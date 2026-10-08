@@ -1,4 +1,8 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>붉은 벽돌의 기억</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,6 +71,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 /* 모달 */
 .modal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,6,.62);padding:16px;z-index:42}
 .modal[hidden]{display:none}
+/* 한국어 낱말이 줄 끝에서 쪼개지지 않게 (게임 전체) */
+#app,#app p,#app div,#app span,#app label,#app button,#app li{word-break:keep-all;overflow-wrap:break-word}
+#app p,#app .lead,#app .fact{text-wrap:pretty}
 /* 비주얼 노벨식 대화 */
 #vn{position:absolute;inset:0;z-index:43;cursor:pointer;background:linear-gradient(180deg,rgba(10,8,6,0) 45%,rgba(10,8,6,.55) 100%)}
 #vn[hidden]{display:none}
@@ -403,6 +410,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+</head>
+<body>
 <div id="app">
   <canvas id="view"></canvas>
   <div id="hud" hidden>
@@ -1685,25 +1694,115 @@ function buildMountain() {
   }
 }
 
-/* ---- 나무: 소나무와 활엽수 ---- */
+/* ---- 나무: 사실적인 소나무와 활엽수 (잎 카드 + 휘어진 줄기) ---- */
 const barkM = new THREE.MeshLambertMaterial({ color: 0x5a4636 });
 const pineM = [0x2f4a2e, 0x38563a, 0x2a4230].map(c => new THREE.MeshLambertMaterial({ color: c }));
 const leafM = [0x4f7040, 0x5e7e45, 0x44653a].map(c => new THREE.MeshLambertMaterial({ color: c }));
 function blob(r, R) { const g = new THREE.IcosahedronGeometry(r, 1); const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const k = 0.82 + R() * 0.3; p.setXYZ(i, p.getX(i) * k, p.getY(i) * k * 0.8, p.getZ(i) * k); } g.computeVertexNormals(); return g; }
+// 잎 무늬 텍스처
+function foliageTex(seed, kind) {
+  const t = canvasTex(256, 256, (g, w, h) => {
+    const R = rng(seed); g.clearRect(0, 0, w, h);
+    const cols = kind === 'pine' ? ['#1f3a22', '#2b4a2c', '#365a34', '#44683c', '#24402a'] : kind === 'hedge' ? ['#2e4a28', '#3b5c30', '#4a6e38', '#567a40', '#33522c'] : ['#3a5a2c', '#4a6e34', '#5c823e', '#6d914a', '#456632'];
+    const N = kind === 'pine' ? 900 : 650;
+    for (let i = 0; i < N; i++) {
+      // 가운데로 갈수록 빽빽하게 (둥근 덩어리 모양)
+      const a = R() * 6.283, rr = Math.pow(R(), 0.6) * 118, x = 128 + Math.cos(a) * rr, y = 128 + Math.sin(a) * rr * 0.9;
+      g.fillStyle = cols[Math.floor(R() * cols.length)]; g.globalAlpha = 0.85 + R() * 0.15;
+      g.save(); g.translate(x, y); g.rotate(R() * 6.283);
+      if (kind === 'pine') { g.fillRect(-1, -9, 2, 18); g.rotate(0.6); g.fillRect(-1, -8, 2, 16); }
+      else { g.beginPath(); g.ellipse(0, 0, 3 + R() * 3, 6 + R() * 4, 0, 0, 6.283); g.fill(); }
+      g.restore();
+    }
+    // 위쪽은 밝게(햇빛)
+    g.globalCompositeOperation = 'source-atop'; const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(255,240,180,.22)'); gr.addColorStop(1, 'rgba(0,0,0,.25)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  });
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+const FOL = {};
+['pine', 'leaf', 'hedge'].forEach((k, i) => {
+  const map = foliageTex(900 + i, k);
+  const m = new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide });
+  const d = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map, alphaTest: 0.5 });
+  FOL[k] = { m, d };
+});
+const barkTex = canvasTex(64, 256, (g, w, h) => { const R = rng(77); g.fillStyle = '#5a4434'; g.fillRect(0, 0, w, h); for (let i = 0; i < 140; i++) { g.fillStyle = `rgba(${30 + R() * 60},${22 + R() * 40},${16 + R() * 30},.6)`; g.fillRect(R() * w, R() * h, 2 + R() * 4, 8 + R() * 30); } });
+barkTex.wrapS = barkTex.wrapT = THREE.RepeatWrapping;
+const pineBarkTex = canvasTex(64, 256, (g, w, h) => { const R = rng(78); g.fillStyle = '#8a4e34'; g.fillRect(0, 0, w, h); for (let i = 0; i < 120; i++) { g.fillStyle = `rgba(${60 + R() * 80},${30 + R() * 30},${20 + R() * 20},.55)`; g.fillRect(R() * w, R() * h, 4 + R() * 10, 3 + R() * 8); } });
+pineBarkTex.wrapS = pineBarkTex.wrapT = THREE.RepeatWrapping;
+const barkLeafM = new THREE.MeshLambertMaterial({ map: barkTex }), barkPineM = new THREE.MeshLambertMaterial({ map: pineBarkTex });
+// 잎 덩어리 하나 = 서로 엇갈린 카드 3장(+수평 1장). 여러 덩어리를 한 지오메트리로 합쳐요.
+function foliageGeo(clusters) {
+  const pos = [], nor = [], uv = [], idx = [];
+  clusters.forEach(({ x, y, z, s, flat, R }) => {
+    const planes = flat ? 4 : 3;
+    for (let k = 0; k < planes; k++) {
+      const horiz = flat && k === 3, a = (k / 3) * Math.PI + R() * 0.4, tilt = (R() - 0.5) * 0.5;
+      const ux = new THREE.Vector3(Math.cos(a), 0, Math.sin(a)), uy = horiz ? new THREE.Vector3(-Math.sin(a), 0, Math.cos(a)) : new THREE.Vector3(0, 1, 0).applyAxisAngle(ux, tilt);
+      const sy = horiz ? s : s * (flat ? 0.55 : 0.9), b = pos.length / 3;
+      [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([u, v]) => {
+        const p = new THREE.Vector3(x, y, z).addScaledVector(ux, u * s).addScaledVector(uy, v * sy);
+        pos.push(p.x, p.y, p.z);
+        const n = p.clone().sub(new THREE.Vector3(x, y - s * 0.6, z)).normalize(); nor.push(n.x, n.y, n.z); // 둥글게 빛 받게
+        uv.push((u + 1) / 2, (v + 1) / 2);
+      });
+      idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+    }
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+  return g;
+}
+function folMesh(geo, kind, parent) { const m = new THREE.Mesh(geo, FOL[kind].m); m.customDepthMaterial = FOL[kind].d; m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; }
+function limb(parent, a, b, r0, r1, mat) {
+  const d = b.clone().sub(a), m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, d.length(), 7, 1), mat);
+  m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); m.castShadow = true; parent.add(m);
+}
+// 소나무: 붉은 줄기가 휘어 올라가고, 가지 끝마다 납작한 솔잎 덩어리
 function pineTree(x, z, s, seed) {
-  const R = rng(seed), g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); scene.add(g);
-  const lean = (R() - 0.5) * 0.3;
-  const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.26, 5.5, 7), barkM); tr.position.set(lean * 2.7, 2.75, 0); tr.rotation.z = -lean; g.add(tr);
-  for (let i = 0; i < 5; i++) { const b = new THREE.Mesh(blob(1.1 + R() * 0.6, R), pineM[i % 3]); const a = R() * 6.28, rr = 0.6 + R() * 1.2; b.position.set(lean * 5.5 + Math.cos(a) * rr, 4.4 + R() * 2.2, Math.sin(a) * rr); b.scale.y = 0.55; g.add(b); }
-  castAll(g); addCol(x - 0.35, z - 0.35, x + 0.35, z + 0.35, 1);
+  const R = rng(seed), g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); g.rotation.y = R() * 6.28; scene.add(g);
+  const pts = [new THREE.Vector3(0, 0, 0)], H = 6.2 + R() * 1.5, lean = (R() - 0.5) * 1.6;
+  for (let i = 1; i <= 5; i++) { const t = i / 5; pts.push(new THREE.Vector3(lean * t * t + Math.sin(t * 3 + seed) * 0.25, H * t, Math.cos(t * 2.5 + seed) * 0.2)); }
+  for (let i = 0; i < 5; i++) limb(g, pts[i], pts[i + 1], 0.24 - i * 0.035, 0.2 - i * 0.035, barkPineM);
+  const cl = [];
+  for (let i = 0; i < 7; i++) {
+    const base = pts[2 + Math.floor(R() * 3.99)].clone(), a = R() * 6.283, len = 1.2 + R() * 1.6;
+    const tip = base.clone().add(new THREE.Vector3(Math.cos(a) * len, 0.3 + R() * 0.6, Math.sin(a) * len));
+    limb(g, base, tip, 0.07, 0.04, barkPineM);
+    for (let k = 0; k < 2; k++) cl.push({ x: tip.x + (R() - 0.5) * 0.6, y: tip.y + 0.1 + k * 0.25, z: tip.z + (R() - 0.5) * 0.6, s: 0.9 + R() * 0.5, flat: true, R });
+  }
+  const top = pts[5]; cl.push({ x: top.x, y: top.y + 0.2, z: top.z, s: 1.3, flat: true, R }, { x: top.x + 0.5, y: top.y - 0.3, z: top.z - 0.4, s: 1.1, flat: true, R });
+  folMesh(foliageGeo(cl), 'pine', g);
+  addCol(x - 0.35, z - 0.35, x + 0.35, z + 0.35, 1);
 }
+// 활엽수: 줄기가 갈라지고 둥근 수관
 function leafTree(x, z, s, seed) {
-  const R = rng(seed), g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); scene.add(g);
-  const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.3, 3.2, 7), barkM); tr.position.y = 1.6; g.add(tr);
-  for (let i = 0; i < 6; i++) { const b = new THREE.Mesh(blob(1.2 + R() * 0.7, R), leafM[i % 3]); b.position.set((R() - 0.5) * 2.2, 3.6 + R() * 1.6, (R() - 0.5) * 2.2); g.add(b); }
-  castAll(g); addCol(x - 0.4, z - 0.4, x + 0.4, z + 0.4, 1);
+  const R = rng(seed), g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); g.rotation.y = R() * 6.28; scene.add(g);
+  const fork = new THREE.Vector3((R() - 0.5) * 0.3, 2.2 + R() * 0.5, (R() - 0.5) * 0.3);
+  limb(g, new THREE.Vector3(0, 0, 0), fork, 0.3, 0.22, barkLeafM);
+  const cl = [];
+  for (let i = 0; i < 4; i++) {
+    const a = i * 1.57 + R() * 0.8, tip = fork.clone().add(new THREE.Vector3(Math.cos(a) * (0.9 + R() * 0.6), 1.4 + R() * 1.2, Math.sin(a) * (0.9 + R() * 0.6)));
+    limb(g, fork, tip, 0.15, 0.08, barkLeafM);
+  }
+  for (let i = 0; i < 16; i++) {
+    const a = R() * 6.283, u = R(), rr = Math.sqrt(u) * 1.9;
+    cl.push({ x: Math.cos(a) * rr, y: 3.6 + R() * 2.0 - rr * 0.3, z: Math.sin(a) * rr, s: 0.95 + R() * 0.5, flat: false, R });
+  }
+  folMesh(foliageGeo(cl), 'leaf', g);
+  addCol(x - 0.4, z - 0.4, x + 0.4, z + 0.4, 1);
 }
-function bush(x, z, seed) { const R = rng(seed); for (let i = 0; i < 3; i++) { const b = new THREE.Mesh(blob(0.5 + R() * 0.3, R), leafM[i % 3]); b.position.set(x + (R() - 0.5) * 0.8, 0.35, z + (R() - 0.5) * 0.8); b.castShadow = true; scene.add(b); } }
+function bush(x, z, seed) {
+  const R = rng(seed), cl = [];
+  for (let i = 0; i < 5; i++) cl.push({ x: x + (R() - 0.5) * 1.0, y: 0.45 + R() * 0.25, z: z + (R() - 0.5) * 1.0, s: 0.5 + R() * 0.25, flat: false, R });
+  folMesh(foliageGeo(cl), 'hedge', scene);
+}
+// 울타리용 관목 줄 (한 지오메트리)
+function hedgeRow(x, z0, z1, seed) {
+  const R = rng(seed), cl = [];
+  for (let z = z0; z <= z1; z += 0.7 + R() * 0.3) { const h = 1.2 + R() * 0.8; for (let k = 0; k < 3; k++) cl.push({ x: x + (R() - 0.5) * 0.7, y: 0.5 + k * h / 3 + R() * 0.2, z: z + (R() - 0.5) * 0.4, s: 0.6 + R() * 0.3, flat: false, R }); }
+  folMesh(foliageGeo(cl), 'hedge', scene);
+}
 
 /* ---- 지붕 용마루·추녀마루 ---- */
 function roofRidges() {
@@ -1732,12 +1831,7 @@ leafTree(-23, 17, 0.9, 19); pineTree(23, 10, 1.0, 20); pineTree(-14, -19.5, 0.8,
 {
   // 옆 울타리: 키 큰 관목 줄(사이사이 틈과 높낮이)
   const R = rng(2601), hedgeM = [0x3f5a34, 0x4a6a3c, 0x37502e].map(c => new THREE.MeshLambertMaterial({ color: c }));
-  [-26, 26].forEach(x => {
-    for (let z = -21.5; z <= 21.5; z += 1.1 + R() * 0.5) {
-      const r = 0.75 + R() * 0.45, b = new THREE.Mesh(blob(r, R), hedgeM[Math.floor(R() * 3)]);
-      b.position.set(x + (R() - 0.5) * 0.5, r * 0.8 + R() * 0.3, z); b.scale.set(1, 1.25 + R() * 0.4, 1); b.castShadow = true; scene.add(b);
-    }
-  });
+  [-26, 26].forEach((x, i) => hedgeRow(x, -21.5, 21.5, 2601 + i));
   [[-27.5, -14, 1.1, 2601], [-28, 3, 1.0, 2602], [-27.2, 15, 0.9, 2603], [27.6, -10, 1.0, 2604], [28.2, 6, 1.1, 2605], [27.4, 19, 0.9, 2606]].forEach(([x, z, sc, sd], i) => (i % 2 ? leafTree : pineTree)(x, z, sc, sd));
   // 울타리 너머 이웃 건물들(2층 목조 가옥과 기와집)
   const wallW = new THREE.MeshLambertMaterial({ color: 0xd8ccb2 }), wallD = new THREE.MeshLambertMaterial({ color: 0x7a5a3e }), tile = new THREE.MeshLambertMaterial({ color: 0x3e3a38 }), tile2 = new THREE.MeshLambertMaterial({ color: 0x55504a });
@@ -1775,15 +1869,16 @@ leafTree(-23, 17, 0.9, 19); pineTree(23, 10, 1.0, 20); pineTree(-14, -19.5, 0.8,
 }
 // 산 위 소나무 숲
 {
-  const N = 220, inst = new THREE.InstancedMesh(new THREE.ConeGeometry(1.4, 4.2, 6), pineM[1], N), m4 = new THREE.Matrix4(), R = rng(311); let c = 0;
+  const fR = rng(312), farGeo = foliageGeo([0, 1, 2].map(k => ({ x: 0, y: 1.2 + k * 1.1, z: 0, s: 1.5 - k * 0.3, flat: false, R: fR })));
+  const N = 220, inst = new THREE.InstancedMesh(farGeo, FOL.pine.m, N); inst.userData.forest = true, m4 = new THREE.Matrix4(), R = rng(311); let c = 0;
   const mesh = scene.children.find(o => o.isMesh && o.geometry.type === 'PlaneGeometry' && o.position.z < TZ - 20);
   const ray2 = new THREE.Raycaster();
   for (let i = 0; i < N * 3 && c < N; i++) {
     const x = -75 + R() * 150, z = TZ - 3 - R() * 60; ray2.set(new THREE.Vector3(x, 100, z), new THREE.Vector3(0, -1, 0));
     const hit = mesh ? ray2.intersectObject(mesh)[0] : null; if (!hit || hit.point.y > 32) continue;
-    m4.compose(new THREE.Vector3(x, hit.point.y + 1.8, z), new THREE.Quaternion(), new THREE.Vector3(1, 0.8 + R() * 0.6, 1)); inst.setMatrixAt(c++, m4);
+    m4.compose(new THREE.Vector3(x, hit.point.y + 0.1, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), R() * 6), new THREE.Vector3(1, 0.8 + R() * 0.6, 1)); inst.setMatrixAt(c++, m4);
   }
-  inst.count = c; scene.add(inst);
+  inst.count = c; inst.frustumCulled = false; scene.add(inst);
 }
 // 바깥 물체 그림자 설정
 scene.updateMatrixWorld(true);
@@ -2067,16 +2162,16 @@ const FA = (() => {
     { id: 'ped', kind: 'ped', bb: [0, 8.4, 3.3, 10.6], y0: 0 },
     { id: 'w2f', kind: 'win', bb: [3.75, 4.75, 9.45, 8.0], y0: 4 },
     { id: 'w1f', kind: 'win', bb: [3.75, 0.75, 9.45, 4.0], y0: 0 },
-    { id: 'qu', kind: 'quoin', bb: [9.3, 0.44, 10.15, 8.0], y0: 0 }
+    { id: 'qu', kind: 'quoin', bb: [9.3, 0.44, 10.15, 8.0], hit: [9.2, 0.3, 11.1, 8.1], y0: 0 }
   ];
   const svg = (vb, inner) => `<svg viewBox="${vb[0]} ${-vb[3]} ${vb[2] - vb[0]} ${vb[3] - vb[1]}" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">${inner}</g></svg>`;
   return { C, rect, base, left, PIECES, SLOTS, svg, S };
 })();
 function puzzle2() {
-  const place = {}; let sel = null;
+  const place = {}; let sel = null, bad = new Set();
   openModal(body => {
     head(body, '② 현관과 세모 지붕', '대칭 자물쇠');
-    body.appendChild(el('p', '', '1관 정면의 <b>오른쪽 반</b>이 비어 있어요. 아래 조각을 골라 빈자리에 넣어 정면을 완성하세요. 가운데 선이 거울이에요.'));
+    body.appendChild(el('p', '', '1관 정면의 <b>오른쪽 반</b>이 비어 있어요. 아래 조각을 골라 빈자리에 넣어 정면을 완성하세요. 가운데 선이 거울이에요. 넣은 조각을 다시 누르면 빠져요.'));
     const wrap = el('div', 'p2'); body.appendChild(wrap);
     const view = el('div', 'elev'); wrap.appendChild(view);
     const tray = el('div', 'ptray'); wrap.appendChild(tray);
@@ -2087,7 +2182,9 @@ function puzzle2() {
         const pid = place[sl.id], [x0, y0, x1, y1] = sl.bb;
         if (pid) inner += FA.PIECES.find(p => p.id === pid).draw(sl.y0);
         else inner += FA.rect(x0, y0, x1, y1, sel && FA.PIECES.find(p => p.id === sel).kind === sl.kind ? 'rgba(255,214,90,.45)' : 'rgba(255,248,230,.35)', '#fff7e0', 2).replace('/>', ' stroke-dasharray="5 4"/>');
-        inner += `<rect data-slot="${sl.id}" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="transparent" style="cursor:pointer"/>`;
+        if (bad.has(sl.id)) inner += FA.rect(x0 - 0.1, y0 - 0.1, x1 + 0.1, y1 + 0.1, 'rgba(220,60,40,.18)', '#e0442c', 3).replace('/>', ' stroke-dasharray="6 3"/>');
+        const [hx0, hy0, hx1, hy1] = sl.hit || sl.bb;
+        inner += `<rect data-slot="${sl.id}" x="${hx0}" y="${hy0}" width="${hx1 - hx0}" height="${hy1 - hy0}" fill="transparent" style="cursor:pointer"/>`;
       });
       inner += `<path d="M0 -0.3V12.2" stroke="#fff3c4" stroke-width="2" stroke-dasharray="6 5" ${FA.S}/>`;
       view.innerHTML = FA.svg([-11, -0.3, 11, 12.2], inner);
@@ -2096,17 +2193,21 @@ function puzzle2() {
       const used = new Set(Object.values(place));
       FA.PIECES.forEach(pc => {
         const b = el('button', 'pc' + (sel === pc.id ? ' on' : '') + (used.has(pc.id) ? ' used' : ''), FA.svg(pc.bb, pc.draw(0)) + `<span>${pc.lab}</span>`);
-        b.disabled = used.has(pc.id);
-        b.onclick = () => { sel = sel === pc.id ? null : pc.id; sfx.click(); draw(); };
+        b.onclick = () => {
+          // 이미 넣은 조각을 누르면 빼서 다시 골라요
+          if (used.has(pc.id)) { for (const k in place) if (place[k] === pc.id) { delete place[k]; bad.delete(k); } sel = pc.id; }
+          else sel = sel === pc.id ? null : pc.id;
+          sfx.click(); draw();
+        };
         tray.appendChild(b);
       });
     };
     const tapSlot = id => {
       const sl = FA.SLOTS.find(s => s.id === id);
-      if (!sel) { if (place[id]) { delete place[id]; sfx.click(); draw(); } else say(m, '먼저 아래에서 조각을 하나 고르세요.'); return; }
+      if (!sel) { if (place[id]) { delete place[id]; bad.delete(id); sfx.click(); draw(); say(m, '조각을 뺐어요. 아래에서 다른 조각을 골라 넣어 보세요.', true); } else say(m, '먼저 아래에서 조각을 하나 고르세요.'); return; }
       const pc = FA.PIECES.find(p => p.id === sel);
       if (pc.kind !== sl.kind) { sfx.bad(); say(m, '그 조각은 이 자리에 들어가지 않아요. 모양과 크기를 비교해 보세요.'); return; }
-      place[id] = sel; sel = null; sfx.click(); m.textContent = ''; draw();
+      place[id] = sel; bad.delete(id); sel = null; sfx.click(); m.textContent = ''; draw();
     };
     draw();
     const btn = el('button', 'pbtn', '자물쇠 열기'); body.appendChild(btn);
@@ -2115,7 +2216,8 @@ function puzzle2() {
       if (empty) { sfx.bad(); say(m, `아직 빈자리가 ${empty}곳 있어요.`); return; }
       const wrong = FA.SLOTS.filter(s => !FA.PIECES.find(p => p.id === place[s.id]).ok);
       if (!wrong.length) { closeModal(); solve(2); return; }
-      sfx.bad(); say(m, `거울처럼 똑같지 않은 곳이 ${wrong.length}곳 있어요. 왼쪽과 방향·모양을 비교해 보세요.`); shake(view);
+      bad = new Set(wrong.map(w => w.id)); draw();
+      sfx.bad(); say(m, `빨간 점선 자리 ${wrong.length}곳이 왼쪽과 거울처럼 똑같지 않아요. 그 자리를 누르면 조각이 빠지고, 다른 조각으로 바꿀 수 있어요.`); shake(view);
     };
   });
 }
@@ -2631,7 +2733,7 @@ function startDrone() {
 function stopDrone() { if (drone && AC) { drone.gain.cancelScheduledValues(AC.currentTime); drone.gain.setTargetAtTime(0, AC.currentTime, 0.6); } }
 function bell() { tone([523.3, 784], 1.4, 'sine', 0.18); }
 function startCine() {
-  state.mode = 'cine'; cine.i = 0; cine.t = 0; cine.lastChars = -1; cine.era = null;
+  state.mode = 'cine'; cine.i = 0; cine.t = 0; cine.lastChars = -1; cine.era = null; $('cineText').dataset.shot = '';
   $('startScreen').hidden = true; $('cine').hidden = false; $('cineTitle').classList.remove('on');
   cineBook.visible = true; $('fade').style.transition = 'none'; $('flash').style.transition = 'none'; startDrone(); bell();
 }
@@ -2655,7 +2757,7 @@ function updateCine(dt) {
   if (sh.era && cine.era !== sh.era) { cine.era = sh.era; goEra(sh.era); }
   const fadeEl = $('fade'), fl = $('flash');
   if (sh.title) {
-    fadeEl.style.opacity = 1; fl.style.opacity = 0; $('cineTitle').classList.add('on'); $('cineYear').textContent = ''; $('cineText').textContent = '';
+    fadeEl.style.opacity = 1; fl.style.opacity = 0; $('cineTitle').classList.add('on'); $('cineYear').textContent = ''; $('cineText').textContent = ''; $('cineText').dataset.shot = '';
     if (cine.t > sh.d - 0.6) stopDrone();
     return;
   }
@@ -2673,7 +2775,7 @@ function updateCine(dt) {
     $('cineYear').textContent = year;
   }
   const chars = Math.floor(Math.max(0, cine.t - 0.4) * 16);
-  if (chars !== cine.lastChars) { cine.lastChars = chars; if (!sh.clock) $('cineYear').textContent = year; $('cineText').classList.toggle('hand', !!sh.hand); $('cineText').textContent = sh.text.slice(0, chars); }
+  if (chars !== cine.lastChars) { cine.lastChars = chars; if (!sh.clock) $('cineYear').textContent = year; $('cineText').classList.toggle('hand', !!sh.hand); const ct = $('cineText'); if (ct.dataset.shot !== String(cine.i)) { ct.dataset.shot = cine.i; ct.textContent = ''; [...sh.text].forEach(ch => { const sp = document.createElement('span'); sp.textContent = ch; sp.style.opacity = '0'; ct.appendChild(sp); }); } [...ct.children].forEach((sp, j) => { const on = j < chars ? '1' : '0'; if (sp.style.opacity !== on) sp.style.opacity = on; }); }
 }
 $('btnPlay').onclick = () => {
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; }
@@ -3889,7 +3991,7 @@ const DPR = window.devicePixelRatio || 1;
 let Qcur = 'med';
 scene.updateMatrixWorld(true);
 const FAR = scene.children.filter(o => { if (o === skyDome || o === camera || o.isLight) return false; const p = new THREE.Vector3(); o.getWorldPosition(p); return p.z > 24 || p.y < -6 || Math.abs(p.x) > 45; });
-const forest = scene.children.find(o => o.isInstancedMesh && o.geometry.type === 'ConeGeometry');
+const forest = scene.children.find(o => o.isInstancedMesh && o.userData.forest);
 function autoQ() { const cores = navigator.hardwareConcurrency || 4; return (coarse && cores <= 4) || cores <= 2 ? 'low' : coarse ? 'med' : 'high'; }
 function setQuality(q) {
   Qcur = q === 'auto' ? autoQ() : q;
@@ -4256,11 +4358,13 @@ function vnSay(who, text, opts = {}) {
 function vnPage() {
   const t = vn.pages[vn.i], box = $('vnText'); clearInterval(vn.timer);
   box.textContent = ''; $('vnMore').classList.remove('on'); vn.typing = true;
+  // 문장 전체를 먼저 자리 잡아 두고(투명) 한 글자씩 보이게 해요 → 줄 끝에서 낱말이 튀거나 잘리지 않아요
+  const spans = [...t].map(ch => { const sp = document.createElement('span'); sp.textContent = ch; sp.style.opacity = '0'; box.appendChild(sp); return sp; });
   let k = 0;
   vn.timer = setInterval(() => {
-    k += 1; box.textContent = t.slice(0, k);
+    if (k < spans.length) spans[k].style.opacity = '1'; k += 1;
     if (k % 3 === 0) tone([900 + Math.random() * 200], 0.025, 'triangle', 0);
-    if (k >= t.length) vnFinish();
+    if (k >= spans.length) vnFinish();
   }, 38);
   $('vnStep').textContent = vn.pages.length > 1 ? `${vn.i + 1} / ${vn.pages.length}` : '';
 }
@@ -4349,5 +4453,5 @@ let bgmLast = performance.now();
 })();
 
 </script>
-
-</body></html>
+</body>
+</html>
