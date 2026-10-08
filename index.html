@@ -537,7 +537,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
     <button class="rSkip" id="rSkip">건너뛰기 ▶▶</button>
   </div>
   <div id="fin" hidden>
-    <div class="fBook" id="fBook"><div class="fCover"><div class="fEmb">民昇</div><div class="fSub">민승이의 수첩 · 1919</div></div><div class="fPage" id="fPage"></div></div>
+    <div class="fBook" id="fBook"><div class="fCover"><div class="fEmb">민승</div><div class="fSub">민승이의 수첩 · 1919</div></div><div class="fPage" id="fPage"></div></div>
     <div class="fTitle" id="fTitle"><div class="fKick">목포근대역사관 1관 · 교실 방탈출</div><h1>붉은 벽돌의 기억</h1><div class="fEnd">끝</div>
       <div class="fCred" id="fCred"></div>
       <div class="fBtns"><button class="big" id="fAgain">처음부터 다시</button><button class="pbtn alt dk" id="fBack">편지 다시 보기</button></div></div>
@@ -926,10 +926,13 @@ function buildBuilding() {
   const slabM = [M.plaster, M.plaster, M.wood, M.plaster, M.plaster, M.plaster];
   const slab = (x1, z1, x2, z2) => { const m = new THREE.Mesh(scaledBox(x2 - x1, 0.2, z2 - z1, 3), slabM); m.position.set((x1 + x2) / 2, 3.9, (z1 + z2) / 2); add(m); };
   slab(-10, -6, 4.2, 6); slab(4.2, -4.3, 10, 6); slab(9.7, -6, 10, -4.3); slab(-3, 6, 3, 7.5);
-  addCol(4.2, -6, 9.7, -4.3, 2, 'hole');
+  addCol(4.2, -6, 8.62, -4.3, 2, 'hole');
   // 난간
-  box(5.5, 0.08, 0.08, M.darkwood, 6.95, 4.95, -4.3); box(0.08, 0.08, 1.7, M.darkwood, 4.2, 4.95, -5.15);
-  for (let x = 4.2; x <= 9.7; x += 0.55) box(0.05, 0.95, 0.05, M.darkwood, x, 4.48, -4.3);
+  // 난간: 계단 꼭대기(동쪽 끝)는 비워 두어 내려가는 입구가 보여요
+  box(4.4, 0.08, 0.08, M.darkwood, 6.4, 4.95, -4.3); box(0.08, 0.08, 1.7, M.darkwood, 4.2, 4.95, -5.15);
+  for (let x = 4.2; x <= 8.61; x += 0.55) box(0.05, 0.95, 0.05, M.darkwood, x, 4.48, -4.3);
+  box(0.12, 1.1, 0.12, M.darkwood, 8.62, 4.55, -4.3); box(0.18, 0.08, 0.18, M.darkwood, 8.62, 5.12, -4.3);
+  box(1.1, 0.1, 1.7, M.wood, 9.15, 3.95, -5.15);   // 계단 꼭대기 층계참
   for (let z = -5.9; z <= -4.3; z += 0.55) box(0.05, 0.95, 0.05, M.darkwood, 4.2, 4.48, z);
   // 천장 장식
   const medTex = canvasTex(128, 128, (g) => { g.clearRect(0, 0, 128, 128); [[60, '#efe6d2'], [52, '#d9cdb2'], [44, '#efe6d2'], [30, '#d9cdb2'], [20, '#efe6d2'], [8, '#c9b994']].forEach(([r, c]) => { g.fillStyle = c; g.beginPath(); g.arc(64, 64, r, 0, 7); g.fill(); }); for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8; g.fillStyle = '#cbbd9e'; g.beginPath(); g.arc(64 + Math.cos(a) * 37, 64 + Math.sin(a) * 37, 4, 0, 7); g.fill(); } });
@@ -1107,8 +1110,9 @@ function buildProps() {
   }
   // 옆판과 손잡이 난간: 위에서 내려다봐도 계단인 게 보이게
   for (const z of [-5.88, -4.28]) {
-    const L = Math.hypot(5.5, 4), rail = new THREE.Mesh(new THREE.BoxGeometry(L, 0.07, 0.07), M.darkwood); rail.position.set(7.0, 0.333 * 6 + 0.95, z); rail.rotation.z = Math.atan2(4, 5.5); add(rail, st);
-    for (let i = 0; i < 12; i += 2) box(0.04, 0.9, 0.04, M.darkwood, 4.43 + i * 0.458, 0.333 * (i + 1) + 0.45, z, st);
+    const n = z > -5 ? 9 : 12, x0 = 4.43, x1 = 4.43 + (n - 1) * 0.458, y0 = 0.333 + 0.95, y1 = 0.333 * n + 0.95;
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(x1 - x0, y1 - y0), 0.07, 0.07), M.darkwood); rail.position.set((x0 + x1) / 2, (y0 + y1) / 2, z); rail.rotation.z = Math.atan2(y1 - y0, x1 - x0); add(rail, st);
+    for (let i = 0; i < n; i += 2) box(0.04, 0.9, 0.04, M.darkwood, 4.43 + i * 0.458, 0.333 * (i + 1) + 0.45, z, st);
   }
   addCol(4.2, -6, 9.7, -4.3, 1);
   const rope = new THREE.Group(); scene.add(rope);
@@ -1326,10 +1330,32 @@ const rugTex = canvasTex(256, 384, (g, w, h) => {
 rugTex.wrapS = rugTex.wrapT = THREE.ClampToEdgeWrapping;
 const rugM = new THREE.MeshLambertMaterial({ map: rugTex });
 function paintingTex(seed) {
-  return canvasTex(160, 120, (g, w, h) => {
-    const R = rng(seed); const sky = g.createLinearGradient(0, 0, 0, h); sky.addColorStop(0, '#c9d3cf'); sky.addColorStop(1, '#e8dcc0'); g.fillStyle = sky; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#6d7f6c'; g.beginPath(); g.moveTo(0, 70); for (let x = 0; x <= w; x += 20) g.lineTo(x, 50 + R() * 25); g.lineTo(w, h); g.lineTo(0, h); g.fill();
-    g.fillStyle = '#4f6f7b'; g.fillRect(0, 88, w, 32); g.fillStyle = '#3b2a20'; g.fillRect(40 + R() * 60, 80, 22, 8); g.fillRect(48 + R() * 50, 70, 3, 12);
+  // 역사 카드 그림을 액자 그림으로 써요(시대에 맞는 것만)
+  const CARD_OF = { 5: 1, 11: 4, 23: 2 };
+  if (typeof CARD_IMG !== 'undefined' && CARD_IMG[CARD_OF[seed]]) {
+    const t = new THREE.TextureLoader().load(CARD_IMG[CARD_OF[seed]]); t.anisotropy = 4; return t;
+  }
+  if (seed === 17) return canvasTex(480, 320, (g, w, h) => { // 유달산 수묵 산수화
+    const R = rng(170); g.fillStyle = '#efe6d0'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 1200; i++) { g.fillStyle = `rgba(150,130,90,${R() * 0.05})`; g.fillRect(R() * w, R() * h, 2, 2); }
+    [[0.18, 150, '#b9b2a2'], [0.32, 190, '#8f887a'], [0.55, 230, '#5e584f'], [0.85, 270, '#2f2b27']].forEach(([a, base, c], k) => {
+      g.fillStyle = c; g.globalAlpha = a + 0.1; g.beginPath(); g.moveTo(0, h);
+      for (let x = 0; x <= w; x += 8) { const pk = Math.exp(-Math.pow((x - (120 + k * 90)) / (60 + k * 10), 2)) * (120 - k * 22); g.lineTo(x, base - pk - Math.abs(Math.sin(x * 0.05 + k)) * 12 - R() * 4); }
+      g.lineTo(w, h); g.fill();
+    });
+    g.globalAlpha = 1; g.strokeStyle = '#2b2622'; g.lineWidth = 3;
+    for (let k = 0; k < 3; k++) { const x = 330 + k * 34, y = 250; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 8, y - 40, x - 4, y - 78); g.stroke(); g.fillStyle = '#2b2622'; for (let j = 0; j < 4; j++) { g.beginPath(); g.ellipse(x - 4 + (R() - 0.5) * 30, y - 70 + j * 12, 18, 5, 0, 0, 7); g.fill(); } }
+    g.fillStyle = '#b3261e'; g.fillRect(w - 46, 26, 22, 22); g.fillStyle = 'rgba(40,30,25,.75)'; for (let j = 0; j < 7; j++) g.fillRect(w - 38, 60 + j * 14, 6, 8);
+  });
+  return canvasTex(480, 320, (g, w, h) => { // 해 질 녘 목포 앞바다와 돛단배(유화)
+    const R = rng(290), sky = g.createLinearGradient(0, 0, 0, h * 0.62); sky.addColorStop(0, '#5b6f8a'); sky.addColorStop(0.55, '#e7a76a'); sky.addColorStop(1, '#f4d39a'); g.fillStyle = sky; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#ffe6a8'; g.beginPath(); g.arc(300, 185, 26, 0, 7); g.fill();
+    g.fillStyle = '#4d4a5a'; g.beginPath(); g.moveTo(0, 200); g.quadraticCurveTo(90, 140, 190, 196); g.lineTo(190, 200); g.fill();
+    g.beginPath(); g.moveTo(360, 200); g.quadraticCurveTo(420, 160, 480, 192); g.lineTo(480, 200); g.fill();
+    const sea = g.createLinearGradient(0, 198, 0, h); sea.addColorStop(0, '#c98f63'); sea.addColorStop(1, '#2f4558'); g.fillStyle = sea; g.fillRect(0, 198, w, h);
+    for (let i = 0; i < 160; i++) { g.fillStyle = `rgba(255,220,160,${R() * 0.35})`; g.fillRect(270 + (R() - 0.5) * 90, 205 + R() * 110, 10 + R() * 20, 2); }
+    [[120, 250, 1], [380, 236, 0.7], [220, 222, 0.5]].forEach(([x, y, s]) => { g.fillStyle = '#2a211c'; g.beginPath(); g.moveTo(x - 34 * s, y); g.lineTo(x + 34 * s, y); g.lineTo(x + 24 * s, y + 10 * s); g.lineTo(x - 26 * s, y + 10 * s); g.fill(); g.fillStyle = '#7a5a3e'; g.beginPath(); g.moveTo(x, y - 2); g.lineTo(x, y - 70 * s); g.lineTo(x + 30 * s, y - 14 * s); g.fill(); g.strokeStyle = 'rgba(40,30,25,.6)'; g.lineWidth = 1; for (let k = 1; k < 5; k++) { g.beginPath(); g.moveTo(x, y - 2 - k * 13 * s); g.lineTo(x + 30 * s * (1 - k / 5.5), y - 14 * s - k * 2 * s); g.stroke(); } });
+    for (let i = 0; i < 2500; i++) { g.fillStyle = `rgba(${R() > 0.5 ? '255,240,220' : '30,20,15'},${R() * 0.05})`; g.fillRect(R() * w, R() * h, 3, 2); }
   });
 }
 
@@ -1408,8 +1434,9 @@ function displayCase(x, z, y0, w, d, items = 'pots') {
   colR(x, z, w, d, lvOf(y0)); return g;
 }
 function panel(lines, x, y, z, ry, w = 1.6, h = 1.0, bg = '#2a1e17') { const light = parseInt(bg.slice(1, 3), 16) > 150; const p = textPlane(lines, w, h, light ? { bg, fg: '#2a211a', fg2: '#7a5a3a' } : { bg }); p.position.set(x, y, z); p.rotation.y = ry; scene.add(p); return p; }
-function painting(x, y, z, ry, seed, w = 1.0, h = 0.75) {
-  const g = grp(x, y, z, ry); dk(w + 0.12, h + 0.12, 0.05, F.gilt, 0, 0, 0, g);
+function painting(x, y, z, ry, seed, w = 1.2, h = 0.8) {
+  const g = grp(x, y, z, ry); dk(w + 0.16, h + 0.16, 0.05, F.gilt, 0, 0, 0, g); dk(w + 0.04, h + 0.04, 0.052, new THREE.MeshLambertMaterial({ color: 0x3a2a1a }), 0, 0, 0.001, g);
+  const plate = dk(0.22, 0.05, 0.01, M.brass, 0, -h / 2 - 0.14, 0.03, g);
   const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: paintingTex(seed) })); p.position.z = 0.03; g.add(p);
 }
 function bench(x, z, y0, ry) {
@@ -3420,9 +3447,35 @@ function puzzle3Order() {
 /* ---------- ④ 망원경으로 배 번호 읽기 ---------- */
 {
   const tg = new THREE.Group(); tg.position.set(-6.6, 4, 4.95); scene.add(tg);
-  const br = new THREE.MeshLambertMaterial({ color: 0x8a6a3a }), bs = M.brass;
-  [0, 2.1, 4.2].forEach(a => { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.3, 6), br); l.position.set(Math.cos(a) * 0.22, 0.62, Math.sin(a) * 0.22); l.rotation.set(Math.sin(a) * 0.3, 0, -Math.cos(a) * 0.3); tg.add(l); });
-  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.9, 12), bs); tube.rotation.x = Math.PI / 2 - 0.15; tube.position.set(0, 1.32, 0.1); tg.add(tube);
+  const wood = new THREE.MeshPhongMaterial({ color: 0x6b4426, shininess: 25 }), brass = new THREE.MeshPhongMaterial({ color: 0xc9a14a, specular: 0xfff0c0, shininess: 70 }),
+    dark = new THREE.MeshPhongMaterial({ color: 0x1b1714, shininess: 40 }), glass = new THREE.MeshPhongMaterial({ color: 0x8fb6c8, specular: 0xffffff, shininess: 120, transparent: true, opacity: 0.85 });
+  const cyl = (r0, r1, l, m, seg = 20) => new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, l, seg), m);
+  // 삼각대: 꼭대기 머리에서 바닥으로 벌어진 나무 다리 3개
+  const head = cyl(0.07, 0.08, 0.06, brass); head.position.y = 1.12; tg.add(head);
+  [0, 2.094, 4.189].forEach(a => {
+    const top = new THREE.Vector3(Math.cos(a) * 0.05, 1.1, Math.sin(a) * 0.05), foot = new THREE.Vector3(Math.cos(a) * 0.48, 0, Math.sin(a) * 0.48), d = foot.clone().sub(top);
+    const leg = cyl(0.022, 0.016, d.length(), wood, 8); leg.position.copy(top).add(foot).multiplyScalar(0.5); leg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); tg.add(leg);
+    const tip = cyl(0.018, 0.012, 0.05, brass, 8); tip.position.copy(foot).setY(0.025); tg.add(tip);
+  });
+  // 가운데 받침 사슬 대신 둥근 선반
+  const tray = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.008, 6, 24), brass); tray.rotation.x = Math.PI / 2; tray.position.y = 0.45; tg.add(tray);
+  // 받침대(요크)
+  const yoke = new THREE.Group(); yoke.position.y = 1.18; tg.add(yoke);
+  [-1, 1].forEach(sd => { const arm = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.14, 0.05), brass); arm.position.set(sd * 0.085, 0.06, 0); yoke.add(arm); });
+  // 경통: 창문 쪽(+z)을 향해 살짝 위로
+  const tube = new THREE.Group(); tube.position.y = 0.12; tube.rotation.x = -0.12; yoke.add(tube);
+  const along = (m, z) => { m.rotation.x = Math.PI / 2; m.position.z = z; tube.add(m); return m; };
+  along(cyl(0.062, 0.062, 0.62, brass), 0.08);                 // 본체
+  along(cyl(0.085, 0.072, 0.2, brass), 0.48);                  // 대물렌즈 쪽 넓은 부분
+  along(cyl(0.088, 0.088, 0.03, dark), 0.585);                 // 앞 테
+  along(cyl(0.07, 0.07, 0.01, glass), 0.598);                  // 렌즈
+  along(cyl(0.048, 0.048, 0.22, brass), -0.33);                // 당김통 1
+  along(cyl(0.036, 0.036, 0.16, brass), -0.51);                // 당김통 2
+  along(cyl(0.03, 0.026, 0.07, dark), -0.62);                  // 접안부
+  [0.36, -0.22, -0.44, -0.59].forEach((z, i) => along(new THREE.Mesh(new THREE.TorusGeometry([0.074, 0.064, 0.05, 0.038][i], 0.008, 6, 24), dark), z).rotation.x = 0);
+  [-0.18, 0.3].forEach(z => along(new THREE.Mesh(new THREE.TorusGeometry(0.066, 0.006, 6, 24), brass), z).rotation.x = 0);
+  const knob = cyl(0.018, 0.018, 0.04, dark, 10); knob.rotation.z = Math.PI / 2; knob.position.set(0.075, 0, 0.05); tube.add(knob);
+  tg.traverse(o => { if (o.isMesh) o.castShadow = true; });
   regEra(tg, ['y1919', 'y1944', 'present']);
 }
 const SHIP_NUMS = [['18', -30, 88, 38, 0.08], ['97', 16, 96, 32, -0.06], ['19', 58, 118, 44, 0.25], ['07', -70, 132, 30, -0.2]];
