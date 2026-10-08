@@ -1,8 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>붉은 벽돌의 기억</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -297,7 +293,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 #evt{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);background:rgba(120,20,15,.88);color:#fff3d6;border:1px solid #f2c76b;
   border-radius:6px;padding:8px 16px;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;z-index:5;pointer-events:none;text-align:center}
 #evt[hidden]{display:none}
-#scope{position:absolute;inset:0;z-index:6;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0 31vmin,rgba(0,0,0,.96) 33vmin)}
+#scope{position:absolute;inset:0;z-index:6;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0 40vmin,rgba(0,0,0,.96) 42vmin)}
+.stags{position:absolute;inset:0;pointer-events:none}
+.stag{position:absolute;left:0;top:0;pointer-events:auto;background:#f2c76b;color:#1f1813;border:2px solid #fff3d6;border-radius:22px;padding:9px 14px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,.45);white-space:nowrap;animation:stagP 1.4s ease-in-out infinite}
+.stag.chosen{background:#4e7d4a;color:#fff;animation:none}
+@keyframes stagP{50%{box-shadow:0 0 0 6px rgba(242,199,107,.35),0 4px 12px rgba(0,0,0,.45)}}
+.snav button{position:absolute;top:50%;transform:translateY(-50%);pointer-events:auto;width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,243,214,.7);background:rgba(20,16,12,.7);color:#fff3d6;font-size:22px}
+#sPrev{left:max(14px,calc(50% - 46vmin))}#sNext{right:max(14px,calc(50% - 46vmin))}
+.sslots{display:flex;justify-content:center;align-items:center;gap:8px;margin:8px 0 4px;pointer-events:auto}
+.ss{display:inline-grid;place-items:center;min-width:54px;height:46px;border:2px dashed rgba(242,199,107,.7);border-radius:8px;font:700 26px Georgia,serif;color:rgba(255,243,214,.5);background:rgba(20,16,12,.6)}
+.ss.on{border-style:solid;color:#f2c76b}
+#sDel{background:rgba(20,16,12,.7);color:#fff3d6;border:1px solid rgba(255,243,214,.5);border-radius:16px;padding:7px 12px;font-size:14px}
 #scope[hidden]{display:none}
 #scope .cross{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:2px solid rgba(255,240,200,.6);border-radius:50%}
 #scope .info{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);text-align:center;color:#fff3d6;font-size:16px;width:min(90vw,520px)}
@@ -410,8 +416,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-</head>
-<body>
 <div id="app">
   <canvas id="view"></canvas>
   <div id="hud" hidden>
@@ -3324,7 +3328,7 @@ SHIP_NUMS.forEach(([n, x, z, L, ry]) => {
   for (const s of [-1, 1]) {
     const nt = canvasTex(256, 160, g => { g.clearRect(0, 0, 256, 160); g.fillStyle = '#f3ecdb'; g.fillRect(6, 6, 244, 148); g.fillStyle = '#b3261e'; g.font = '700 132px Georgia,serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(n, 128, 86); });
     nt.wrapS = nt.wrapT = THREE.ClampToEdgeWrapping;
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(L * 0.16, L * 0.1), new THREE.MeshBasicMaterial({ map: nt, transparent: true }));
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(L * 0.16, L * 0.1), new THREE.MeshBasicMaterial({ map: nt, transparent: true, fog: false }));
     p.position.set(-L * 0.12, L * 0.085 + L * 0.06, s * (L * 0.15 / 2 + 0.1)); p.rotation.y = s > 0 ? 0 : Math.PI; g.add(p);
   }
   const hit = new THREE.Mesh(new THREE.BoxGeometry(L, L * 0.2, L * 0.17), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = L * 0.05; g.add(hit);
@@ -4452,6 +4456,62 @@ let bgmLast = performance.now();
   BGM.cur = want;
 })();
 
+/* ---------- ④ 망원경: 배 고르기를 쉽고 확실하게 ---------- */
+{
+  const sc = $('scope');
+  const tags = el('div', 'stags'); sc.appendChild(tags);
+  const nav = el('div', 'snav', '<button id="sPrev" aria-label="왼쪽 배">◀</button><button id="sNext" aria-label="오른쪽 배">▶</button>'); sc.appendChild(nav);
+  const slots = el('div', 'sslots', '<span class="ss" id="ss0">?</span><span class="ss" id="ss1">?</span><button id="sDel">⌫ 지우기</button>'); sc.querySelector('.info').insertBefore(slots, $('scopeSel'));
+  $('scopeTxt').innerHTML = '배 옆의 <b>⚓ 고르기</b>를 눌러 배 <b>두 척</b>을 순서대로 고르세요. ◀ ▶로 다른 배를 볼 수 있어요.';
+  const ships = SHIP_NUMS.map(([n]) => ({ n, obj: interactables['ship' + n].obj, btn: null }));
+  ships.forEach(s => { const b = el('button', 'stag', '⚓ 고르기'); b.onclick = e => { e.stopPropagation(); pickShip(s.n); }; tags.appendChild(b); s.btn = b; });
+  let turn = null, pitchTo = null, msgT = 0;
+  const NEAR0 = camera.near;
+  const pitchOf = s => { const p = s.obj.getWorldPosition(new THREE.Vector3()); return Math.atan2(p.y + 4 - 5.95, Math.hypot(p.x + 6.6, p.z - 6.35)); };
+  const yawOf = s => { const p = s.obj.getWorldPosition(new THREE.Vector3()); const a = Math.atan2(-(p.x - -6.6), -(p.z - 6.35)); return (a % 6.2832 + 6.2832) % 6.2832; };
+  window._shipYaws = () => ships.map(s => s.n + ":" + yawOf(s).toFixed(2) + ":" + s.obj.getWorldPosition(new THREE.Vector3()).toArray().map(v=>v.toFixed(0)));
+  const order = () => ships.slice().sort((a, b) => yawOf(b) - yawOf(a));
+  function go(dir) {
+    const list = order(), cur = player.yaw; let best = null;
+    for (const s of (dir > 0 ? list : list.slice().reverse())) { const y = yawOf(s), d = Math.atan2(Math.sin(y - cur), Math.cos(y - cur)); if (dir > 0 ? d < -0.05 : d > 0.05) { best = y; break; } }
+    if (best == null) best = yawOf(dir > 0 ? list[0] : list[list.length - 1]);
+    turn = best; const sh = ships.find(s => Math.abs(yawOf(s) - best) < 1e-6); if (sh) pitchTo = pitchOf(sh); sfx.click();
+  }
+  $('sNext').onclick = e => { e.stopPropagation(); go(1); };
+  $('sPrev').onclick = e => { e.stopPropagation(); go(-1); };
+  function showSel() { [0, 1].forEach(i => { const v = FX.scopeSel[i]; $('ss' + i).textContent = v || '?'; $('ss' + i).classList.toggle('on', !!v); }); }
+  $('sDel').onclick = e => { e.stopPropagation(); FX.scopeSel.pop(); $('scopeSel').textContent = ''; showSel(); sfx.click(); };
+  function pickShip(n) {
+    if (FX.scopeSel.length >= 2 || Date.now() < msgT) return;
+    FX.scopeSel.push(n); sfx.pick(); showSel(); $('scopeSel').textContent = '';
+    if (FX.scopeSel.length < 2) { $('scopeSel').textContent = '좋아요! 이제 두 번째 배를 고르세요.'; return; }
+    const y = FX.scopeSel.join('');
+    if (y === CONFIG.answers.s4) { $('scopeSel').innerHTML = `<b>${y}</b>년! 항구가 열린 해예요.`; tone([523, 659, 784], 0.4); setTimeout(() => { exitScope(); solve(4); }, 1100); }
+    else { sfx.bad(); msgT = Date.now() + 1400; $('scopeSel').innerHTML = `<b>${y}</b>년? 항구가 열린 해가 아니에요. 민승이가 태어난 해에서 10년을 빼 보세요.`; setTimeout(() => { FX.scopeSel = []; showSel(); }, 1400); }
+  }
+  scopePick = pickShip;
+  const _exit = exitScope; exitScope = function () { camera.near = NEAR0; camera.fov = 70; camera.updateProjectionMatrix(); _exit(); }; $('scopeExit').onclick = () => exitScope();
+  const _enter = enterScope;
+  enterScope = function () { _enter(); msgT = 0; showSel(); const first = order()[1]; player.yaw = yawOf(first); player.pitch = pitchOf(first); turn = pitchTo = null; if (camera.fov !== 22) { camera.fov = 22; camera.updateProjectionMatrix(); } };
+  PUZZLES[4] = enterScope;
+  const v = new THREE.Vector3();
+  POST.push(() => {
+    if (!FX.scope) return;
+    if (turn != null) { const d = Math.atan2(Math.sin(turn - player.yaw), Math.cos(turn - player.yaw)); player.yaw += d * 0.3; if (Math.abs(d) < 0.01) { player.yaw = turn; turn = null; } }
+    player.yaw = Math.max(Math.PI - 0.9, Math.min(Math.PI + 0.9, player.yaw));
+    if (pitchTo != null) { player.pitch += (pitchTo - player.pitch) * 0.3; if (Math.abs(pitchTo - player.pitch) < 0.003) pitchTo = null; }
+    camera.fov = 22; camera.near = 50; camera.updateProjectionMatrix(); camera.rotation.set(player.pitch, player.yaw, 0); camera.updateMatrixWorld();
+    const r = canvas.getBoundingClientRect(), R = Math.min(r.width, r.height) * 0.4;
+    ships.forEach(s => {
+      s.obj.getWorldPosition(v); v.y += 6; v.project(camera);
+      const x = (v.x + 1) / 2 * r.width, y = (1 - v.y) / 2 * r.height, inView = v.z < 1 && Math.hypot(x - r.width / 2, y - r.height / 2) < R;
+      s.btn.style.display = inView ? '' : 'none';
+      if (inView && (!s.px || Math.hypot(x - s.px, y - s.py) > 3)) { s.px = Math.round(x); s.py = Math.round(y); s.btn.style.transform = `translate(${s.px}px,${s.py}px) translate(-50%,-100%)`; }
+      s.btn.classList.toggle('chosen', FX.scopeSel.includes(s.n));
+    });
+  });
+}
+
 </script>
-</body>
-</html>
+
+</body></html>
