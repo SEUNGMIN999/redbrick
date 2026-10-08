@@ -4775,7 +4775,7 @@ returnHome = async function () {
   $('rText').innerHTML = ''; $('rTap').classList.remove('on');
   // 큐레이터
   R.hidden = true;
-  await new Promise(res => vnSay('curator', '어? 그 수첩, 공사 중인 벽난로에서 나온 거죠? 민승 씨의 바람대로 이 건물은 1947년부터 목포시청이 되었고, 도서관과 문화원을 거쳐 2014년에 목포근대역사관 1관이 되었어요. 민승 씨의 수첩을 끝까지 읽은 사람은 당신이 처음이에요.', { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
+  await new Promise(res => vnSay('curator', "어머, 그 수첩… 공사하던 벽난로 안에서 나온 거예요? 겉장에 '정민승'이라고 쓰여 있네요. 1919년이면… 이 건물이 목포부청이던 때예요. 이렇게 소중한 걸 찾아 줘서 고마워요. 이 수첩, 우리 역사관에 전시해도 될까요?", { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
   state.modal = false; R.hidden = false;
   // 6. 마지막 한 줄
   $('rBook').className = 'rBook on glow'; $('rPage').innerHTML = '';
