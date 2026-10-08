@@ -1,8 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>붉은 벽돌의 기억</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -407,8 +403,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-</head>
-<body>
 <div id="app">
   <canvas id="view"></canvas>
   <div id="hud" hidden>
@@ -4305,13 +4299,23 @@ if (charImgURL('minseung')) {
   const lab = w.querySelector('label'); box.appendChild(im); box.appendChild(lab); w.insertBefore(box, w.firstChild);
 }
 
-/* ---------- 배경음악 ---------- */
-const BGM = { els: {}, cur: 0, unlocked: false, vol: {}, base: 0.42 };
-function bgmEl(n) {
-  if (BGM.els[n]) return BGM.els[n];
-  if (typeof BGM_DATA === 'undefined' || !BGM_DATA[n]) return null;
-  const a = new Audio(BGM_DATA[n]); a.loop = true; a.preload = 'auto'; a.volume = 0; BGM.vol[n] = 0; BGM.els[n] = a; return a;
+/* ---------- 배경음악 (WebAudio로 재생: 아티팩트·태블릿 어디서나 같은 방식) ---------- */
+const BGM = { buf: {}, loading: {}, src: {}, gain: {}, cur: 0, base: 0.5 };
+function b64ToBuf(d) { const s = atob(d.slice(d.indexOf(',') + 1)), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; }
+function ensureAC() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } } if (AC && AC.state === 'suspended' && sndOn) AC.resume(); return AC; }
+function bgmLoad(n) {
+  if (BGM.buf[n] || BGM.loading[n] || !AC || typeof BGM_DATA === 'undefined' || !BGM_DATA[n]) return;
+  BGM.loading[n] = true;
+  const done = b => { BGM.buf[n] = b; BGM.loading[n] = false; };
+  try { const pr = AC.decodeAudioData(b64ToBuf(BGM_DATA[n]), done, () => { BGM.loading[n] = false; }); if (pr && pr.catch) pr.catch(() => { BGM.loading[n] = false; }); } catch (e) { BGM.loading[n] = false; }
 }
+function bgmStart(n) {
+  if (BGM.src[n] || !BGM.buf[n]) return;
+  const g = AC.createGain(); g.gain.value = 0; g.connect(AC.destination);
+  const s = AC.createBufferSource(); s.buffer = BGM.buf[n]; s.loop = true; s.connect(g); s.start();
+  BGM.src[n] = s; BGM.gain[n] = g; BGM.lv = BGM.lv || {}; BGM.lv[n] = 0;
+}
+function bgmStop(n) { try { BGM.src[n].stop(); } catch (e) {} BGM.src[n].disconnect(); BGM.gain[n].disconnect(); delete BGM.src[n]; delete BGM.gain[n]; }
 function bgmWant() {
   if (!$('endScreen').hidden) return 5;
   if (state.mode === 'cine') return 2;
@@ -4321,30 +4325,29 @@ function bgmWant() {
   if (curEra === 'present') return 2;
   return 3;
 }
-function bgmUnlock() {
-  if (BGM.unlocked) return; BGM.unlocked = true;
-  for (let n = 1; n <= 5; n++) { const a = bgmEl(n); if (a) { a.play().then(() => { if (n !== bgmWant()) a.pause(); }).catch(() => {}); } }
-}
-['pointerdown', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, bgmUnlock, { capture: true, passive: true }));
+['pointerdown', 'keydown', 'touchend'].forEach(ev => window.addEventListener(ev, () => { ensureAC(); }, { capture: true, passive: true }));
 let bgmLast = performance.now();
 (function bgmLoop() {
   requestAnimationFrame(bgmLoop);
   const now = performance.now(), dt = Math.min(0.1, (now - bgmLast) / 1000); bgmLast = now;
-  if (!BGM.unlocked) return;
+  if (!AC) return;
   const want = bgmWant();
+  bgmLoad(want);
+  if (sndOn && AC.state === 'running') bgmStart(want);
   const duck = (state.modal || (typeof vn !== 'undefined' && vn.on)) && $('endScreen').hidden ? 0.55 : 1;
-  for (let n = 1; n <= 5; n++) {
-    const a = BGM.els[n]; if (!a) continue;
-    const target = sndOn && n === want ? BGM.base * duck : 0;
-    let v = BGM.vol[n]; const step = dt / (target > v ? 2.2 : 1.6) * BGM.base;
+  for (const k in BGM.src) {
+    const n = +k, target = sndOn && n === want ? BGM.base * duck : 0;
+    let v = BGM.lv[n]; const step = dt / (target > v ? 2.2 : 1.6) * BGM.base;
     v = target > v ? Math.min(target, v + step) : Math.max(target, v - step);
-    BGM.vol[n] = v; a.volume = Math.max(0, Math.min(1, v));
-    if (v > 0.001 && a.paused) { if (n === want && want !== BGM.cur && $('endScreen').hidden === false && n === 5) a.currentTime = 0; a.play().catch(() => {}); }
-    if (v <= 0.001 && !a.paused && n !== want) a.pause();
+    BGM.lv[n] = v; BGM.gain[n].gain.value = v;
+    if (v <= 0.0005 && n !== want) bgmStop(n);
   }
-  if (want !== BGM.cur) { const a = BGM.els[want]; if (a && a.paused && want === 5) a.currentTime = 0; BGM.cur = want; }
+  // 메모리 아끼기: 지금 곡과 다음에 올 곡만 남겨요
+  for (const k in BGM.buf) { const n = +k; if (n !== want && !BGM.src[n] && Math.abs(n - want) > 1) delete BGM.buf[n]; }
+  if (want < 5) bgmLoad(want + 1);
+  BGM.cur = want;
 })();
 
 </script>
-</body>
-</html>
+
+</body></html>
