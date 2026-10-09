@@ -72,6 +72,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 /* 모달 */
 .modal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,6,.62);padding:16px;z-index:42}
 .modal[hidden]{display:none}
+.pc,.piece,.cards .card{touch-action:none;cursor:grab}
+.dragGhost{position:fixed;left:0;top:0;z-index:90;pointer-events:none;opacity:.9;box-shadow:0 12px 26px rgba(0,0,0,.35);transform-origin:center;margin:0!important}
+.dragFrom{opacity:.35}
+.dropHover{outline:3px solid #e0a92a!important;outline-offset:2px;filter:drop-shadow(0 0 6px rgba(224,169,42,.8))}
 /* 마지막: 수첩이 닫히고 '끝' */
 #fin{position:absolute;inset:0;z-index:60;background:rgba(10,8,6,0);transition:background 1.6s ease;display:grid;place-items:center;perspective:1400px;overflow:hidden}
 #fin[hidden]{display:none}
@@ -278,6 +282,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .card.used{opacity:.3}
 .card.sel{background:var(--ink2);color:var(--paper);border-color:var(--ink2)}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.slot.full{border-style:solid;background:#fff6dc;cursor:pointer}
 .slot{min-width:96px;padding:9px 8px;border:2px dashed #a8977a;border-radius:4px;text-align:center;font-weight:700;min-height:1.4em}
 
 /* 태극기 */
@@ -654,7 +659,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
     <div class="ending">
       <div class="kick" style="color:var(--brass);letter-spacing:.2em;font-size:13px">2026년 · 다시 목포근대역사관 1관</div>
       <div class="final">
-        <div class="hand">"1945년 8월 15일. 굴 밖에서 만세 소리가 들렸다. 언젠가 이 건물이 <b>우리의 집</b>이 되는 날이 오겠지. 그날 누군가 이 수첩을 읽어 주기를. — 정민승"</div>
+        <div class="hand">"1945년 8월 15일. 굴 밖에서 만세 소리가 들렸다. 언젠가 우리가 이 건물을 <b>되찾은 집</b>이라 부르는 날이 오겠지. 그날 누군가 이 수첩을 읽어 주기를. — 정민승"</div>
         <div class="hand adult" style="text-align:right">"고마워, 미래에서 온 친구."</div>
         <p style="line-height:1.7;margin-bottom:0">민승이의 바람대로 이 건물은 1947년 목포시청이 되었고, 도서관과 문화원을 거쳐 2014년 목포근대역사관 1관이 되었어요. 그리고 오늘, 수첩을 끝까지 읽은 첫 번째 사람은 바로 당신이에요.</p>
       </div>
@@ -697,7 +702,7 @@ const CONFIG = {
   moveSpeed: 3.2,            // 걷는 속도
   lookSpeed: 0.0055,         // 둘러보기 감도
   answers: { s1: '1900', s4: '1897' },
-  tunnelWord: ['우', '리', '의', '집']
+  tunnelWord: ['되', '찾', '은', '집']
 };
 
 /* ================= 기본 장면 ================= */
@@ -1290,7 +1295,7 @@ const MAZE = [
   '#.........#',
   '#####.#####'
 ];
-const LETTER_CELLS = [[7, 9], [6, 7], [9, 1], [5, 2]]; // [r,c] → 우, 리, 의, 집 (입구에서 가까운 순서는 집 → 리 → 우 → 의)
+const LETTER_CELLS = [[7, 9], [6, 7], [9, 1], [5, 2]]; // [r,c] → 되, 찾, 은, 집 (입구에서 가까운 순서는 집 → 찾 → 되 → 은)
 const cellX = c => (c - 5) * S, cellZ = r => TZ - (r + 0.5) * S;
 const isOpen = (r, c) => r >= 0 && r < MAZE.length && c >= 0 && c < 11 && MAZE[r][c] === '.';
 let gate, exitDoor;
@@ -2286,16 +2291,20 @@ function solve(n) {
   showFact(n, true);
 }
 function showFact(n, fresh) {
+  // 처음 나오는 카드는 ✕로 닫아도 이야기가 다음으로 이어져요
+  let act = null, acted = false;
+  const run = () => { if (acted || !act) return; acted = true; act(); };
   openModal(body => {
     head(body, `역사 카드 ${'①②③④⑤⑥⑦'[n - 1]}`, FACTS[n].t);
     if (typeof CARD_IMG !== 'undefined' && CARD_IMG[n]) { const im = el('img', 'cardimg'); im.src = CARD_IMG[n]; im.alt = FACTS[n].t; im.title = '눌러서 크게 보기'; im.onclick = () => im.classList.toggle('zoom'); body.appendChild(im); }
     body.appendChild(el('div', 'fact', FACTS[n].b));
     const row = el('div', 'row'); row.style.marginTop = '14px'; body.appendChild(row);
-    if (fresh && n === 5) { const b = el('button', 'pbtn', '창밖에서 함성이 들려요…'); b.onclick = () => { closeModal(); const go = () => timeJump(() => openNotebook(6)); if (typeof FX !== 'undefined' && FX.cameoDone) go(); else cameo(go); }; if (typeof FX !== 'undefined' && FX.cameoDone) b.textContent = '수첩이 다시 뜨거워진다…'; row.appendChild(b); }
-    else if (fresh && n < 7) { const b = el('button', 'pbtn', '수첩 다음 장 읽기'); b.onclick = () => { closeModal(); openNotebook(n + 1); }; row.appendChild(b); }
-    else if (fresh && n === 7) { const b = el('button', 'pbtn', '수첩 마지막 장 읽기'); b.onclick = () => { closeModal(); returnHome(); }; b.textContent = '출구로 나가기'; row.appendChild(b); }
-    else { const b = el('button', 'pbtn', '닫기'); b.onclick = closeModal; row.appendChild(b); }
-  });
+    let label = '닫기';
+    if (fresh && n === 5) { const done = typeof FX !== 'undefined' && FX.cameoDone; label = done ? '수첩이 다시 뜨거워진다…' : '창밖에서 함성이 들려요…'; act = () => { const go = () => timeJump(() => openNotebook(6)); if (done) go(); else cameo(go); }; }
+    else if (fresh && n < 7) { label = '수첩 다음 장 읽기'; act = () => openNotebook(n + 1); }
+    else if (fresh && n === 7) { label = '출구로 나가기'; act = () => returnHome(); }
+    const b = el('button', 'pbtn', label); b.onclick = () => closeModal(); row.appendChild(b);
+  }, { onClose: () => setTimeout(run, 30) });
 }
 
 /* ================= 퍼즐 ①: 벽돌 암호판 ================= */
@@ -2469,18 +2478,26 @@ function puzzle3() {
     const sl = [0, 1, 2].map(i => { const s = el('div', 'slot', `${i + 1}번째`); slots.appendChild(s); return s; });
     const order = ['일본영사관', '목포 이사청', '목포부청'];
     const cards = el('div', 'cards'); body.appendChild(cards);
-    const picked = [];
+    const picked = [null, null, null];
     const m = msgLine(body);
+    const reset = () => { picked.fill(null); sl.forEach((s, i) => { s.textContent = `${i + 1}번째`; s.classList.remove('full'); }); [...cards.children].forEach(x => x.classList.remove('used')); };
+    const check = () => {
+      if (picked.some(p => !p)) return;
+      if (picked.every((p, i) => p === order[i])) { setTimeout(() => { closeModal(); solve(3); }, 350); }
+      else { sfx.bad(); say(m, '순서가 달라요. 쪽지의 연도를 다시 확인해 보세요.'); shake(slots); setTimeout(reset, 700); }
+    };
+    const put = (c, name, i) => {
+      if (i < 0 || i > 2) return;
+      const prev = picked.indexOf(name); if (prev >= 0) { picked[prev] = null; sl[prev].textContent = `${prev + 1}번째`; sl[prev].classList.remove('full'); }
+      if (picked[i]) { const old = [...cards.children].find(x => x.textContent === picked[i]); if (old) old.classList.remove('used'); }
+      picked[i] = name; sl[i].textContent = name; sl[i].classList.add('full'); c.classList.add('used'); sfx.click(); m.textContent = ''; check();
+    };
+    // 채운 칸을 누르면 카드가 빠져요
+    sl.forEach((s, i) => s.onclick = () => { if (!picked[i]) return; const c = [...cards.children].find(x => x.textContent === picked[i]); if (c) c.classList.remove('used'); picked[i] = null; s.textContent = `${i + 1}번째`; s.classList.remove('full'); sfx.click(); });
     ['목포부청', '일본영사관', '목포 이사청'].forEach(name => {
       const c = el('button', 'card', name); cards.appendChild(c);
-      c.onclick = () => {
-        if (c.classList.contains('used')) return;
-        c.classList.add('used'); picked.push(name); sl[picked.length - 1].textContent = name; sfx.click();
-        if (picked.length === 3) {
-          if (picked.every((p, i) => p === order[i])) { setTimeout(() => { closeModal(); solve(3); }, 350); }
-          else { sfx.bad(); say(m, '순서가 달라요. 쪽지의 연도를 다시 확인해 보세요.'); shake(slots); setTimeout(() => { picked.length = 0; sl.forEach((s, i) => s.textContent = `${i + 1}번째`); [...cards.children].forEach(x => x.classList.remove('used')); }, 700); }
-        }
-      };
+      c.onclick = () => { if (c.classList.contains('used')) return; put(c, name, picked.indexOf(null)); };
+      c._drop = slot => put(c, name, sl.indexOf(slot));
     });
   });
 }
@@ -2629,7 +2646,7 @@ function puzzle7() {
         if (c.classList.contains('used')) return;
         c.classList.add('used'); picked.push(ch); sl[picked.length - 1].textContent = ch; sfx.click();
         if (picked.length === 4) {
-          if (picked.join('') === word.join('')) { say(m, '"우리의 집"! 출구 문이 열려요.', true); setTimeout(() => { closeModal(); solve(7); }, 1100); }
+          if (picked.join('') === word.join('')) { say(m, '"되찾은 집"! 출구 문이 열려요.', true); setTimeout(() => { closeModal(); solve(7); }, 1100); }
           else { sfx.bad(); say(m, '말이 되지 않아요. 민승이는 이 건물이 어떻게 되기를 바랐을까요?'); shake(slots); setTimeout(() => { picked.length = 0; sl.forEach(s => s.textContent = '·'); [...cards.children].forEach(x => x.classList.remove('used')); }, 800); }
         }
       };
@@ -4182,7 +4199,7 @@ const HINT3 = [null,
   ['먼저 1층 동쪽 방 책상의 전신기, 그다음 2층 서쪽 방 창가의 망원경이에요.', '전보 부호는 부호표와 한 칸씩 비교해요. 항구가 열린 해 = 민승이가 태어난 해 − 10년이에요.', '전보 번호는 4·0·8이에요. 1919 − 12 = 1907, 1907 − 10 = 1897 → 18번 배, 그다음 97번 배.'],
   ['2층 바닥 곳곳에 떨어진 태극기 조각 4개를 모은 뒤, 동쪽 방 서랍장을 조사하세요.', '태극기의 괘는 짝끼리 대각선으로 마주 봐요. 하늘 ↔ 땅, 물 ↔ 불.', '하늘 ☰ 왼쪽 위, 땅 ☷ 오른쪽 아래, 물 ☵ 오른쪽 위, 불 ☲ 왼쪽 아래예요.'],
   ['1층 뒷문으로 나가 봉안전 왼쪽 앞의 공고문을 찾으세요. 순사가 등을 돌렸을 때 움직이고, 돌 건물 뒤에 숨을 수 있어요.', '1관이 처음 누구를 위해 지어졌는지, 쌀이 어디로 실려 갔는지 떠올려 보세요.', '거짓은 2번(조선 사람을 위한 관청)과 5번(쌀 덕분에 밥상이 넉넉)이에요.'],
-  ['서고(왼쪽 돌 건물) 탁자 위 손전등을 챙긴 뒤, 언덕의 방공호로 들어가세요.', '막다른 길도 끝까지 비춰 보고, 무너진 길은 돌아가요. 노란 건전지로 손전등을 채울 수 있어요.', '벽 글자는 우·리·의·집 네 개예요. 출구에서 "우리의 집"으로 맞추세요.']];
+  ['서고(왼쪽 돌 건물) 탁자 위 손전등을 챙긴 뒤, 언덕의 방공호로 들어가세요.', '막다른 길도 끝까지 비춰 보고, 무너진 길은 돌아가요. 노란 건전지로 손전등을 채울 수 있어요.', '벽 글자는 되·찾·은·집 네 개예요. 출구에서 "되찾은 집"으로 맞추세요.']];
 FX.hintTier = {};
 const TIER_LAB = ['① 어디를 볼까', '② 어떻게 풀까', '③ 결정적 단서'];
 function hintModal() {
@@ -4242,7 +4259,7 @@ function whyModal(n, after) {
     body.appendChild(fb); body.appendChild(next);
     if (!after) body.appendChild(el('p', 'legend', '닫아도 괜찮아요. 수첩의 "생각하기" 탭에서 언제든 다시 열 수 있어요.'));
     next.onclick = () => { const a = after; after = null; closeModal(); if (a) a(); };
-  }, { onClose: () => { if (FX.why[n] == null) toast('질문은 수첩의 "생각하기" 탭에서 다시 열 수 있어요.', 2600); else if (after) { const a = after; after = null; a(); } } });
+  }, { onClose: () => { if (FX.why[n] == null) toast('질문은 수첩의 "생각하기" 탭에서 다시 열 수 있어요.', 2600); if (after) { const a = after; after = null; setTimeout(a, 30); } } }); // 질문을 닫아도 이야기는 이어져요
 }
 const _showFact7 = showFact;
 showFact = function (n, fresh) {
@@ -4881,14 +4898,14 @@ returnHome = async function () {
   const yawD = Math.atan2(-(ed.x + 0.9 - cx), -(ed.z - cz)), dd = Math.hypot(ed.x + 0.9 - cx, ed.z - cz);
   const sx = dd > 3.2 ? ed.x + 0.9 + Math.sin(yawD) * 3.2 : cx, sz = dd > 3.2 ? ed.z + Math.cos(yawD) * 3.2 : cz;
   retCam = d => { t += d; camera.position.set(sx, cy, sz); camera.rotation.set(0.02, yawD, Math.sin(t * 2) * 0.004); };
-  for (const ch of ['우', '리', '의', '집']) { const sp = el('span', '', ch); $('rLetters').appendChild(sp); await sleep(80); sp.classList.add('on'); tone([659, 988], 0.5, 'sine', 0.1); await sleep(520); }
+  for (const ch of ['되', '찾', '은', '집']) { const sp = el('span', '', ch); $('rLetters').appendChild(sp); await sleep(80); sp.classList.add('on'); tone([659, 988], 0.5, 'sine', 0.1); await sleep(520); }
   await openExitDoor();
   await say2('네 글자가 맞춰지자, 녹슨 출구 문이 <b>삐걱</b> 하고 열렸다.<br>문틈으로 하얀 빛과 함께 바깥바람이 쏟아져 들어왔다.');
   // 2. 수첩이 저절로 펼쳐지고 마지막 쪽이 써져요
   $('rLight').classList.add('on'); $('rLetters').style.transition = 'opacity 1s'; $('rLetters').style.opacity = '0';
   await sleep(700); $('rBook').classList.add('on'); $('rText').innerHTML = '';
   await sleep(900); playManse(2, 0.9);
-  await typeInto($('rPage'), '1945년 8월 15일. 굴 밖에서 만세 소리가 들렸다. 언젠가 이 건물이 <span class="gold">우리의 집</span>이 되는 날이 오겠지. 그날 누군가 이 수첩을 읽어 주기를. — 정민승', 70);
+  await typeInto($('rPage'), '1945년 8월 15일. 굴 밖에서 만세 소리가 들렸다. 언젠가 우리가 이 건물을 <span class="gold">되찾은 집</span>이라 부르는 날이 오겠지. 그날 누군가 이 수첩을 읽어 주기를. — 정민승', 70);
   await say2('빈칸이던 수첩 마지막 쪽에, 민승이의 글씨가 저절로 번져 나왔다.<br>멀리서 <b>"대한 독립 만세!"</b> 함성이 들려왔다.');
   // 3. 왜 돌아오는가
   $('rBook').classList.add('glow'); tone([392, 523, 659], 1.6, 'sine', 0.25);
@@ -4986,14 +5003,27 @@ TICK.push(dt => {
 
 /* ---------- 창밖 만세 행렬: 여러 사람이 태극기를 들고 달려가요 ---------- */
 {
-  const flagTex = canvasTex(96, 64, g => {
-    g.fillStyle = '#f6f2e6'; g.fillRect(0, 0, 96, 64);
-    g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(48, 32, 13, Math.PI, 0); g.fill();
-    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(48, 32, 13, 0, Math.PI); g.fill();
-    g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(41.5, 32, 6.5, 0, Math.PI); g.fill();
-    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(54.5, 32, 6.5, Math.PI, 0); g.fill();
-    g.fillStyle = '#111'; [[18, 12, -0.6], [78, 12, 0.6], [18, 52, 0.6], [78, 52, -0.6]].forEach(([x, y, r]) => { g.save(); g.translate(x, y); g.rotate(r); for (let k = 0; k < 3; k++) g.fillRect(-8, -6 + k * 5, 16, 3); g.restore(); });
+  const flagTex = canvasTex(192, 128, g => { // 태극기: 3:2, 태극은 가운데(지름 = 세로의 1/2), 건곤감리는 대각선 위
+    const W = 192, H = 128, cx = 96, cy = 64, r = 32, ang = Math.atan2(H, W);
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+    g.save(); g.translate(cx, cy); g.rotate(ang);
+    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, r, Math.PI, 0); g.fill();               // 위쪽 반원은 빨강
+    g.beginPath(); g.arc(-r / 2, 0, r / 2, 0, Math.PI); g.fill();                               // 왼쪽 아래로 빨강이 휘어 들어가고
+    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(r / 2, 0, r / 2, Math.PI, 0); g.fill();         // 오른쪽 위로 파랑이 휘어 올라가요
+    g.restore();
+    // 괘: [대각선 방향, 막대 3줄(true=이어진 막대, false=끊어진 막대) 안쪽→바깥쪽]
+    const TRIG = [[-1, -1, [1, 1, 1]], [1, 1, [0, 0, 0]], [1, -1, [0, 1, 0]], [-1, 1, [1, 0, 1]]]; // 건(하늘) 곤(땅) 감(물) 리(불)
+    g.fillStyle = '#111';
+    TRIG.forEach(([sx, sy, bars]) => {
+      const d = Math.hypot(W, H) / 2, dist = r + (d - r) * 0.42, ux = sx * W / 2 / d, uy = sy * H / 2 / d;
+      g.save(); g.translate(cx + ux * dist, cy + uy * dist); g.rotate(Math.atan2(uy, ux) + Math.PI / 2);
+      const bw = r, bh = r / 6, gap = r / 12;
+      bars.forEach((solid, i) => { const y = (i - 1) * (bh + gap) - bh / 2; if (solid) g.fillRect(-bw / 2, y, bw, bh); else { g.fillRect(-bw / 2, y, bw / 2 - gap / 2, bh); g.fillRect(gap / 2, y, bw / 2 - gap / 2, bh); } });
+      g.restore();
+    });
   });
+
   const flagM = new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide }), poleM = new THREE.MeshLambertMaterial({ color: 0x5a3a22 });
   const LOOKS = [
     { top: 0xf4f0e6, bottom: 0x1f2233, skirt: true, braid: true, goreum: 0xf4f0e6 },   // 정명여학교 학생
@@ -5415,6 +5445,58 @@ whyModal = function (n, after) {
 
 // 방공호 철문: 왼쪽 경첩을 축으로 안쪽으로 열리게
 gate.children.forEach(c => c.position.x += 1.15); gate.position.x -= 1.15;
+
+/* ---------- 안전장치: 이야기가 멈춰 있으면 다음 장면으로 이어 줘요 ---------- */
+let stuckT = 0;
+TICK.push(dt => {
+  const idle = state.mode === 'play' && !state.modal && !vn.on && !state.fading && !TJ.on && !RET.on && $('ret').hidden && !FX.scope;
+  const stuck5 = idle && state.solved[5] && curEra === 'y1919';
+  const stuck7 = idle && state.solved[7] && $('endScreen').hidden;
+  stuckT = stuck5 || stuck7 ? stuckT + dt : 0;
+  if (stuckT > 4) { stuckT = -30; if (stuck5) { const go = () => timeJump(() => openNotebook(6)); if (FX.cameoDone) go(); else cameo(go); } else returnHome(); }
+});
+
+/* ---------- 끌어서 놓기: 모양·태극기·이름 맞추기 ---------- */
+{
+  const SRC = '.pc, .piece, .cards .card', DST = '[data-slot], .slots .slot';
+  let drag = null;
+  document.addEventListener('pointerdown', e => {
+    const s = e.target.closest && e.target.closest(SRC);
+    if (!s || s.disabled || s.classList.contains('used') && !s.classList.contains('pc') && !s._drop) return;
+    drag = { s, x: e.clientX, y: e.clientY, on: false, ghost: null, id: e.pointerId };
+  }, true);
+  document.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.on && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) {
+      drag.on = true; const r = drag.s.getBoundingClientRect();
+      const g = drag.s.cloneNode(true); g.classList.add('dragGhost'); g.style.width = r.width + 'px'; g.style.height = r.height + 'px'; document.body.appendChild(g); drag.ghost = g;
+      drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top; drag.s.classList.add('dragFrom');
+    }
+    if (drag.on) { e.preventDefault(); drag.ghost.style.transform = `translate(${e.clientX - drag.dx}px,${e.clientY - drag.dy}px)`;
+      document.querySelectorAll('.dropHover').forEach(x => x.classList.remove('dropHover'));
+      drag.ghost.style.display = 'none'; const t = document.elementFromPoint(e.clientX, e.clientY); drag.ghost.style.display = '';
+      const d = t && t.closest && t.closest(DST); if (d) d.classList.add('dropHover'); }
+  }, { capture: true, passive: false });
+  const end = e => {
+    if (!drag || (e.pointerId !== undefined && e.pointerId !== drag.id)) return;
+    const D = drag; drag = null;
+    if (!D.on) return;
+    D.ghost.remove(); D.s.classList.remove('dragFrom'); document.querySelectorAll('.dropHover').forEach(x => x.classList.remove('dropHover'));
+    const t = document.elementFromPoint(e.clientX, e.clientY), d = t && t.closest && t.closest(DST);
+    const blockClick = ev => { ev.stopPropagation(); ev.preventDefault(); }; window.addEventListener('click', blockClick, { capture: true, once: true }); setTimeout(() => window.removeEventListener('click', blockClick, true), 60);
+    if (!d) return;
+    const slotId = d.dataset && d.dataset.slot;
+    if (D.s._drop) { setTimeout(() => D.s._drop(d), 70); return; }
+    setTimeout(() => {
+      // 조각을 고른 다음(누른 것과 같은 효과) 빈자리에 놓아요
+      if (D.s.classList.contains('pc') && D.s.classList.contains('used')) D.s.click(); // 이미 놓인 조각은 빼서 다시 골라요
+      else if (!(D.s.classList.contains('sel') || D.s.classList.contains('on'))) D.s.click();
+      if (slotId) { const fresh = document.querySelector(`#modalBody [data-slot="${slotId}"]`); if (fresh) fresh.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+    }, 70);
+  };
+  document.addEventListener('pointerup', end, true);
+  document.addEventListener('pointercancel', e => { if (drag && drag.ghost) { drag.ghost.remove(); drag.s.classList.remove('dragFrom'); } drag = null; }, true);
+}
 
 </script>
 
