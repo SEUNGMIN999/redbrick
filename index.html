@@ -89,6 +89,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 #fin.closed .fCover{transform:rotateY(0)}
 .fEmb{font:700 clamp(40px,8vw,68px)/1 var(--f-display);letter-spacing:.2em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
 .fSub{font-size:14px;letter-spacing:.3em}
+.fTop{font:700 clamp(18px,3vw,26px)/1.2 var(--f-display);letter-spacing:.35em;color:#f0d79e;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+.fRule{width:46%;height:0;border-top:1px solid rgba(232,201,138,.55);border-bottom:1px solid rgba(232,201,138,.3);padding-top:3px}
+.fBot{font:400 clamp(12px,1.7vw,15px)/1.4 var(--f-display);color:rgba(232,201,138,.8);letter-spacing:.08em;margin-top:2px}
 #fin.away .fBook{transform:rotateY(180deg) translateY(-6vh) scale(.55);opacity:0}
 .fTitle{position:relative;text-align:center;color:#f3ead6;opacity:0;transition:opacity 1.6s ease;padding:16px}
 #fin.title .fTitle{opacity:1}
@@ -560,7 +563,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
     <button class="rSkip" id="rSkip">건너뛰기 ▶▶</button>
   </div>
   <div id="fin" hidden>
-    <div class="fBook" id="fBook"><div class="fPage" id="fPage"></div><div class="fCover"></div><div class="fFront"><div class="fEmb">민승</div><div class="fSub">민승이의 수첩 · 1919</div></div></div>
+    <div class="fBook" id="fBook"><div class="fPage" id="fPage"></div><div class="fCover"></div><div class="fFront"><div class="fTop">붉은 벽돌의 기억</div><div class="fRule"></div><div class="fEmb">민승</div><div class="fSub">민승이의 수첩 · 1919</div><div class="fRule"></div><div class="fBot">이 건물이 본 것을 기억해 줄 사람에게</div></div></div>
     <div class="fTitle" id="fTitle"><div class="fKick">목포근대역사관 1관 · 교실 방탈출</div><h1>붉은 벽돌의 기억</h1><div class="fEnd">끝</div>
       <div class="fCred" id="fCred"></div>
       <div class="fBtns"><button class="big" id="fAgain">처음부터 다시</button><button class="pbtn alt dk" id="fBack">편지 다시 보기</button></div></div>
@@ -1239,7 +1242,7 @@ const MAZE = [
   '#.........#',
   '#####.#####'
 ];
-const LETTER_CELLS = [[9, 1], [7, 9], [6, 7], [5, 2]]; // [r,c] → 우, 리, 의, 집 (입구에서 가까운 순서는 집 → 의 → 리 → 우)
+const LETTER_CELLS = [[7, 9], [6, 7], [9, 1], [5, 2]]; // [r,c] → 우, 리, 의, 집 (입구에서 가까운 순서는 집 → 리 → 우 → 의)
 const cellX = c => (c - 5) * S, cellZ = r => TZ - (r + 0.5) * S;
 const isOpen = (r, c) => r >= 0 && r < MAZE.length && c >= 0 && c < 11 && MAZE[r][c] === '.';
 let gate, exitDoor;
