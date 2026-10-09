@@ -1,8 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>붉은 벽돌의 기억</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -87,7 +83,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 #fin.flip .fBook{transform:rotateY(180deg)}
 .fPage{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 #fin.closed .fCover{transform:rotateY(0)}
-.fEmb{font:700 clamp(40px,8vw,68px)/1 var(--f-display);letter-spacing:.2em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.fSign{position:absolute;right:26px;bottom:22px;font:700 clamp(14px,2vw,18px)/1 var(--f-display);letter-spacing:.2em;color:#e8c98a}
+.fEmb{text-align:center;font:700 clamp(40px,7.5vw,64px)/1.25 var(--f-display);letter-spacing:.12em;margin:6px 0;text-shadow:0 2px 0 rgba(0,0,0,.35)}
 .fSub{font-size:14px;letter-spacing:.3em}
 .fTop{font:700 clamp(18px,3vw,26px)/1.2 var(--f-display);letter-spacing:.35em;color:#f0d79e;text-shadow:0 1px 0 rgba(0,0,0,.4)}
 .fRule{width:46%;height:0;border-top:1px solid rgba(232,201,138,.55);border-bottom:1px solid rgba(232,201,138,.3);padding-top:3px}
@@ -121,8 +118,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .rYear.on{opacity:1}
 .rCap{position:absolute;left:0;right:0;top:calc(20% + clamp(80px,16vw,170px));text-align:center;font-size:clamp(18px,2.6vw,26px);letter-spacing:.12em;color:#ffd98a;opacity:0;transition:opacity .5s}
 .rCap.on{opacity:1}
-.rText{position:absolute;left:50%;bottom:max(9%,70px);transform:translateX(-50%);width:min(760px,88vw);font-size:clamp(17px,2.4vw,23px);line-height:1.7;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.9);word-break:keep-all}
+.rText{background:rgba(22,15,10,.72);padding:14px 22px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.35);position:absolute;left:50%;bottom:max(9%,70px);transform:translateX(-50%);width:min(760px,88vw);font-size:clamp(17px,2.4vw,23px);line-height:1.7;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.9);word-break:keep-all}
 .rText b{color:#ffd98a}
+.rText:empty{display:none}
 .rTap{position:absolute;left:50%;bottom:max(3%,22px);transform:translateX(-50%);background:var(--brick);color:#fff4e2;font-weight:700;font-size:14px;padding:7px 16px;border-radius:20px;opacity:0;transition:opacity .4s;pointer-events:none}
 .rTap.on{opacity:1;animation:vnNudge 1.1s ease-in-out infinite}
 .rSkip{position:absolute;right:max(14px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));background:rgba(20,16,12,.6);color:#fff3d6;border:1px solid rgba(255,243,214,.4);border-radius:18px;padding:7px 14px;font-size:13px;z-index:2}
@@ -514,8 +512,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
   #vnPort.in,.ending.rv>*,.ending.rv .final .hand.adult,.grade .st{opacity:1!important;transform:none!important;filter:none!important}}
 </style>
 
-</head>
-<body>
 <div id="app">
   <canvas id="view"></canvas>
   <div id="hud" hidden>
@@ -563,7 +559,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
     <button class="rSkip" id="rSkip">건너뛰기 ▶▶</button>
   </div>
   <div id="fin" hidden>
-    <div class="fBook" id="fBook"><div class="fPage" id="fPage"></div><div class="fCover"></div><div class="fFront"><div class="fTop">붉은 벽돌의 기억</div><div class="fRule"></div><div class="fEmb">민승</div><div class="fSub">민승이의 수첩 · 1919</div><div class="fRule"></div><div class="fBot">이 건물이 본 것을 기억해 줄 사람에게</div></div></div>
+    <div class="fBook" id="fBook"><div class="fPage" id="fPage"></div><div class="fCover"></div><div class="fFront"><div class="fRule"></div><div class="fEmb">붉은 벽돌의<br>기억</div><div class="fRule"></div><div class="fBot">이 건물이 본 것을 기억해 줄 사람에게</div><div class="fSign">정민승</div></div></div>
     <div class="fTitle" id="fTitle"><div class="fKick">목포근대역사관 1관 · 교실 방탈출</div><h1>붉은 벽돌의 기억</h1><div class="fEnd">끝</div>
       <div class="fCred" id="fCred"></div>
       <div class="fBtns"><button class="big" id="fAgain">처음부터 다시</button><button class="pbtn alt dk" id="fBack">편지 다시 보기</button></div></div>
@@ -1030,7 +1026,11 @@ function winCanvas(kind) {
     g.fillStyle = '#efe7d4'; g.fillRect(cx - ro, cy - 2, 20, 8); g.fillRect(cx + ro - 20, cy - 2, 20, 8);
     const glass = kind === 'in' ? (() => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#e8f0f2'); gr.addColorStop(1, '#b8cdd2'); return gr; })() : '#2d3d47';
     g.fillStyle = '#f2ece0'; g.fillRect(16, cy, 128, 210); g.beginPath(); g.arc(cx, cy, ri, Math.PI, 0); g.fill();
-    if (kind === 'hole') { g.fillStyle = '#2d3d47'; g.beginPath(); g.arc(cx, cy + 4, ri - 6, Math.PI, 0); g.fill(); g.clearRect(20, cy + 6, 120, 202); }
+    if (kind === 'hole') { // 유리만 비우고 창틀·창살은 남겨요(밖이 보이는 창)
+      g.fillStyle = '#2d3d47'; g.beginPath(); g.arc(cx, cy + 4, ri - 6, Math.PI, 0); g.fill(); g.clearRect(22, cy + 6, 116, 198);
+      g.fillStyle = '#f2ece0'; g.fillRect(cx - 3, cy + 6, 6, 198); [70, 140].forEach(y => g.fillRect(22, cy + y, 116, 5));
+      g.strokeStyle = '#f2ece0'; g.lineWidth = 3; for (let k = 1; k < 5; k++) { const a = Math.PI + k * Math.PI / 5; g.beginPath(); g.moveTo(cx, cy + 4); g.lineTo(cx + Math.cos(a) * (ri - 6), cy + 4 + Math.sin(a) * (ri - 6)); g.stroke(); }
+    }
     else {
       g.fillStyle = glass; g.fillRect(22, cy + 6, 116, 198); g.beginPath(); g.arc(cx, cy + 4, ri - 6, Math.PI, 0); g.fill();
       g.strokeStyle = '#f2ece0'; g.lineWidth = 3;
@@ -2142,6 +2142,7 @@ function updateHUD() {
   for (let i = 1; i <= 7; i++) { const e = el('i', state.solved[i] ? 'done' : (i === state.stage ? 'now' : ''), '①②③④⑤⑥⑦'[i - 1]); d.appendChild(e); }
   let g = GOALS[state.stage] || '';
   if (state.stage === 7 && !state.torch) g = GOAL_TORCH;
+  else if (state.stage === 7 && !gateOpen) g = '언덕 방공호 철문을 손전등에 묶인 열쇠로 여세요.';
   $('inv').hidden = !state.torch;
   if (state.stage === 7 && state.letters.size === 4) g = '방공호 출구에서 글자 네 개를 순서대로 맞추세요.';
   else if (state.stage === 7 && state.letters.size) g = `방공호 벽의 글자를 찾으세요. (${state.letters.size}/4)`;
@@ -2604,13 +2605,20 @@ function useInteract(id) {
     if (player.lv === 1 && !state.solved[3]) { sfx.bad(); toast('계단 앞에 줄이 쳐져 있어요. 벽난로의 비밀을 먼저 풀어야 해요.'); return; }
     teleport(player.lv === 1 ? 2 : 1); return;
   }
-  if (id === 'gate') { if (!state.torch) { sfx.bad(); toast(state.solved[6] ? '철문이 잠겨 있고 굴 안은 칠흑같이 어두워요. 서고에서 민승이가 남긴 물건을 찾아보세요.' : '철문이 굳게 잠겨 있어요. 봉안전 터의 안내문을 먼저 살펴보세요.'); } return; }
+  if (id === 'gate') {
+    if (state.torch && !gateOpen) { // 손전등 손잡이에 묶인 열쇠로 철문을 열어요
+      state.fading = true; tone([1200], 0.05, 'square', 0); setTimeout(() => tone([900], 0.06, 'square', 0), 260); setTimeout(() => tone([520, 390], 0.18, 'square', 0.05), 600);
+      toast('민승이의 열쇠를 자물쇠에 꽂아 돌렸다… 철컥!', 2400);
+      setTimeout(() => { gateOpen = true; state.gateOpen = true; colById('gate').forEach(c => c.on = false); sfx.ok(); state.fading = false; toast('철문이 끼이익 올라갔다. 손전등을 켜고 굴로 들어가자!', 2600); updateHUD(); if (typeof saveGame === 'function') saveGame(); }, 1000);
+      return;
+    }
+    if (!state.torch) { sfx.bad(); toast(state.solved[6] ? '철문이 잠겨 있고 굴 안은 칠흑같이 어두워요. 서고에서 민승이가 남긴 물건을 찾아보세요.' : '철문이 굳게 잠겨 있어요. 봉안전 터의 안내문을 먼저 살펴보세요.'); } return; }
   if (id === 'seogoDoor') { if (!state.solved[6]) { sfx.bad(); toast('서고 문이 잠겨 있어요. 봉안전 터의 거짓 안내문을 먼저 밝혀 보세요.'); } return; }
   if (id === 'torch') {
     if (state.torch) return;
-    state.torch = true; sfx.pick(); interactables.torch.obj.visible = false; gateOpen = true; colById('gate').forEach(c => c.on = false);
+    state.torch = true; sfx.pick(); interactables.torch.obj.visible = false;
     updateHUD();
-    openModal(body => { head(body, '⑦ 서고', '민승이의 손전등'); if (typeof ART_IMG !== 'undefined' && ART_IMG[8]) { const im = el('img', 'artimg'); im.src = ART_IMG[8]; im.alt = '민승이의 손전등'; body.appendChild(im); } body.appendChild(el('p', 'hand', '"굴은 어둡다. 내 손전등을 가져가라. 손잡이에 묶인 열쇠로 철문을 열 수 있다. — 민승"')); body.appendChild(el('div', 'fact', '손전등과 방공호 철문 열쇠를 얻었어요! 굴에 들어가면 손전등이 자동으로 켜져요.')); const bb = el('button', 'pbtn', '방공호로 가기'); bb.style.marginTop = '12px'; bb.onclick = closeModal; body.appendChild(bb); });
+    openModal(body => { head(body, '⑦ 서고', '민승이의 손전등'); if (typeof ART_IMG !== 'undefined' && ART_IMG[8]) { const im = el('img', 'artimg'); im.src = ART_IMG[8]; im.alt = '민승이의 손전등'; body.appendChild(im); } body.appendChild(el('p', 'hand', '"굴은 어둡다. 내 손전등을 가져가라. 손잡이에 묶인 열쇠로 철문을 열 수 있다. — 민승"')); body.appendChild(el('div', 'fact', '손전등과 방공호 철문 열쇠를 얻었어요! 방공호 철문에서 열쇠로 문을 열어요. 굴에 들어가면 손전등이 자동으로 켜져요.')); const bb = el('button', 'pbtn', '방공호로 가기'); bb.style.marginTop = '12px'; bb.onclick = closeModal; body.appendChild(bb); });
     return;
   }
   if (id.startsWith('letter')) {
@@ -2856,8 +2864,21 @@ function returnHome() {
 /* ================= 시작·영상·브리핑 ================= */
 // 영상: 게임 속 3D 장면을 카메라가 지나가며 보여 줘요.
 const cineBook = new THREE.Group(); cineBook.position.set(-9.05, 0.07, 0.15); cineBook.rotation.y = 0.4; scene.add(cineBook);
-cineBook.add(new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.05, 0.36), new THREE.MeshLambertMaterial({ color: 0x5a3a22 })));
-{ const pg = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.04, 0.34), new THREE.MeshLambertMaterial({ color: 0xe9dcbc })); pg.position.set(0.012, 0.012, 0); cineBook.add(pg); }
+{ // 엔딩의 수첩과 같은 표지: 갈색 가죽, 왼쪽 등, 금빛 글씨
+  const cov = canvasTex(260, 360, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#6b3a24'); gr.addColorStop(1, '#4a2616'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#3a1d10'; g.fillRect(0, 0, 18, h);
+    g.strokeStyle = 'rgba(232,201,138,.45)'; g.lineWidth = 3; g.strokeRect(26, 8, w - 34, h - 16);
+    g.fillStyle = '#f0d79e'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillRect(w / 2 - 50, 92, 116, 2); g.fillRect(w / 2 - 50, 236, 116, 2);
+    g.font = '700 40px "Gowun Batang",serif'; g.fillText('붉은 벽돌의', w / 2 + 8, 140); g.fillText('기억', w / 2 + 8, 192);
+    g.font = '700 15px "Gowun Batang",serif'; g.fillStyle = '#e8c98a'; g.textAlign = 'right'; g.fillText('정민승', w - 22, h - 26);
+  });
+  const pages = canvasTex(64, 16, (g, w, h) => { g.fillStyle = '#e9dcbc'; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(120,100,70,.35)'; for (let y = 1; y < h; y += 2) g.fillRect(0, y, w, 1); });
+  const brown = new THREE.MeshLambertMaterial({ color: 0x4a2616 }), pg = new THREE.MeshLambertMaterial({ map: pages });
+  const book = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.05, 0.36), [pg, brown, new THREE.MeshLambertMaterial({ map: cov }), brown, pg, pg]);
+  cineBook.add(book);
+}
 cineBook.visible = false;
 // 괘종시계 바늘(영상에서 거꾸로 돌아요)
 const clockHands = new THREE.Group(); clockHands.position.set(-9.375, 1.75, 5.4); clockHands.rotation.y = Math.PI / 2; scene.add(clockHands);
@@ -3592,7 +3613,7 @@ TICK.push(dt => {
   ev.hidden = false; ev.textContent = `⏱ 순사가 오기까지 ${Math.max(0, Math.ceil(e.t))}초 · 태극기 조각 ${FX.pieces.size}/4`;
   e.beat -= dt; if (e.beat <= 0 && AC && sndOn) { e.beat = Math.max(0.35, e.t / 80); tone([90], 0.12, 'sine', 0); }
   pieceMeshes.forEach((m, i) => { if (!FX.pieces.has(i)) m.position.y = 4.04 + Math.abs(Math.sin(performance.now() / 300 + i)) * 0.03; });
-  if (FX.pieces.size === 4) { FX.evt = null; ev.hidden = true; toast('조각을 다 모았다! 발소리가 멈췄다. 서랍장으로 가자!', 3000); updateHUD(); return; }
+  if (FX.pieces.size === 4) { FX.evt = null; ev.hidden = true; updateHUD(); return; }
   if (e.t <= 0) {
     FX.evt = null; ev.hidden = true; pieceMeshes.forEach(m => show(m, false)); FX.pieces.clear();
     openModal(body => { head(body, '⑤ 4월 8일', '발소리가 지나갔다…'); body.appendChild(el('p', '', '순사가 복도를 지나가는 동안 숨어 있느라 조각을 다 모으지 못했어요. 다시 해 볼까요?')); const b = el('button', 'pbtn', '다시 시작'); b.onclick = () => { closeModal(); startEvt5(); }; body.appendChild(b); });
@@ -4338,7 +4359,7 @@ window.addEventListener('keydown', e => { if (state.mode === 'play' && !state.mo
 function saveGame() {
   if (state.mode !== 'play' || state.solved[7]) return;
   LS.set(SAVE_KEY, {
-    t: Date.now(), team: state.team, stage: state.stage, solved: state.solved, letters: [...state.letters], hints: state.hints, torch: state.torch,
+    t: Date.now(), team: state.team, stage: state.stage, solved: state.solved, letters: [...state.letters], hints: state.hints, torch: state.torch, gateOpen: !!state.gateOpen,
     elapsed: (performance.now() - state.start) / 1000, p: { x: player.x, z: player.z, lv: player.lv, yaw: player.yaw },
     fx: { bricks: [...FX.bricks], marks: [...FX.marks], tele: FX.tele, arts: [...FX.arts], battery: FX.battery, collapsed: FX.collapsed, hintTier: FX.hintTier, hintStage: FX.hintStage, why: FX.why },
     written: [...written], tunnelMsg: state.tunnelMsg
@@ -4367,7 +4388,8 @@ function restore(sv) {
   if (S[3] && FX.tele) doors.rope.visible = false; else if (S[3]) doors.rope.visible = true;
   if (S[5]) { doors.back.target = doors.back.cur = 1.5; colById('backDoor').forEach(c => c.on = false); }
   if (S[6]) { doors.seogo.target = doors.seogo.cur = 1.5; colById('seogoDoor').forEach(c => { c.on = false; c.lockedOff = true; }); }
-  if (state.torch) { interactables.torch.obj.visible = false; gateOpen = true; gate.visible = false; colById('gate').forEach(c => c.on = false); }
+  if (state.torch) interactables.torch.obj.visible = false;
+  if (sv.gateOpen) { state.gateOpen = true; gateOpen = true; gate.visible = false; colById('gate').forEach(c => c.on = false); }
   state.letters.forEach(i => letterMeshes[i].material.emissive = new THREE.Color(0x6a4a10));
   (f.arts || []).forEach(i => { FX.arts.add(i); artMeshes[i].traverse(c => c.layers.set(1)); ERA_REG.forEach(r => { if (r.objs.includes(artMeshes[i])) r.eras = []; }); });
   goEra(S[5] ? 'y1944' : 'y1919');
@@ -4632,12 +4654,15 @@ if (charImgURL('minseung')) {
 /* ---------- 배경음악 (WebAudio로 재생: 아티팩트·태블릿 어디서나 같은 방식) ---------- */
 const BGM = { buf: {}, loading: {}, src: {}, gain: {}, cur: 0, base: 0.5 };
 function b64ToBuf(d) { const s = atob(d.slice(d.indexOf(',') + 1)), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; }
+// 소리 파일: 한 파일 버전은 data: 주소, 나눠 올린 버전은 assets/ 파일을 받아 와요
+function audioBuf(src) { if (src.startsWith('data:')) return Promise.resolve(b64ToBuf(src)); return fetch(src).then(r => r.arrayBuffer()); }
+function decodeSrc(src) { return audioBuf(src).then(ab => new Promise((res, rej) => { const pr = AC.decodeAudioData(ab, res, rej); if (pr && pr.catch) pr.catch(rej); })); }
 function ensureAC() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } } if (AC && AC.state === 'suspended' && sndOn) AC.resume(); return AC; }
 function bgmLoad(n) {
   if (BGM.buf[n] || BGM.loading[n] || !AC || typeof BGM_DATA === 'undefined' || !BGM_DATA[n]) return;
   BGM.loading[n] = true;
   const done = b => { BGM.buf[n] = b; BGM.loading[n] = false; };
-  try { const pr = AC.decodeAudioData(b64ToBuf(BGM_DATA[n]), done, () => { BGM.loading[n] = false; }); if (pr && pr.catch) pr.catch(() => { BGM.loading[n] = false; }); } catch (e) { BGM.loading[n] = false; }
+  decodeSrc(BGM_DATA[n]).then(done, () => { BGM.loading[n] = false; });
 }
 function bgmStart(n) {
   if (BGM.src[n] || !BGM.buf[n]) return;
@@ -4741,7 +4766,7 @@ const RET = { on: false, skip: false, tapRes: null, bgm: 5, speed: 1 };
 const curatorFig = makeFigure(CHARS.curator.fig); curatorFig.position.set(-7.2, 0, -1.6); curatorFig.rotation.y = -2.2; curatorFig.visible = false; scene.add(curatorFig);
 // 반 아이들이 녹음한 "대한 독립 만세!" (manse1: 창밖 행렬, manse2: 방공호에서 나올 때)
 const MANSE = { buf: {}, src: {} };
-function loadManse(n) { if (MANSE.buf[n] || !AC || typeof SFX_DATA === 'undefined' || !SFX_DATA['manse' + n]) return Promise.resolve(MANSE.buf[n]); return new Promise(res => { try { const pr = AC.decodeAudioData(b64ToBuf(SFX_DATA['manse' + n]), b => { MANSE.buf[n] = b; res(b); }, () => res(null)); if (pr && pr.catch) pr.catch(() => res(null)); } catch (e) { res(null); } }); }
+function loadManse(n) { if (MANSE.buf[n] || !AC || typeof SFX_DATA === 'undefined' || !SFX_DATA['manse' + n]) return Promise.resolve(MANSE.buf[n]); return decodeSrc(SFX_DATA['manse' + n]).then(b => { MANSE.buf[n] = b; return b; }, () => null); }
 async function playManse(n, vol = 1) {
   ensureAC(); if (!AC || !sndOn) return;
   const b = await loadManse(n); if (!b) { cheer(0.45); return; }
@@ -4884,6 +4909,7 @@ const MS_LINES = [
   ['공고문', '1944년이 되었어… 뒤뜰 봉안전 앞에 공고문이 붙어 있어. 순사가 돌고 있으니 노란 시야에 들키지 않게 조심해!'],
   ['서고', '방공호는 아주 어두워. 뒤뜰 왼쪽 돌 건물, 서고에 내 손전등을 두었어. 먼저 챙겨 가!'],
   ['출구에서', '글자를 다 모았어! 출구에서 네 글자를 순서대로 맞추면 밖으로 나갈 수 있어.'],
+  ['철문', '손전등 손잡이에 내 열쇠를 묶어 두었어. 언덕 방공호 철문에서 그 열쇠로 문을 열어 줘!'],
   ['방공호', '손전등을 챙겼지? 언덕 방공호로 들어가 벽에 새긴 글자 네 개를 찾아 줘. 무너진 길은 돌아가야 해.']
 ];
 const MS = { last: null, pending: null, t: 0, started: false };
@@ -4896,7 +4922,7 @@ TICK.push(dt => {
   const g = goalKey(); if (!g) return;
   if (g !== MS.last) { MS.last = g; MS.pending = g; MS.t = performance.now() + 700; }
   if (!MS.pending) return;
-  if (state.modal || vn.on || state.fading || FX.scope || RET.on) { MS.t = performance.now() + 700; return; }
+  if (state.modal || vn.on || state.fading || FX.scope || RET.on || (typeof E5 !== 'undefined' && E5.calm > 0)) { MS.t = performance.now() + 700; return; }
   if (performance.now() < MS.t) return;
   const goal = MS.pending; MS.pending = null;
   const old = (curEra === 'y1944' || state.stage >= 6) && charImgURL('minseung2');
@@ -5036,10 +5062,10 @@ TICK.push(dt => {
   // 끝났을 때: 성공 → 문 앞 정적 → 멀어지는 발소리, 실패 → 문 쾅
   if (E5.prev && !e) {
     if (FX.pieces.size === 4) {
-      E5.calm = 3.2; $('toast').classList.remove('show');
+      E5.calm = 3.2; $('toast').classList.remove('show'); updateHUD(); MS.last = goalKey(); MS.pending = null; // 미션 팝업이 따로 겹쳐 뜨지 않게
       setTimeout(() => footstep(0.9), 150); setTimeout(() => footstep(0.95), 650);
       setTimeout(() => { [0, 520, 1040, 1560].forEach((d, k) => setTimeout(() => footstep(0.55 - k * 0.12), d)); }, 2300);
-      setTimeout(() => { MS.last = goalKey(); MS.pending = null; vnSay('minseung', '휴… 발소리가 문 앞에서 멈췄다가 멀어졌어. 조각을 다 모았어! 이제 서랍장에서 태극기를 맞춰 줘.', { place: '' }); $('vnPlace').innerHTML = '1919년 4월 8일 · <b style="color:#ffd98a">휴, 살았다</b>'; }, 4200);
+      setTimeout(() => { MS.last = goalKey(); MS.pending = null; vnSay('minseung', '휴… 발소리가 문 앞에서 멈췄다가 멀어졌어. 이제 서랍장에서 태극기를 맞춰 줘. 하늘과 땅, 물과 불은 서로 마주 봐.', { place: '' }); $('vnPlace').innerHTML = '1919년 4월 8일 · <b style="color:#ffd98a">휴, 살았다</b>'; }, 4200);
     } else { doorSlam(); const f = $('flash'); f.classList.add('on'); setTimeout(() => f.classList.remove('on'), 350); }
     E5.pieces = 0;
   }
@@ -5235,5 +5261,5 @@ const _nightWanted = nightWanted;
 nightWanted = function () { return NIGHT_FORCE || (TJ.on && curEra === 'y1944') || _nightWanted(); };
 
 </script>
-</body>
-</html>
+
+</body></html>
