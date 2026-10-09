@@ -73,8 +73,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .modal{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,6,.62);padding:16px;z-index:42}
 .modal[hidden]{display:none}
 .pc,.piece,.cards .card{touch-action:none;cursor:grab}
+.pc,.piece,.cards,.slots,.ptray,.elev,.dragGhost{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .dragGhost{position:fixed;left:0;top:0;z-index:90;pointer-events:none;opacity:.9;box-shadow:0 12px 26px rgba(0,0,0,.35);transform-origin:center;margin:0!important}
 .dragFrom{opacity:.35}
+.elev .dropHover{outline:none!important;filter:none!important}
 .dropHover{outline:3px solid #e0a92a!important;outline-offset:2px;filter:drop-shadow(0 0 6px rgba(224,169,42,.8))}
 /* 마지막: 수첩이 닫히고 '끝' */
 #fin{position:absolute;inset:0;z-index:60;background:rgba(10,8,6,0);transition:background 1.6s ease;display:grid;place-items:center;perspective:1400px;overflow:hidden}
@@ -158,6 +160,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .rBook.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .rBook.glow{box-shadow:0 0 0 2px #c9a157,0 0 120px 30px rgba(255,214,120,.9),0 30px 60px rgba(0,0,0,.5)}
 .rPage{color:#1d2148;font-size:clamp(20px,3vw,28px);line-height:1.6;min-height:5em;word-break:keep-all}
+.rPage.q{text-align:center;padding-top:.6em}
 .rPage .gold{color:#a8761c;text-shadow:0 0 12px rgba(255,200,80,.6)}
 .rYear{position:absolute;left:0;right:0;top:20%;text-align:center;font:700 clamp(64px,14vw,150px)/1 Georgia,serif;letter-spacing:.04em;color:#fff3d6;text-shadow:0 4px 30px rgba(0,0,0,.6),0 0 40px rgba(255,214,120,.5);opacity:0;transition:opacity .6s}
 .rYear.on{opacity:1}
@@ -2635,21 +2638,28 @@ function puzzle7() {
   const shuffled = [word[2], word[0], word[3], word[1]];
   openModal(body => {
     head(body, '⑦ 방공호 출구', '민승이의 소원');
-    body.appendChild(el('p', '', '굴 벽에서 찾은 글자 네 개를 민승이의 소원이 되도록 순서대로 누르세요.'));
+    body.appendChild(el('p', '', '굴 벽에서 찾은 글자 네 개를 민승이의 소원이 되도록 칸에 끌어다 놓거나 순서대로 누르세요.'));
     const slots = el('div', 'slots'); body.appendChild(slots);
     const sl = word.map(() => { const s = el('div', 'slot', '·'); s.style.minWidth = '56px'; s.style.fontSize = '24px'; slots.appendChild(s); return s; });
     const cards = el('div', 'cards'); body.appendChild(cards);
     const m = msgLine(body);
-    shuffled.forEach(ch => {
+    const pk = word.map(() => null);
+    const clear = i => { if (pk[i] == null) return; cards.children[pk[i]].classList.remove('used'); pk[i] = null; sl[i].textContent = '·'; sl[i].classList.remove('full'); };
+    const check = () => {
+      if (pk.some(p => p == null)) return;
+      if (pk.map(k => shuffled[k]).join('') === word.join('')) { say(m, '"되찾은 집"! 출구 문이 열려요.', true); setTimeout(() => { closeModal(); solve(7); }, 1100); }
+      else { sfx.bad(); say(m, '말이 되지 않아요. 민승이는 이 건물이 어떻게 되기를 바랐을까요? 칸에 다른 글자를 끌어다 덮어도 돼요.'); shake(slots); }
+    };
+    const put = (k, i) => {
+      if (i < 0 || i >= word.length) return;
+      const prev = pk.indexOf(k); if (prev === i) return; if (prev >= 0) clear(prev);
+      clear(i); pk[i] = k; sl[i].textContent = shuffled[k]; sl[i].classList.add('full'); cards.children[k].classList.add('used'); sfx.click(); m.textContent = ''; check();
+    };
+    sl.forEach((s, i) => s.onclick = () => { if (pk[i] != null) { clear(i); sfx.click(); } });
+    shuffled.forEach((ch, k) => {
       const c = el('button', 'card', ch); c.style.fontSize = '26px'; cards.appendChild(c);
-      c.onclick = () => {
-        if (c.classList.contains('used')) return;
-        c.classList.add('used'); picked.push(ch); sl[picked.length - 1].textContent = ch; sfx.click();
-        if (picked.length === 4) {
-          if (picked.join('') === word.join('')) { say(m, '"되찾은 집"! 출구 문이 열려요.', true); setTimeout(() => { closeModal(); solve(7); }, 1100); }
-          else { sfx.bad(); say(m, '말이 되지 않아요. 민승이는 이 건물이 어떻게 되기를 바랐을까요?'); shake(slots); setTimeout(() => { picked.length = 0; sl.forEach(s => s.textContent = '·'); [...cards.children].forEach(x => x.classList.remove('used')); }, 800); }
-        }
-      };
+      c.onclick = () => { if (c.classList.contains('used')) return; put(k, pk.indexOf(null)); };
+      c._drop = slot => put(k, sl.indexOf(slot));
     });
   });
 }
@@ -3565,20 +3575,29 @@ PUZZLES[3] = () => {
 function puzzle3Order() {
   openModal(body => {
     head(body, '③ 벽난로 방', '이름이 바뀐 차례');
-    body.appendChild(el('p', '', '촛불로 찾은 이름 세 개를 <b>바뀐 순서대로</b> 누르세요.'));
+    body.appendChild(el('p', '', '촛불로 찾은 이름 세 개를 <b>바뀐 순서대로</b> 칸에 끌어다 놓거나 누르세요. 칸을 누르면 카드가 빠져요.'));
     const slots = el('div', 'slots'); body.appendChild(slots);
     const sl = [0, 1, 2].map(i => { const s = el('div', 'slot', `${i + 1}번째`); slots.appendChild(s); return s; });
     const order = ['일본영사관', '목포 이사청', '목포부청'], cards = el('div', 'cards'); body.appendChild(cards);
-    const picked = [], m = msgLine(body);
+    const picked = [null, null, null], m = msgLine(body);
+    const cardOf = name => [...cards.children].find(x => x.textContent === name);
+    const clear = i => { if (!picked[i]) return; const c = cardOf(picked[i]); if (c) c.classList.remove('used'); picked[i] = null; sl[i].textContent = `${i + 1}번째`; sl[i].classList.remove('full'); };
+    const check = () => {
+      if (picked.some(p => !p)) return;
+      if (picked.every((p, i) => p === order[i])) setTimeout(() => { closeModal(); FX.candle = false; solve(3); }, 350);
+      else { sfx.bad(); say(m, '순서가 달라요. 벽에 적힌 연도를 다시 떠올려 보세요. 칸에 다른 카드를 끌어다 덮어도 돼요.'); shake(slots); }
+    };
+    // i번째 칸에 카드를 놓아요. 이미 있던 카드는 아래로 돌아가고, 다른 칸에 있던 같은 카드는 옮겨 와요
+    const put = (c, name, i) => {
+      if (i < 0 || i > 2) return;
+      const prev = picked.indexOf(name); if (prev === i) return; if (prev >= 0) clear(prev);
+      clear(i); picked[i] = name; sl[i].textContent = name; sl[i].classList.add('full'); c.classList.add('used'); sfx.click(); m.textContent = ''; check();
+    };
+    sl.forEach((s, i) => s.onclick = () => { if (picked[i]) { clear(i); sfx.click(); } });
     ['목포부청', '일본영사관', '목포 이사청'].forEach(name => {
       const c = el('button', 'card', name); cards.appendChild(c);
-      c.onclick = () => {
-        if (c.classList.contains('used')) return; c.classList.add('used'); picked.push(name); sl[picked.length - 1].textContent = name; sfx.click();
-        if (picked.length === 3) {
-          if (picked.every((p, i) => p === order[i])) setTimeout(() => { closeModal(); FX.candle = false; solve(3); }, 350);
-          else { sfx.bad(); say(m, '순서가 달라요. 벽에 적힌 연도를 다시 떠올려 보세요.'); shake(slots); setTimeout(() => { picked.length = 0; sl.forEach((s, i) => s.textContent = `${i + 1}번째`); [...cards.children].forEach(x => x.classList.remove('used')); }, 700); }
-        }
-      };
+      c.onclick = () => { if (c.classList.contains('used')) return; put(c, name, picked.indexOf(null)); };
+      c._drop = slot => put(c, name, sl.indexOf(slot));
     });
   });
 }
@@ -4888,7 +4907,7 @@ TICK.push(dt => {
 returnHome = async function () {
   if (RET.on) return; RET.on = true; RET.skip = false;
   $('toast').classList.remove('show'); const R = $('ret'); R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; $('interact').hidden = true; $('near').hidden = true;
-  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = '';
+  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
   ensureAC(); RET.bgm = 4; state.mode = 'ret';
   // 1. 굴 출구: 네 글자가 빛나요
   const cx = player.x, cz = player.z, cy = 1.6, yaw0 = player.yaw; let t = 0;
@@ -4940,7 +4959,7 @@ returnHome = async function () {
   await new Promise(res => vnSay('curator', "어머, 그 수첩… 공사하던 벽난로 안에서 나온 거예요? 겉장에 '정민승'이라고 쓰여 있네요. 1919년이면… 이 건물이 목포부청이던 때예요. 이렇게 소중한 걸 찾아 줘서 고마워요. 이 수첩, 우리 역사관에 전시해도 될까요?", { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
   state.modal = false; R.hidden = false;
   // 6. 마지막 한 줄
-  $('rBook').className = 'rBook on glow'; $('rPage').innerHTML = '';
+  $('rBook').className = 'rBook on glow'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
   await sleep(700);
   await say2('수첩을 덮으려던 순간, 마지막 쪽 맨 아래에 처음 보는 한 줄이 천천히 떠올랐다.', false);
   await sleep(500);
@@ -4970,7 +4989,7 @@ const MS_LINES = [
   ['분필 표시', '안녕, 나는 민승이야! 이 집 바깥벽 네 곳에 분필로 번호를 적어 두었어. 건물을 한 바퀴 돌면서 네 곳을 모두 찾아 줘.'],
   ['쪽지판에서 흰 벽돌', '분필 표시를 다 찾았구나! 이제 앞마당 쪽지판으로 가서, 줄마다 흰 벽돌을 세어 자물쇠를 열어 봐.'],
   ['대칭 자물쇠', '현관문에는 대칭 자물쇠가 걸려 있어. 이 집 정면은 왼쪽과 오른쪽이 거울처럼 똑같아. 그걸 떠올리면 열 수 있을 거야.'],
-  ['촛불을 켜', '안으로 들어왔구나! 들어가서 왼쪽, 서쪽 방 벽난로를 살펴봐. 촛불을 켜야만 보이는 게 있어.'],
+  ['촛불을 켜', '현관문이 열렸어! 안으로 들어가서 왼쪽, 서쪽 방 벽난로를 살펴봐. 촛불을 켜야만 보이는 게 있어.'],
   ['숨은 글씨', '촛불을 켰다! 서쪽 방 벽 곳곳에 이 집의 옛 이름을 몰래 적어 두었어. 세 개를 모두 찾아 줘.'],
   ['바뀐 순서대로', '다 찾았네! 벽난로로 돌아가서 이름들을 바뀐 순서대로 놓아 줘.'],
   ['전신기', '2층 계단이 줄로 막혀 있어. 1층 동쪽 방 전신기에서 전보를 들어 봐. 짧은 소리와 긴 소리가 숫자를 알려 줄 거야.'],
@@ -5332,7 +5351,7 @@ const TJ = { on: false };
 timeJump = async function (after) {
   if (TJ.on) return; TJ.on = true; RET.skip = false;
   const R = $('ret'); R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; $('interact').hidden = true; $('near').hidden = true; $('toast').classList.remove('show');
-  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLetters').style.opacity = '1'; $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = '';
+  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLetters').style.opacity = '1'; $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
   ensureAC(); RET.bgm = 3; const prevMode = state.mode; state.mode = 'ret';
   const px = player.x, pz = player.z, py = player.lv === 2 ? 5.6 : 1.6, pyaw = player.yaw;
   retCam = () => { camera.position.set(px, py, pz); camera.rotation.set(0, pyaw, 0); };
@@ -5385,6 +5404,8 @@ TICK.push(() => {
 });
 function hornLong() { if (!AC || !sndOn) return; const t = AC.currentTime; [0, 0.004].forEach(dt => { const o = AC.createOscillator(), g = AC.createGain(), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500; o.type = 'sawtooth'; o.frequency.value = 98 + dt * 400; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.3); g.gain.setValueAtTime(0.09, t + 2.2); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2); o.connect(lp).connect(g).connect(AC.destination); o.start(t); o.stop(t + 3.3); }); }
 const lerp3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+// 물음 쪽지: 가운데 정렬, 첫 쉼표(또는 마침표) 뒤에서 한 줄 내려요
+function qNote(t) { $('rPage').classList.add('q'); return t.replace(/([,.]) /, '$1<br>'); }
 const BRIDGE = {
   1: { from: [0, 1.6, 21], to: [0, 1.4, 16], look: [0, 7, 6], say: '쪽지판 자물쇠가 철컥 열렸다. 고개를 드니, 언덕 위 붉은 벽돌집이 마을과 항구를 내려다보고 있었다.', note: '1900년. 이 집은 왜 하필 언덕 꼭대기에 지었을까?' },
   2: { from: [0, 1.5, 13], to: [0, 1.3, 10.6], look: [0, 9.2, 7.4], say: '현관문이 삐걱 열렸다. 문 위로 세모난 박공이 하늘을 찌를 듯 솟아 있었다. 초가와 기와집뿐이던 마을에 처음 선 붉은 벽돌집이었다.', note: '나무 집들 사이에 선 이 낯선 벽돌집을, 사람들은 어떤 마음으로 바라봤을까?' },
@@ -5395,13 +5416,13 @@ const BRIDGE = {
 async function bridgeScene(n) {
   const B = BRIDGE[n]; if (!B) return;
   RET.skip = false; const R = $('ret'); R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; $('toast').classList.remove('show');
-  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = '';
+  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
   const prev = state.mode; state.mode = 'ret'; let k = 0;
   const L = new THREE.Vector3(...B.look);
   retCam = d => { k = Math.min(1, k + d / 4); const e = 1 - Math.pow(1 - k, 2); camera.position.set(...lerp3(B.from, B.to, e)); camera.lookAt(L); };
   await say2(B.say);
   $('rText').innerHTML = ''; $('rBook').className = 'rBook on'; await sleep(400);
-  await typeInto($('rPage'), B.note, 60); await waitTap();
+  await typeInto($('rPage'), qNote(B.note), 60); await waitTap();
   R.hidden = true; retCam = null; state.mode = prev === 'ret' ? 'play' : prev; resize(); $('hud').hidden = false;
 }
 // ④ 망원경: 정답 → 부두로 내려다보기 → 짐꾼 → 민승이의 물음
@@ -5414,8 +5435,8 @@ async function harborScene() {
   $('scope').querySelector('.info').style.visibility = 'hidden'; document.querySelectorAll('.stag,.snav').forEach(b => b.style.visibility = 'hidden');
   await new Promise(res => vnSay('jim', '이 쌀가마들? 전부 배에 실려 일본으로 가지. 좋은 쌀은 다 바다 건너로 가고, 우리는 보리죽을 먹는구먼.', { place: '망원경 속 · 1919년 목포항 부두', onDone: res }));
   state.modal = false;
-  R.hidden = false; R.classList.remove('white'); ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rBook').className = 'rBook on';
-  await sleep(300); await typeInto($('rPage'), '항구가 열리고 22년. 배는 늘었는데, 우리 밥상은 왜 더 가난해졌을까?', 60); await waitTap();
+  R.hidden = false; R.classList.remove('white'); ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q'); $('rBook').className = 'rBook on';
+  await sleep(300); await typeInto($('rPage'), qNote('항구가 열리고 22년. 배는 늘었는데, 우리 밥상은 왜 더 가난해졌을까?'), 60); await waitTap();
   R.hidden = true; $('scope').querySelector('.info').style.visibility = ''; document.querySelectorAll('.stag,.snav').forEach(b => b.style.visibility = '');
 }
 const _whyModal8 = whyModal;
@@ -5433,8 +5454,8 @@ async function scene5() {
   await sleep(1200);
   await new Promise(res => vnSay('girl', '봤어? 우리 학교 언니들이 맨 앞에 섰어. 붙잡히면 끌려간다는 걸 다 알면서도… 언니들이 그랬어. 우리가 함께 외치면, 언젠가 세상이 꼭 들어 줄 거라고.', { place: '1919년 4월 8일 · 목포부청 앞', onDone: res }));
   state.modal = false;
-  R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rBook').className = 'rBook on';
-  await sleep(300); await typeInto($('rPage'), '붙잡히면 큰일인데, 사람들은 왜 거리로 나섰을까?', 60); await waitTap();
+  R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q'); $('rBook').className = 'rBook on';
+  await sleep(300); await typeInto($('rPage'), qNote('붙잡히면 큰일인데, 사람들은 왜 거리로 나섰을까?'), 60); await waitTap();
   R.hidden = true; retCam = null; state.mode = prev === 'ret' || prev === 'cameo' ? 'play' : prev; resize(); $('hud').hidden = false;
 }
 const _whyModal5 = whyModal;
