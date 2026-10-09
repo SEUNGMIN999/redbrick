@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>붉은 벽돌의 기억</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="붉은 벽돌의 기억">
+<meta name="theme-color" content="#16120f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap">
@@ -508,6 +513,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
         <div class="btnrow">
           <button class="hbtn mini" id="btnMap" aria-pressed="true" aria-label="지도 켜고 끄기">지도</button>
           <button class="hbtn mini" id="btnGear" aria-label="설정">⚙</button>
+          <button class="hbtn mini" id="btnFS" aria-label="전체 화면">⛶</button>
           <button class="hbtn mini" id="btnSnd" aria-pressed="true" aria-label="소리 켜고 끄기">🔊</button>
         </div>
         <div id="mapBox"><div id="mapLoc">앞마당</div><canvas id="map" width="300" height="280"></canvas></div>
@@ -4911,6 +4917,30 @@ function finale() {
 }
 $('fAgain').onclick = () => location.reload();
 $('fBack').onclick = () => { $('fin').hidden = true; };
+
+/* ---------- 전체 화면: 처음 화면을 누르는 순간 PC·태블릿·휴대폰 모두 전체 화면으로 ---------- */
+const FS = {
+  el: document.documentElement,
+  on: () => !!(document.fullscreenElement || document.webkitFullscreenElement),
+  can: () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen),
+  enter() {
+    if (FS.on() || !FS.can()) return;
+    try {
+      const r = FS.el.requestFullscreen ? FS.el.requestFullscreen({ navigationUI: 'hide' }) : FS.el.webkitRequestFullscreen();
+      if (r && r.then) r.then(() => { if (coarse && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); setTimeout(resize, 200); }).catch(() => {});
+    } catch (e) {}
+  },
+  exit() { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
+};
+let fsAuto = true;
+['pointerup', 'keydown'].forEach(ev => window.addEventListener(ev, e => {
+  if (!fsAuto || (e.key && e.key === 'Escape')) return;
+  if (e.target && e.target.id === 'btnFS') return;
+  fsAuto = false; FS.enter();
+}, { capture: true }));
+['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { $('btnFS').textContent = FS.on() ? '🗗' : '⛶'; setTimeout(resize, 150); }));
+$('btnFS').onclick = () => { fsAuto = false; FS.on() ? FS.exit() : FS.enter(); };
+if (!FS.can()) $('btnFS').hidden = true;   // 아이폰 사파리처럼 지원하지 않는 곳에서는 버튼을 숨겨요
 
 </script>
 </body>
