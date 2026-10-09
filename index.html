@@ -5351,7 +5351,7 @@ const PORTERS = [];
 TICK.push(() => {
   if (curEra !== 'y1919') return;
   const t = performance.now() / 1000;
-  PORTERS.forEach(p => { const k = (t * 0.035 + p.ph) % 1; p.f.position.set(8 + Math.sin(p.ph * 9) * 1.2, SEA_Y + 1.3, 67 + k * 22); p.f.rotation.y = 0; walkPose(p.f, t * 6 + p.ph * 10, 0.9); });
+  PORTERS.forEach(p => { const k = (t * 0.035 + p.ph) % 1; walkPose(p.f, t * 6 + p.ph * 10, 0.9); const bob = p.f.position.y; p.f.position.set(8 + Math.sin(p.ph * 9) * 1.2, SEA_Y + 1.3 + bob, 67 + k * 22); p.f.rotation.y = 0; });
 });
 function hornLong() { if (!AC || !sndOn) return; const t = AC.currentTime; [0, 0.004].forEach(dt => { const o = AC.createOscillator(), g = AC.createGain(), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500; o.type = 'sawtooth'; o.frequency.value = 98 + dt * 400; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.3); g.gain.setValueAtTime(0.09, t + 2.2); g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2); o.connect(lp).connect(g).connect(AC.destination); o.start(t); o.stop(t + 3.3); }); }
 const lerp3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
