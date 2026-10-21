@@ -1027,7 +1027,7 @@ body.plFree #view{cursor:none}
     <div class="intro">
       <div class="kick">목포근대역사관 1관 · 교실 방탈출</div>
       <h1>붉은 벽돌의<br><span>기억</span></h1>
-      <p class="lead">체험학습으로 찾은 목포근대역사관 1관. 공사 중인 벽난로 앞에서 주운 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
+      <p class="lead">체험학습으로 찾은 목포근대역사관 1관. 벽난로 쇠살대 틈에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
       <div class="startrow"><button class="big" id="btnResume" hidden>▶ 이어하기</button><button class="big" id="btnPlay">▶ 시작하기</button><button class="pbtn alt dk" id="btnSndStart" aria-pressed="true">🔊 소리 켜짐</button><button class="pbtn alt dk" id="btnSet">⚙ 설정</button><div id="playCnt" hidden><div class="pcIn"><span class="pcDot"></span><span>지금까지 <b id="pcPlay">0</b> 명이 붉은 벽돌의 기억을 찾아 떠났어요</span><b id="pcFin" hidden></b></div></div><span class="small" id="resumeInfo">배경음악과 효과음이 있어요. 스피커 버튼으로 켜고 끌 수 있어요.</span></div>
     </div>
   </section>
@@ -7027,12 +7027,12 @@ function mxModelCase(x, y, z, ry, kind) {
     ev.forEach(([yr, t], i) => { const x = x0 + (x1 - x0) * i / (ev.length - 1); g.fillStyle = '#a8462f'; g.beginPath(); g.arc(x, y, H * 0.03, 0, 7); g.fill();
       mxText(g, yr, x, y - H * 0.11, H * 0.065, '#1f1a16', true, 'center'); mxText(g, t, x, y + H * 0.13, H * 0.05, '#3a312a', false, 'center'); });
   });
-  mxAdd(tl, -2.83, 2.05, 1.2, PI / 2, R);
+  mxAdd(tl, -2.83, 2.05, 3.0, PI / 2, R); // 왼쪽 방 문(z -1~1)을 가리지 않게
   const desk = grp(2.3, 0, 4.2); R.add(desk); // 안내도: INFORMATION은 홀 오른쪽 앞
   dk(0.7, 1.0, 1.8, MXM.white, 0, 0.5, 0, desk); dk(0.78, 0.04, 1.9, M.darkwood, 0, 1.02, 0, desk);
   const dsign = textPlane([{ t: 'INFORMATION', size: 0.12, bold: true }, { t: '관람 순서 · 1층 → 2층 → 방공호', size: 0.07 }], 1.4, 0.45, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' });
   mxAdd(dsign, -0.36, 0.62, 0, -PI / 2, desk); colR(2.3, 4.2, 0.8, 1.9, 1);
-  mxDef({ id: 'mx0', extra: true, name: '건물 연표', place: '1층 현관 홀', lv: 1, obj: tl, at: [-1.6, 1.2], title: '붉은 벽돌 건물이 걸어온 시간',
+  mxDef({ id: 'mx0', extra: true, name: '건물 연표', place: '1층 현관 홀', lv: 1, obj: tl, at: [-1.6, 3.0], title: '붉은 벽돌 건물이 걸어온 시간',
     facts: ['1897년 목포항이 문을 열자(개항), 일본은 1900년 이 자리에 붉은 벽돌로 영사관을 지었어요. 목포에서 가장 오래된 근대 건축물이에요.', '그 뒤 이사청과 목포부청으로 쓰였고, 광복 뒤 1947년 목포시청, 1990년 목포문화원이 되었어요.', '2014년 목포근대역사관 1관으로 다시 문을 열었어요. 관람은 1층 오른쪽 방(1·2 전시실)에서 시작해요.'] });
 
   /* ════════ 1층 오른쪽 방 ════════ */
@@ -7111,10 +7111,10 @@ function mxModelCase(x, y, z, ry, kind) {
     MXS('동양척식주식회사', OL), bp('1921년', 'Dongyang Cheoksik', ['우리 땅과 자원을 빼앗던', '국책 회사의 목포지점'], 33),
     MXS('목포부립병원 관사', OL), bp('1920년대', 'Mokpo Hospital', ['병원장이 살던 관사', '지금은 카페로 쓰여요'], 35)]);
   [-7.72, -6.6, -5.48].forEach((x, i) => mxModelCase(x, 0, 4.85, PI, ['bank', 'toyo', 'temple'][i]));
-  mxUnit(-3.25, 0, 3.4, -PI / 2, [MXS('구 동본원사 목포별원', OL), bp('1930년대 초', 'Dongbonwonsa', ['일본 불교 사찰', '지금은 공연 · 전시 공간'], 41),
+  mxUnit(-7.8, 0, -0.85, 0, [MXS('구 동본원사 목포별원', OL), bp('1930년대 초', 'Dongbonwonsa', ['일본 불교 사찰', '지금은 공연 · 전시 공간'], 41),
     MXS('구 호남은행 목포지점', OL), bp('1929년', 'Honam Bank', ['민족 자본으로 세운 은행', '현준호가 주축이 되다'], 43),
     MXS('구 목포 청년회관', OL), bp('1925년', 'Young Men\'s Hall', ['시민들의 성금으로 지은', '민족운동의 산실'], 45)]);
-  [2.28, 3.4, 4.52].forEach((z, i) => mxModelCase(-4.1, 0, z, -PI / 2, ['temple', 'honam', 'hall'][i]));
+  [-8.9, -7.8, -6.7].forEach((x, i) => mxModelCase(x, 0, -0.22, 0, ['temple', 'honam', 'hall'][i]));
   mxUnit(-9.75, 0, 2.9, PI / 2, [MXS('목포 양동교회', OL), bp('1910년', 'Yangdong Church', ['호남 최초의 교회', '유달산 돌로 지은 예배당'], 51),
     MXS('북교동 문익수 가옥', OL), bp('1908년', 'Mun Ik-su House', ['근대 초기 한옥', 'ㄱ자 안채와 대청'], 53),
     MXS('정명여학교 선교사 사택', OL), bp('1905년 무렵', 'Missionary House', ['목포에 처음 지어진', '서양식 석조 주택'], 55)]);
@@ -7930,7 +7930,7 @@ const GLARE = (() => {
   regSince(N0, ['present'], C0);
   // 지금은 '공사 중' 팻말과 옛 철문 대신 새 문이 보여요
   const old = []; scene.children.forEach(o => { if (Math.abs(o.position.x - 2.6) < 0.05 && Math.abs(o.position.z - (TZ + 0.38)) < 0.1) old.push(o); });
-  regEra(old, ['y1944']); regEra(gate, ['y1919', 'y1944']);
+  regEra(old, ['y1944']); regEra(gate, ['y1944']) // 1919년엔 아직 방공호를 파기 전이라 철문이 없어요;
   if (interactables.case) { const c = interactables.case.obj; regEra(c, ['y1919', 'y1944'], colliders.filter(k => k.lv === 2 && Math.abs(k.x1 - 5.65) < 0.01 && Math.abs(k.z1 - 1.65) < 0.01)); }
   setEra(curEra);
 }
@@ -7973,8 +7973,8 @@ const GLARE = (() => {
   const fp = interactables.fireplace && interactables.fireplace.obj;
   if (fp) regEra(fp, ['y1919', 'y1944']);
   const n0 = mxRoot.children.length;
-  mxFireplace(-9.72, 0, 0.2, Math.PI / 2, false);
-  const lab = textPlane([{ t: '벽난로', size: 0.06, bold: true }], 0.3, 0.12, { bg: '#1d1d20', fg: '#f1ece2' }); lab.position.set(-9.55, 1.32, 0.2); lab.rotation.set(-0.3, Math.PI / 2, 0, 'YXZ'); mxRoot.add(lab);
+  mxFireplace(-3.28, 0, 2.6, -Math.PI / 2, false); // 실제 1관: 왼쪽 방 들어가자마자 홀 쪽 벽
+  const lab = textPlane([{ t: '벽난로', size: 0.06, bold: true }], 0.3, 0.12, { bg: '#1d1d20', fg: '#f1ece2' }); lab.position.set(-3.45, 1.32, 2.6); lab.rotation.set(-0.3, -Math.PI / 2, 0, 'YXZ'); mxRoot.add(lab);
   TICK.push(() => { if (typeof fireLight !== 'undefined' && fireLight) fireLight.visible = curEra !== 'present'; });
 }
 // ── 지금(2026) 방공호: 문이 열려 있고 안은 전등이 켜진 체험 공간
@@ -8433,6 +8433,80 @@ $('btnHome').onclick = e => { e.stopPropagation(); if (document.pointerLockEleme
     const row = el('div', 'mxO'); const y = el('button', 'pbtn', '처음 화면으로'), n = el('button', 'pbtn alt', '계속하기');
     y.onclick = () => { try { if (!MUSEUM.on && typeof saveGame === 'function' && state.mode === 'play') saveGame(); sessionStorage.setItem('rb_home', '1'); } catch (err) {} location.reload(); };
     n.onclick = closeModal; row.append(y, n); body.appendChild(row); }); };
+// ── 실제 1관: 왼쪽 방 벽난로는 방에 들어서자마자 보이는 홀 쪽 벽(x -3)에 있어요 → 1919 · 1944 벽난로와 인트로 장면도 함께 옮겨요
+{
+  const T = (x, z) => [-13 - x, 2.6 - z];                      // 옛 자리(서쪽 벽 -9.85, 0) → 새 자리(홀 쪽 벽 -3.15, 2.6)
+  const T3 = a => { const [x, z] = T(a[0], a[2]); return [x, a[1], z]; };
+  const fp = interactables.fireplace && interactables.fireplace.obj;
+  if (fp) { fp.position.set(-3.15, 0, 2.6); fp.rotation.y = Math.PI; interactables.fireplace.pos.set(-3.5, 1.2, 2.6); }
+  if (typeof fireLight !== 'undefined' && fireLight) fireLight.position.set(-3.95, 0.7, 2.6);
+  colliders.forEach(c => { if (c.lv === 1 && Math.abs(c.x1 + 10) < 0.01 && Math.abs(c.z1 + 1.4) < 0.01 && Math.abs(c.x2 + 9.1) < 0.01) { c.x1 = -3.9; c.x2 = -3.0; c.z1 = 1.2; c.z2 = 4.0; } });
+  // 벽난로 위 촛대 · 소품
+  scene.children.forEach(o => { if (!o.isMesh || o.position.x > -9.3 || o.position.x < -9.6 || o.position.y < 1.6 || o.position.y > 2.0) return; const [x, z] = T(o.position.x, o.position.z); o.position.x = x; o.position.z = z; });
+  // 1919 책장(홀 쪽 벽)은 옛 벽난로 자리(서쪽 벽)로
+  scene.children.forEach(o => { if (o.isGroup && Math.abs(o.position.x + 3.4) < 0.02 && Math.abs(o.position.z - 3.6) < 0.02 && o.position.y < 0.1) { o.position.set(-9.6, 0, 0); o.rotation.y = Math.PI / 2; } });
+  // 2026 '보수 공사' 표시
+  if (typeof work !== 'undefined') { work.position.set(-13, 0, 2.6); work.rotation.y = Math.PI; }
+  // 인트로: 벽난로 앞 수첩과 카메라
+  if (typeof cineBook !== 'undefined') { const [x, z] = T(cineBook.position.x, cineBook.position.z); cineBook.position.x = x; cineBook.position.z = z; cineBook.rotation.y += Math.PI; }
+  if (typeof CINE !== 'undefined') CINE.forEach(c => { if (!c.p0 || c.clock || !c.l1 || c.l1[0] > -8.5) return; ['p0', 'p1', 'l0', 'l1'].forEach(k => c[k] = T3(c[k])); });
+  if (typeof BRIDGE !== 'undefined' && BRIDGE[3]) ['from', 'to', 'look'].forEach(k => BRIDGE[3][k] = T3(BRIDGE[3][k]));
+}
+// ── 지붕(항공 사진): 회색 슬레이트 기와
+{
+  const t = canvasTex(256, 256, (g, w, h) => { const R = rng(301); g.fillStyle = '#5c6066'; g.fillRect(0, 0, w, h);
+    for (let y = 0; y < h; y += 10) { let x = (y / 10 % 2) * 8; while (x < w) { const c = 96 + R() * 34; g.fillStyle = `rgb(${c},${c + 3},${c + 8})`; g.fillRect(x, y, 15, 8); x += 16; } g.fillStyle = 'rgba(30,32,36,.5)'; g.fillRect(0, y + 8, w, 2); } });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 3);
+  const slate = new THREE.MeshLambertMaterial({ map: t });
+  scene.children.forEach(o => { if (o.isGroup && Math.abs(o.scale.x - 21.4) < 0.01) o.children.forEach(c => { if (c.isMesh) c.material = slate; }); });
+}
+// ── 2026: 옛 거울은 계단참 밑 뒷문 왼쪽에(사진)
+{ const mg = scene.children.find(o => o.isGroup && Math.abs(o.position.x - 2.6) < 0.01 && Math.abs(o.position.z - 1.9) < 0.01); if (mg) { mg.position.set(-1.95, 0, -5.65); mg.rotation.y = 0; }
+  colliders.forEach(c => { if (Math.abs(c.x1 - 2.3) < 0.01 && Math.abs(c.z1 - 1.3) < 0.01) { c.x1 = -2.6; c.x2 = -1.3; c.z1 = -6.0; c.z2 = -5.35; } }); }
+setEra(curEra);
+// ── 태극기가 바람에 펄럭여요(깃대 쪽은 고정, 끝으로 갈수록 크게 물결)
+{
+  const flags = [];
+  scene.traverse(o => { if (!o.isMesh || o.geometry.type !== 'PlaneGeometry') return; const p = o.geometry.parameters, im = o.material.map && o.material.map.image;
+    if (p.width === 0.9 && p.height === 0.6 && im && im.width === 192 && im.height === 128) flags.push(o); });
+  flags.forEach(f => {
+    const pair = flags.find(g => g !== f && g.parent === f.parent && Math.abs(g.position.y - f.position.y) < 0.01 && Math.abs(g.position.z - f.position.z) < 0.01 && Math.abs(Math.abs(g.position.x - f.position.x) - 0.96) < 0.05);
+    const hinge = pair ? Math.sign(pair.position.x - f.position.x) * 0.45 : Math.sign(f.position.x) * 0.45; // 깃대 쪽 가장자리
+    const geo = new THREE.PlaneGeometry(0.9, 0.6, 14, 6); f.geometry = geo; f.material.side = THREE.DoubleSide;
+    f.userData.flag = { base: geo.attributes.position.array.slice(), hinge, ph: f.position.x * 1.7 + f.position.z * 0.9 };
+  });
+  TICK.push(() => {
+    if (!flags.length) return; const t = performance.now() / 1000;
+    flags.forEach(f => { if (f.layers.mask !== 1) return; const d = f.userData.flag, a = f.geometry.attributes.position, b = d.base;
+      for (let i = 0; i < a.count; i++) { const x = b[i * 3], y = b[i * 3 + 1], k = Math.abs(x - d.hinge) / 0.9; // 0(깃대)~1(끝)
+        const w = Math.sin(k * 6.5 - t * 5.2 + d.ph) * 0.15 * k + Math.sin(k * 11 - t * 8.3 + y * 4 + d.ph) * 0.04 * k;
+        a.setXYZ(i, d.hinge + (x - d.hinge) * (1 - 0.1 * k), y - 0.06 * k * k + Math.sin(t * 3.1 + k * 5 + d.ph) * 0.015 * k, w); }
+      a.needsUpdate = true; f.geometry.computeVertexNormals(); });
+  });
+}
+// ── 인트로: 공사 표시 없이, 실제 1관 벽난로의 무쇠 쇠살대 틈에 끼어 있던 수첩을 찾아요
+{
+  TICK.push(() => { if (typeof work !== 'undefined') work.visible = false; });
+  const C1 = CINE.find(c => c.era === 'present' && c.text && c.text.includes('수첩'));
+  if (C1) Object.assign(C1, { p0: [-2.6, 1.7, 0.0], p1: [-4.7, 1.0, 2.9], l0: [-6.2, 1.3, 0.9], l1: [-3.45, 0.3, 2.6], text: '벽난로 쇠살대 틈에 낡은 수첩 한 권이 끼어 있었다.' });
+  cineBook.scale.setScalar(1.5);
+  // 쇠살대 사이에 비스듬히 꽂힌 수첩(모서리가 밖으로) / 1919년에는 벽난로 앞 바닥
+  const NOW = { p: new THREE.Vector3(-3.47, 0.34, 2.62), r: new THREE.Euler(0, -Math.PI / 2 + 0.25, 0.95, 'YXZ') };
+  const OLD = { p: cineBook.position.clone(), r: cineBook.rotation.clone() };
+  // 위에서 비추는 빛 + 금빛 반짝임
+  const spot = new THREE.SpotLight(0xffe2a8, 0, 4, 0.5, 0.6, 1.2); spot.position.set(-4.1, 2.2, 2.6); spot.target.position.copy(NOW.p); scene.add(spot, spot.target);
+  const gT = canvasTex(64, 64, (g, w, h) => { const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,240,190,1)'); gr.addColorStop(0.3, 'rgba(255,214,120,.55)'); gr.addColorStop(1, 'rgba(255,200,100,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,250,230,.9)'; g.fillRect(31, 4, 2, 56); g.fillRect(4, 31, 56, 2); });
+  const glint = new THREE.Sprite(new THREE.SpriteMaterial({ map: gT, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  glint.visible = false; scene.add(glint);
+  TICK.push(() => {
+    const on = cineBook.visible, now = curEra === 'present';
+    if (on) { const S = now ? NOW : OLD; cineBook.position.copy(S.p); cineBook.rotation.copy(S.r); }
+    spot.intensity = on && now ? 2.2 : 0;
+    glint.visible = on && now;
+    if (glint.visible) { const t = performance.now() / 1000, k = Math.max(0, Math.sin(t * 2.4)); glint.position.set(-3.55, 0.48, 2.5); glint.scale.setScalar(0.12 + k * 0.32); glint.material.opacity = 0.35 + k * 0.65; }
+  });
+}
 
 </script>
 </body>
