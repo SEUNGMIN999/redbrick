@@ -509,7 +509,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .mxList{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .mxRow{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:8px 12px;border:1px solid #d6c39a;border-radius:8px;background:#fffaf0;font-size:15px}
 .mxRow i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e7dcc2;color:#5a4630;font-weight:700;font-size:13px}
-.mxRow span{font-size:13px;color:#7a6a50;white-space:nowrap}
+.mxRow>span{font-size:13px;color:#7a6a50;white-space:nowrap}.mxRow b .gl{font-size:inherit;color:inherit}
 .mxRow.done{background:#f3ece0;opacity:.8}.mxRow.done i{background:#a8462f;color:#fff4e2}
 .mxFacts p{margin:0 0 8px;line-height:1.7;font-size:16px;word-break:keep-all;padding-left:12px;border-left:3px solid rgba(168,70,47,.35)}
 .mxQ{margin-top:12px;background:#f8f1df;border:1px solid #d6c39a;border-radius:10px;padding:12px}
@@ -536,7 +536,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .mxCd{margin-top:10px;font-size:14px;color:#5a4630}
 .mxBtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:12px}
 body.museum #timer{display:none}
-@media (max-width:560px),(max-height:480px){.mxO{grid-template-columns:1fr}.mxFacts p{font-size:14.5px}.mxRow span{display:none}}
+@media (max-width:560px),(max-height:480px){.mxO{grid-template-columns:1fr}.mxFacts p{font-size:14.5px}.mxRow>span{display:none}}
 /* 미래 · 기억의 담벼락 */
 #wallScreen{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;z-index:40;overflow:hidden;
   background:linear-gradient(180deg,#1d2a3c 0%,#3c4a5c 38%,#c98f6a 78%,#e8b98a 100%);color:var(--lime)}
@@ -1666,7 +1666,7 @@ function buildProps() {
   bsp.position.set(0, 1.25, 0.06); add(bsp, bgs); box(1.2, 0.8, 0.08, M.darkwood, 0, 1.25, 0, bgs);
   addCol(4.9, -14.6, 8.1, -11.4, 1); addCol(4.2, -11.5, 4.4, -11.3, 1);
   makeInteract('bongan', bg, new THREE.Vector3(6.5, 1.0, -13));
-  regSince(nB, ['y1944', 'present'], cB);
+  regSince(nB, ['y1944'], cB); // 지금은 봉안전 터가 남아 있지 않아요
   const shrine = new THREE.Group(); shrine.position.set(6.5, 0.85, -13.3); scene.add(shrine);
   box(1.0, 1.1, 0.9, new THREE.MeshLambertMaterial({ color: 0xd9d2c0 }), 0, 0.55, 0, shrine);
   box(0.5, 0.7, 0.04, M.darkwood, 0, 0.45, 0.46, shrine);
@@ -3772,7 +3772,7 @@ function drawMap() {
   rect(-27, -26, 27, TZ, '#6c665c');
   rect(-13, -7, 13, 7, '#8b867b'); rect(-1.6, 10.4, 1.6, 22, '#8b867b'); rect(-27, 22, 27, 24, '#2f5562');
   const later = curEra === 'y1944' || curEra === 'present';
-  if (player.lv === 1 && later) { rect(-18, -16.5, -13, -8.5, '#b9b2a5'); rect(4.9, -14.6, 8.1, -11.4, '#9b968c'); }
+  if (player.lv === 1 && later) { rect(-18, -16.5, -13, -8.5, '#b9b2a5'); if (curEra === 'y1944') rect(4.9, -14.6, 8.1, -11.4, '#9b968c'); }
   // 건물 바닥
   rect(-10, -6, 10, 6, player.lv === 2 ? '#a07e57' : '#8f6f4c'); rect(-3, 6, 3, 7.5, player.lv === 2 ? '#a07e57' : '#8f6f4c');
   rect(1.75, -6, 3, -1.3, '#5a4630'); rect(-1.1, -6, 1.75, -4.9, '#5a4630');
@@ -8529,6 +8529,75 @@ setEra(curEra);
 // 1919·1944 부청 안내 데스크는 2026에는 치워요(역사관 INFORMATION 데스크가 그 자리에)
 { const d = scene.children.find(o => o.isMesh && Math.abs(o.position.x - 2.3) < 0.01 && Math.abs(o.position.z - 3.4) < 0.01 && Math.abs(o.position.y - 0.45) < 0.01);
   if (d) { regEra(d, ['y1919', 'y1944'], colliders.filter(c => Math.abs(c.x1 - 1.95) < 0.01 && Math.abs(c.z1 - 2.3) < 0.01)); setEra(curEra); } }
+// ── 2026 방공호: 서고 쪽(왼쪽)에 입구를 따로 내고, 가운데 문은 출구로(실제처럼 들어가는 문 · 나오는 문이 따로)
+{
+  const N0 = scene.children.length, C0 = colliders.length, X = cellX(1), zN = cellZ(2) + S / 2; // 새 통로: 절벽(TZ) → 2번째 줄 굴(zN)
+  const L = TZ - zN, zc = (TZ + zN) / 2;
+  // 절벽 왼쪽 덩어리를 통로 자리만 비워 다시 쌓아요
+  const oldCliff = scene.children.find(o => o.isMesh && Math.abs(o.position.x + 7.85) < 0.01 && Math.abs(o.position.z - (TZ - 0.6)) < 0.01);
+  const oldCol = colliders.find(c => Math.abs(c.x1 + 26) < 0.01 && Math.abs(c.x2 + 1.2) < 0.01 && Math.abs(c.z1 - (TZ - 0.3)) < 0.01);
+  const northWall = scene.children.filter(o => o.isMesh && Math.abs(o.position.x - X) < 0.01 && Math.abs(o.position.z - zN) < 0.01);
+  const northCol = colliders.filter(c => Math.abs(c.x1 - (X - S / 2)) < 0.01 && Math.abs(c.z1 - (zN - 0.1)) < 0.01);
+  if (oldCliff) regEra(oldCliff, ['y1919', 'y1944'], oldCol ? [oldCol] : []);
+  regEra(northWall, ['y1919', 'y1944'], northCol);
+  const hm = oldCliff ? oldCliff.material : M.rock, xa = X - S / 2, xb = X + S / 2;
+  [[-14.5, xa], [xb, -1.2]].forEach(([a, b]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(b - a, 3.5, 1.2), hm); m.position.set((a + b) / 2, 1.75, TZ - 0.6); scene.add(m); });
+  dk(S, 0.9, 1.2, hm, X, 3.05, TZ - 0.6);
+  addCol(-26, TZ - 0.3, xa, TZ + 0.1, 1); addCol(xb, TZ - 0.3, -1.2, TZ + 0.1, 1);
+  // 통로: 바닥 · 천장 · 양 벽 · 주황 전등
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(S, L), new THREE.MeshLambertMaterial({ color: 0x8a847a })); fl.rotation.x = -Math.PI / 2; fl.position.set(X, 0.03, zc); scene.add(fl);
+  const ce = new THREE.Mesh(new THREE.PlaneGeometry(S, L), M.rock); ce.rotation.x = Math.PI / 2; ce.position.set(X, TH, zc); scene.add(ce);
+  [-1, 1].forEach(sd => { const w = new THREE.Mesh(new THREE.PlaneGeometry(L, TH), M.rock); w.rotation.y = -sd * Math.PI / 2; w.position.set(X + sd * S / 2, TH / 2, zc); scene.add(w); addCol(X + sd * S / 2 - 0.1, zN, X + sd * S / 2 + 0.1, TZ, 1); });
+  const bulbO = new THREE.MeshBasicMaterial({ color: 0xffb35a, toneMapped: false });
+  for (let z = TZ - 1; z > zN; z -= 1.6) [-1, 1].forEach(sd => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), bulbO); b.position.set(X + sd * (S / 2 - 0.08), TH - 0.45, z); scene.add(b); });
+  const pl = new THREE.PointLight(0xff9a40, 1.2, 6, 1.6); pl.position.set(X, TH - 0.5, zc); scene.add(pl);
+  // 입구 문틀(민트색 아치) · 하늘색 철문(열림)
+  const mint = new THREE.MeshLambertMaterial({ color: 0x9fbfb0 }), sky = new THREE.MeshLambertMaterial({ color: 0x8fb4d8 });
+  dk(0.4, 2.4, 0.5, mint, xa - 0.05, 1.2, TZ + 0.45); dk(0.4, 2.4, 0.5, mint, xb + 0.05, 1.2, TZ + 0.45);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.25, 0.24, 8, 20, Math.PI), mint); arch.scale.set(1, 0.45, 1.6); arch.position.set(X, 2.4, TZ + 0.45); scene.add(arch);
+  [-1, 1].forEach(s => { const g = grp(X + s * 1.1, 0, TZ + 0.75, s * 1.2); const Lf = 1.05; dk(0.06, 2.0, 0.06, sky, s * Lf, 1.05, 0, g); dk(Lf, 0.06, 0.06, sky, s * Lf / 2, 2.05, 0, g); dk(Lf, 0.06, 0.06, sky, s * Lf / 2, 0.1, 0, g); for (let i = 1; i < 6; i++) dk(0.03, 1.95, 0.03, sky, s * Lf * i / 6, 1.05, 0, g); });
+  const pth = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 6), new THREE.MeshLambertMaterial({ color: 0xb8b8b2 })); pth.rotation.x = -Math.PI / 2; pth.position.set(X, 0.035, TZ + 3.2); scene.add(pth);
+  // 입구 · 출구 팻말
+  const sign = (t, sub, x) => { const s = textPlane([{ t, size: 0.2, bold: true }, { t: sub, size: 0.08 }], 0.9, 0.45, { bg: '#1f3b57', fg: '#ffffff', fg2: '#d8e4ee' }); s.position.set(x, 3.0, TZ + 0.72); scene.add(s); };
+  sign('입구', 'ENTRANCE · 피난 체험부터', X); sign('출구', 'EXIT', 0);
+  regSince(N0, ['present'], C0);
+  setEra(curEra);
+}
+// ── 2026: 2층 계단 앞 줄과 자물쇠는 없어요(1919년 게임에서만)
+{ let hid = false; TICK.push(() => { const now = curEra === 'present'; if (now && doors.rope.visible) { doors.rope.visible = false; hid = true; } else if (!now && hid) { hid = false; doors.rope.visible = !(state.solved && state.solved[3] && typeof FX !== 'undefined' && FX.tele); } }); }
+// ── 2026 방공호: 서고 쪽(왼쪽)에 입구를 따로 내고, 가운데 문은 출구로
+{
+  const N0 = scene.children.length, C0 = colliders.length, X = cellX(1), zN = cellZ(2) + S / 2;
+  const L = TZ - zN, zc = (TZ + zN) / 2;
+  const oldCliff = scene.children.find(o => o.isMesh && Math.abs(o.position.x + 7.85) < 0.01 && Math.abs(o.position.z - (TZ - 0.6)) < 0.01);
+  const oldCol = colliders.find(c => Math.abs(c.x1 + 26) < 0.01 && Math.abs(c.x2 + 1.2) < 0.01 && Math.abs(c.z1 - (TZ - 0.3)) < 0.01);
+  const northWall = scene.children.filter(o => o.isMesh && Math.abs(o.position.x - X) < 0.01 && Math.abs(o.position.z - zN) < 0.01);
+  const northCol = colliders.filter(c => Math.abs(c.x1 - (X - S / 2)) < 0.01 && Math.abs(c.z1 - (zN - 0.1)) < 0.01);
+  if (oldCliff) regEra(oldCliff, ['y1919', 'y1944'], oldCol ? [oldCol] : []);
+  regEra(northWall, ['y1919', 'y1944'], northCol);
+  const hm = oldCliff ? oldCliff.material : M.rock, xa = X - S / 2, xb = X + S / 2;
+  [[-14.5, xa], [xb, -1.2]].forEach(([a, b]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(b - a, 3.5, 1.2), hm); m.position.set((a + b) / 2, 1.75, TZ - 0.6); scene.add(m); });
+  dk(S, 0.9, 1.2, hm, X, 3.05, TZ - 0.6);
+  addCol(-26, TZ - 0.3, xa, TZ + 0.1, 1); addCol(xb, TZ - 0.3, -1.2, TZ + 0.1, 1);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(S, L), new THREE.MeshLambertMaterial({ color: 0x8a847a })); fl.rotation.x = -Math.PI / 2; fl.position.set(X, 0.03, zc); scene.add(fl);
+  const ce = new THREE.Mesh(new THREE.PlaneGeometry(S, L), M.rock); ce.rotation.x = Math.PI / 2; ce.position.set(X, TH, zc); scene.add(ce);
+  [-1, 1].forEach(sd => { const w = new THREE.Mesh(new THREE.PlaneGeometry(L, TH), M.rock); w.rotation.y = -sd * Math.PI / 2; w.position.set(X + sd * S / 2, TH / 2, zc); scene.add(w); addCol(X + sd * S / 2 - 0.1, zN, X + sd * S / 2 + 0.1, TZ, 1); });
+  const bulbO = new THREE.MeshBasicMaterial({ color: 0xffb35a, toneMapped: false });
+  for (let z = TZ - 1; z > zN; z -= 1.6) [-1, 1].forEach(sd => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), bulbO); b.position.set(X + sd * (S / 2 - 0.08), TH - 0.45, z); scene.add(b); });
+  const pl = new THREE.PointLight(0xff9a40, 1.2, 6, 1.6); pl.position.set(X, TH - 0.5, zc); scene.add(pl);
+  const mint = new THREE.MeshLambertMaterial({ color: 0x9fbfb0 }), sky = new THREE.MeshLambertMaterial({ color: 0x8fb4d8 });
+  dk(0.4, 2.4, 0.5, mint, xa - 0.05, 1.2, TZ + 0.45); dk(0.4, 2.4, 0.5, mint, xb + 0.05, 1.2, TZ + 0.45);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.25, 0.24, 8, 20, Math.PI), mint); arch.scale.set(1, 0.45, 1.6); arch.position.set(X, 2.4, TZ + 0.45); scene.add(arch);
+  [-1, 1].forEach(s => { const g = grp(X + s * 1.1, 0, TZ + 0.75, s * 1.2); const Lf = 1.05; dk(0.06, 2.0, 0.06, sky, s * Lf, 1.05, 0, g); dk(Lf, 0.06, 0.06, sky, s * Lf / 2, 2.05, 0, g); dk(Lf, 0.06, 0.06, sky, s * Lf / 2, 0.1, 0, g); for (let i = 1; i < 6; i++) dk(0.03, 1.95, 0.03, sky, s * Lf * i / 6, 1.05, 0, g); });
+  const pth = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 6), new THREE.MeshLambertMaterial({ color: 0xb8b8b2 })); pth.rotation.x = -Math.PI / 2; pth.position.set(X, 0.035, TZ + 3.2); scene.add(pth);
+  const sign = (t, sub, x) => { const s = textPlane([{ t, size: 0.2, bold: true }, { t: sub, size: 0.08 }], 0.9, 0.45, { bg: '#1f3b57', fg: '#ffffff', fg2: '#d8e4ee' }); s.position.set(x, 3.0, TZ + 0.72); scene.add(s); };
+  sign('입구', 'ENTRANCE', X); sign('출구', 'EXIT', 0);
+  regSince(N0, ['present'], C0);
+  setEra(curEra);
+}
+// 새 입구 앞을 막던 바위는 지금 시대에는 치워요
+{ const rk = []; scene.traverse(o => { if (!o.isMesh || o.parent !== scene) return; const p = o.position; if (p.x > -11.3 && p.x < -7.9 && p.z > TZ + 0.2 && p.z < TZ + 4 && p.y < 1.2 && /Icosa|Dodeca|Tetra|Octa/.test(o.geometry.type)) rk.push(o); });
+  if (rk.length) { regEra(rk, ['y1919', 'y1944']); setEra(curEra); } }
 
 </script>
 </body>
