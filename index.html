@@ -1027,7 +1027,7 @@ body.plFree #view{cursor:none}
     <div class="intro">
       <div class="kick">목포근대역사관 1관 · 교실 방탈출</div>
       <h1>붉은 벽돌의<br><span>기억</span></h1>
-      <p class="lead">체험학습으로 찾은 목포근대역사관 1관. 벽난로 쇠살대 틈에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
+      <p class="lead">체험학습으로 찾은 목포근대역사관 1관. 계단 밑 옛 거울 서랍에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
       <div class="startrow"><button class="big" id="btnResume" hidden>▶ 이어하기</button><button class="big" id="btnPlay">▶ 시작하기</button><button class="pbtn alt dk" id="btnSndStart" aria-pressed="true">🔊 소리 켜짐</button><button class="pbtn alt dk" id="btnSet">⚙ 설정</button><div id="playCnt" hidden><div class="pcIn"><span class="pcDot"></span><span>지금까지 <b id="pcPlay">0</b> 명이 붉은 벽돌의 기억을 찾아 떠났어요</span><b id="pcFin" hidden></b></div></div><span class="small" id="resumeInfo">배경음악과 효과음이 있어요. 스피커 버튼으로 켜고 끌 수 있어요.</span></div>
     </div>
   </section>
@@ -1586,7 +1586,7 @@ function buildProps() {
   addCol(-10, -1.4, -9.1, 1.4, 1);
   makeInteract('fireplace', fp, new THREE.Vector3(-9.5, 1.2, 0));
   // 1층 방 꾸미기: 안내 데스크(홀 서쪽 벽)
-  box(0.7, 0.9, 2.2, M.darkwood, -2.2, 0.45, -3.2); addCol(-2.55, -4.3, -1.85, -2.1, 1);
+  box(0.7, 0.9, 2.2, M.darkwood, 2.3, 0.45, 3.4); addCol(1.95, 2.3, 2.65, 4.5, 1); // 홀 오른쪽 앞(계단 밑 거울 앞을 막지 않게)
   // 중앙 계단(실제 1관처럼 현관 홀 안쪽): 오른쪽 벽을 따라 뒤로 오르고 → 뒤쪽 층계참에서 왼쪽으로 꺾여 2층
   const st = new THREE.Group(); scene.add(st);
   const treadM = new THREE.MeshLambertMaterial({ color: 0xb4793a }), stringM = new THREE.MeshLambertMaterial({ color: 0x3a2016 }), railM = new THREE.MeshLambertMaterial({ color: 0x5a2618 });
@@ -2041,9 +2041,9 @@ function furnish() {
   // ── 1층 중앙 홀: 안내 데스크·방명록·샹들리에
   rug(0, 0.5, 0, 1.6, 9);
   chandelier(0, 3.8, 0.5);
-  stack(scene, -2.2, 0.9, -3.6, 2); phone(scene, -2.2, 0.9, -2.6);
-  dk(0.35, 0.03, 0.25, F.paper, -2.15, 0.915, -3.1).rotation.y = 0.2;
-  bench(-2.55, 3.8, 0, Math.PI / 2); plant(-2.6, 6.9, 0); plant(2.6, 6.9, 0); coatStand(2.5, 5.6, 0);
+  stack(scene, 2.2, 0.9, 3.0, 2); phone(scene, 2.2, 0.9, 4.0);
+  dk(0.35, 0.03, 0.25, F.paper, 2.25, 0.915, 3.5).rotation.y = 0.2;
+  bench(-2.55, 3.8, 0, Math.PI / 2); plant(-2.6, 6.9, 0); plant(2.6, 6.9, 0); coatStand(-2.5, 5.2, 0);
   panel([{ t: '게 시 판', size: 0.15, bold: true }, { t: '목포부 호구 조사 안내', size: 0.09 }, { t: '부청 출입 시 모자를 벗을 것', size: 0.09 }], -2.84, 2.1, 3.8, Math.PI / 2, 1.6, 1.0, '#e6dbbe');
   // ── 1층 서쪽 방: 영사 집무실·응접실 재현
   rug(-6.6, 0, 0, 3.4, 4.6); chandelier(-6.5, 3.8, 0);
@@ -5448,13 +5448,13 @@ returnHome = async function () {
   $('rLight').classList.add('full'); tone([1047, 1319, 1568], 1.4, 'sine', 0.15); await sleep(1200);
   $('rYear').classList.remove('on'); $('rCap').classList.remove('on');
   goEra('present'); cineBook.visible = true;
-  let b2 = 0; retCam = d => { b2 += d; camera.position.set(-5.6 - Math.min(1, b2 / 6) * 0.6, 1.55, 1.9); camera.lookAt(-8.6, 0.9, 0.0); };
+  let b2 = 0; retCam = d => { b2 += d; camera.position.set(-1.95 + Math.min(1, b2 / 6) * 0.4, 1.5, -3.3 + Math.min(1, b2 / 6) * 0.5); camera.lookAt(-1.95, 0.8, -5.5); };
   R.classList.add('white'); await sleep(300); $('rLight').className = 'rLight'; R.classList.remove('white');
-  await say2('눈을 떠 보니, 다시 <b>2026년</b>. 1관 벽난로 앞이었다.<br>손에는 그 낡은 수첩이 그대로 들려 있었다.');
+  await say2('눈을 떠 보니, 다시 <b>2026년</b>. 1관 계단 밑 옛 거울 앞이었다.<br>손에는 그 낡은 수첩이 그대로 들려 있었다.');
   $('rText').innerHTML = ''; $('rTap').classList.remove('on');
   // 큐레이터
   R.hidden = true;
-  await new Promise(res => vnSay('curator', "어머, 그 수첩… 공사하던 벽난로 안에서 나온 거예요? 겉장에 '정민승'이라고 쓰여 있네요. 1919년이면… 이 건물이 목포부청이던 때예요. 이렇게 소중한 걸 찾아 줘서 고마워요. 이 수첩, 우리 역사관에 전시해도 될까요?", { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
+  await new Promise(res => vnSay('curator', "어머, 그 수첩… 계단 밑 거울 서랍에서 나온 거예요? 그 서랍은 100년 넘게 안 열리던 건데… 겉장에 '정민승'이라고 쓰여 있네요. 1919년이면… 이 건물이 목포부청이던 때예요. 이렇게 소중한 걸 찾아 줘서 고마워요. 이 수첩, 우리 역사관에 전시해도 될까요?", { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
   state.modal = false; R.hidden = false;
   // 6. 마지막 한 줄
   $('rBook').className = 'rBook on glow'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
@@ -8190,7 +8190,7 @@ TICK.push(() => { if (typeof work !== 'undefined') work.visible = !MUSEUM.on; })
     for (let i = 0; i < 18; i++) at(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.08), trimM), -2.3 + i * 0.27, 4.82, 4.2);
     const tri = new THREE.Shape(); tri.moveTo(-2.75, 0); tri.lineTo(2.75, 0); tri.lineTo(0, 1.5); tri.lineTo(-2.75, 0);
     const tp = new THREE.Mesh(new THREE.ShapeGeometry(tri), stoneM(5.5, 1.5, 4)); at(tp, 0, 5.06, 4.31);
-    [-1, 1].forEach(sd => { const L = Math.hypot(2.85, 1.55), b = new THREE.Mesh(new THREE.BoxGeometry(L, 0.18, 0.4), trimM); b.rotation.z = sd * Math.atan2(1.5, 2.75); at(b, sd * 1.38, 5.82, 4.25); });
+    [-1, 1].forEach(sd => { const L = Math.hypot(2.85, 1.55), b = new THREE.Mesh(new THREE.BoxGeometry(L, 0.18, 0.4), trimM); b.rotation.z = -sd * Math.atan2(1.5, 2.75); at(b, sd * 1.38, 5.82, 4.25); });
     // 하늘색 덧문(정면 위층 두 짝, 옆면)
     const shutter = (x, y, z, ry) => { const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; sq.add(g); [-0.22, 0.22].forEach(dx => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.95, 0.05), skyM); b.position.x = dx; g.add(b); }); const ln = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.95, 0.06), new THREE.MeshLambertMaterial({ color: 0x5a7a96 })); g.add(ln); };
     shutter(-1.2, 3.85, 4.06, 0); shutter(1.2, 3.85, 4.06, 0);
@@ -8484,29 +8484,51 @@ setEra(curEra);
       a.needsUpdate = true; f.geometry.computeVertexNormals(); });
   });
 }
-// ── 인트로: 공사 표시 없이, 실제 1관 벽난로의 무쇠 쇠살대 틈에 끼어 있던 수첩을 찾아요
+// ── 인트로(실제 1관 계단 밑 옛 거울): 거울 속에 1919년 부청 사람들이 비치고, 받침 서랍이 스르르 열리며 수첩이 보여요
 {
   TICK.push(() => { if (typeof work !== 'undefined') work.visible = false; });
+  const mg = scene.children.find(o => o.isGroup && Math.abs(o.position.x + 1.95) < 0.01 && Math.abs(o.position.z + 5.65) < 0.01);
+  // 옛 거울은 영사관 시절부터 있던 가구로 세 시대 모두에 둬요(민승이가 1919년에 서랍에 수첩을 숨겨요)
+  if (mg) { regEra(mg, ['y1919', 'y1944', 'present']); addCol(-2.6, -6.0, -1.3, -5.35, 1); }
+  const mah = new THREE.MeshLambertMaterial({ color: 0x3a1e14 }), brass = M.brass;
+  const drawer = new THREE.Group(); if (mg) mg.add(drawer);
+  dk(0.9, 0.2, 0.04, mah, 0, 0.36, 0.31, drawer); dk(0.86, 0.04, 0.5, mah, 0, 0.27, 0.06, drawer); dk(0.04, 0.16, 0.5, mah, -0.43, 0.35, 0.06, drawer); dk(0.04, 0.16, 0.5, mah, 0.43, 0.35, 0.06, drawer);
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), brass); knob.position.set(0, 0.36, 0.34); drawer.add(knob);
+  // 거울 속 1919년(세피아 사진처럼 서서히 떠올라요)
+  const refT = canvasTex(170, 260, (g, W, H) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#d8c8a4'); gr.addColorStop(1, '#8a7452'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    g.fillStyle = 'rgba(90,64,40,.55)'; g.fillRect(0, H * 0.62, W, H * 0.38); g.fillStyle = 'rgba(70,50,30,.5)'; g.fillRect(W * 0.62, H * 0.1, W * 0.22, H * 0.5);
+    const fig = (x, y, s, dark, hat) => { g.fillStyle = dark ? 'rgba(40,28,20,.85)' : 'rgba(235,225,200,.9)'; g.fillRect(x - s * 0.22, y, s * 0.44, s * 1.25); g.fillStyle = 'rgba(200,170,130,.9)'; g.beginPath(); g.arc(x, y - s * 0.16, s * 0.15, 0, 7); g.fill(); if (hat) { g.fillStyle = 'rgba(30,22,16,.9)'; g.fillRect(x - s * 0.25, y - s * 0.32, s * 0.5, s * 0.06); g.fillRect(x - s * 0.13, y - s * 0.44, s * 0.26, s * 0.13); } };
+    fig(W * 0.28, H * 0.42, 70, true, true); fig(W * 0.55, H * 0.46, 60, false, true); fig(W * 0.78, H * 0.5, 52, true, false);
+    for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(${Math.random() < 0.5 ? '255,250,230' : '40,30,20'},${Math.random() * 0.12})`; g.fillRect(Math.random() * W, Math.random() * H, 2, 2); }
+    const v = g.createRadialGradient(W / 2, H / 2, W * 0.2, W / 2, H / 2, W * 0.8); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(40,25,10,.6)'); g.fillStyle = v; g.fillRect(0, 0, W, H); });
+  const refl = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 1.75), new THREE.MeshBasicMaterial({ map: refT, transparent: true, opacity: 0, depthWrite: false })); refl.position.set(0, 1.4, 0.03); if (mg) mg.add(refl);
+  // 인트로 장면 카메라: 홀에서 계단 밑 거울로 → 서랍 안 수첩으로
   const C1 = CINE.find(c => c.era === 'present' && c.text && c.text.includes('수첩'));
-  if (C1) Object.assign(C1, { p0: [-2.6, 1.7, 0.0], p1: [-4.7, 1.0, 2.9], l0: [-6.2, 1.3, 0.9], l1: [-3.45, 0.3, 2.6], text: '벽난로 쇠살대 틈에 낡은 수첩 한 권이 끼어 있었다.' });
-  cineBook.scale.setScalar(1.5);
-  // 쇠살대 사이에 비스듬히 꽂힌 수첩(모서리가 밖으로) / 1919년에는 벽난로 앞 바닥
-  const NOW = { p: new THREE.Vector3(-3.47, 0.34, 2.62), r: new THREE.Euler(0, -Math.PI / 2 + 0.25, 0.95, 'YXZ') };
-  const OLD = { p: cineBook.position.clone(), r: cineBook.rotation.clone() };
-  // 위에서 비추는 빛 + 금빛 반짝임
-  const spot = new THREE.SpotLight(0xffe2a8, 0, 4, 0.5, 0.6, 1.2); spot.position.set(-4.1, 2.2, 2.6); spot.target.position.copy(NOW.p); scene.add(spot, spot.target);
+  if (C1) Object.assign(C1, { d: 7, p0: [0.4, 1.7, 1.8], p1: [-1.95, 1.05, -4.0], l0: [-1.95, 1.45, -5.6], l1: [-1.95, 0.35, -5.2], text: '계단 밑 옛 거울 속에 100년 전 사람들이 비치더니, 서랍이 스르르 열렸다.' });
+  const C4 = CINE.find(c => c.era === 'y1919' && c.hand);
+  if (C4) Object.assign(C4, { p0: [-1.95, 1.3, -3.5], p1: [-1.95, 0.95, -4.35], l0: [-1.95, 0.6, -5.3], l1: [-1.95, 0.32, -5.22] });
+  cineBook.scale.setScalar(1.3);
+  const BOOK = { p: new THREE.Vector3(-1.95, 0.335, -5.27), r: new THREE.Euler(0, 0.12, 0) };
+  const spot = new THREE.SpotLight(0xffe2a8, 0, 4, 0.5, 0.6, 1.2); spot.position.set(-1.95, 2.4, -4.4); spot.target.position.copy(BOOK.p); scene.add(spot, spot.target);
   const gT = canvasTex(64, 64, (g, w, h) => { const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,240,190,1)'); gr.addColorStop(0.3, 'rgba(255,214,120,.55)'); gr.addColorStop(1, 'rgba(255,200,100,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
     g.fillStyle = 'rgba(255,250,230,.9)'; g.fillRect(31, 4, 2, 56); g.fillRect(4, 31, 56, 2); });
-  const glint = new THREE.Sprite(new THREE.SpriteMaterial({ map: gT, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false }));
-  glint.visible = false; scene.add(glint);
+  const glint = new THREE.Sprite(new THREE.SpriteMaterial({ map: gT, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false })); glint.visible = false; scene.add(glint);
+  const ss = x => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
   TICK.push(() => {
-    const on = cineBook.visible, now = curEra === 'present';
-    if (on) { const S = now ? NOW : OLD; cineBook.position.copy(S.p); cineBook.rotation.copy(S.r); }
-    spot.intensity = on && now ? 2.2 : 0;
-    glint.visible = on && now;
-    if (glint.visible) { const t = performance.now() / 1000, k = Math.max(0, Math.sin(t * 2.4)); glint.position.set(-3.55, 0.48, 2.5); glint.scale.setScalar(0.12 + k * 0.32); glint.material.opacity = 0.35 + k * 0.65; }
+    const inCine = state.mode === 'cine' && typeof cine !== 'undefined', sh = inCine ? CINE[cine.i] : null;
+    const shot1 = sh === C1, shot4 = sh === C4, t = inCine ? cine.t : 0;
+    const open = shot1 ? ss((t - 3.0) / 1.4) : shot4 ? 1 : (cineBook.visible ? 1 : 0);
+    drawer.position.z = open * 0.38;
+    refl.material.opacity = shot1 ? ss((t - 0.6) / 1.6) * (1 - ss((t - 4.6) / 1.2)) * 0.9 : 0;
+    if (cineBook.visible) { cineBook.position.copy(BOOK.p); cineBook.position.z += open * 0.38 - 0.38; cineBook.rotation.copy(BOOK.r); }
+    const lit = cineBook.visible && curEra === 'present' && open > 0.5;
+    spot.intensity = lit ? 2.0 : 0; glint.visible = lit;
+    if (lit) { const k = Math.max(0, Math.sin(performance.now() / 1000 * 2.4)); glint.position.copy(cineBook.position).add(new THREE.Vector3(0.12, 0.08, 0.1)); glint.scale.setScalar(0.1 + k * 0.28); glint.material.opacity = 0.35 + k * 0.65; }
   });
 }
+// 1919·1944 부청 안내 데스크는 2026에는 치워요(역사관 INFORMATION 데스크가 그 자리에)
+{ const d = scene.children.find(o => o.isMesh && Math.abs(o.position.x - 2.3) < 0.01 && Math.abs(o.position.z - 3.4) < 0.01 && Math.abs(o.position.y - 0.45) < 0.01);
+  if (d) { regEra(d, ['y1919', 'y1944'], colliders.filter(c => Math.abs(c.x1 - 1.95) < 0.01 && Math.abs(c.z1 - 2.3) < 0.01)); setEra(curEra); } }
 
 </script>
 </body>
