@@ -985,6 +985,18 @@ body.plFree #view{cursor:none}
 @media (max-height:480px){.bhHead{padding:6px 12px 0}.bhLk button small{display:none}}
 #btnSndStart{min-width:132px}
 
+
+/* 첫 탐색 안내와 분필 수집 기록 */
+#firstSteps{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);width:min(420px,calc(100% - 40px));box-sizing:border-box;padding:12px 16px;background:rgba(22,18,15,.94);border:1px solid var(--brass);border-radius:8px;color:var(--lime);pointer-events:auto;font:15px/1.5 var(--f-display)}
+#firstSteps[hidden],#chalkProgress[hidden]{display:none}
+#firstSteps strong{color:var(--brass)}
+#firstSteps button{display:block;margin:8px 0 0 auto;min-height:44px;padding:6px 12px;border:1px solid var(--brass);border-radius:5px;background:transparent;color:var(--lime)}
+#chalkProgress{margin-top:8px;font-size:13px;line-height:1.6;color:var(--lime)}
+#chalkProgress .found{color:#ffe0a0;font-weight:700}
+@media(max-width:640px){#firstSteps{bottom:calc(env(safe-area-inset-bottom,0px) + 156px);font-size:14px}}
+
+
+.mxEvidence{margin:10px 0 16px;padding:12px 14px;background:#e5dac0;border-left:4px solid #8a5437;font:14px/1.6 var(--f-display);color:#3a312a}.mxEvidence p{margin:0 0 8px}.mxSourceLinks{display:flex;flex-wrap:wrap;gap:4px 14px}.mxSourceLinks a{display:inline-block;color:#1f5362;text-decoration:underline;padding:8px 0}.mxEvidence small{display:block;margin-top:6px;color:#66543e}
 </style>
 
 <div id="findPop" aria-live="polite"><div class="fpImg"><img id="fpImg" alt=""></div><div><span class="fpK">새 유물 발견</span><span class="fpT" id="fpT"></span><span class="fpN" id="fpN"></span></div></div>
@@ -4424,11 +4436,11 @@ const _showEnding = showEnding;
 showEnding = function () {
   _showEnding();
   const min = (performance.now() - state.start) / 60000;
-  const c1 = true, c2 = state.hints <= 2, c3 = FX.arts.size >= 5;
+  const c1 = true, c2 = Object.keys(FX.why || {}).length >= 5, c3 = FX.arts.size >= 5;
   const stars = Math.max(1, 1 + [c2, c3].filter(Boolean).length);
   const title = ['', '기억의 여행자', '기억의 탐험가', '기억의 수호자'][stars];
   $('grade').innerHTML = `<b>${'★'.repeat(stars)}${'☆'.repeat(3 - stars)} ${title}</b>` +
-    `<span>${c2 ? '✔' : '·'} 힌트 2번 이하</span><span>${c3 ? '✔' : '·'} 유물 5개 이상 (${FX.arts.size}/7)</span>`;
+    `<span>${c2 ? '✔' : '·'} 생각하기 5개 이상 참여</span><span>${c3 ? '✔' : '·'} 유물 5개 이상 (${FX.arts.size}/7)</span>`;
 };
 setEra(curEra);
 
@@ -4758,7 +4770,7 @@ function hintModal() {
       row.appendChild(b);
     }
     const c = el('button', 'pbtn alt', '스스로 더 해 볼게요'); c.onclick = closeModal; row.appendChild(c);
-    body.appendChild(el('p', 'legend', '힌트는 한 단계씩 열려요. 연 힌트 수는 마지막 기록에 남아요.'));
+    body.appendChild(el('p', 'legend', '힌트는 한 단계씩 열려요. 마음껏 도움을 받아도 마지막 별 등급에는 영향이 없어요.'));
   };
   openModal(draw);
 }
@@ -6883,6 +6895,17 @@ function mxPanel(title, sub, lines, w, h, accent = '#a8462f') {
 }
 function mxAdd(o, x, y, z, ry, parent) { o.position.set(x, y, z); if (ry) o.rotation.y = ry; (parent || scene).add(o); return o; }
 
+
+const MX_SOURCES = {"mokpo":{"label":"목포시 문화관광 · 근대역사관 1관","url":"https://biz.mokpo.go.kr/tour/attraction/museum?idx=7449&mode=view"},"heritage":{"label":"국가유산포털 · 구 목포 일본영사관","url":"https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1333602890000&pageNo=1_1_2_0"}};
+function mxEvidence(body, ids = ['mokpo']) {
+  const box = el('aside', 'mxEvidence');
+  box.appendChild(el('p', '', '공식 안내로 살펴보는 가상 관람이에요. 공간과 모형은 학습용 재구성이며, 실제 전시 배치·사진·유물 원본과 다를 수 있어요.'));
+  const links = el('div', 'mxSourceLinks');
+  ids.forEach(id => { const s = MX_SOURCES[id]; const a = document.createElement('a'); a.textContent = s.label; a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; links.appendChild(a); });
+  box.appendChild(links); box.appendChild(el('small', '', '내용 확인: 2026. 10. 23. · 실제 방문 안내는 공식 페이지를 확인하세요.'));
+  body.appendChild(box);
+}
+
 const MX = [];
 // id, 이름, 위치 설명, 층, 가까이 설 자리, 내용
 function mxDef(def) { MX.push(def); return def; }
@@ -6924,17 +6947,12 @@ function mxWalnut(w, h, title, small, x, y, z, ry, parent) {
   return g;
 }
 // 흐릿한 옛 사진 느낌(가짜 사진: 바다·산·지붕·사람)
-function oldPhoto(g, x, y, w, h, seed, tone) {
-  const R = rng(seed); g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
-  const t = tone || [228, 220, 202];
-  const sky = g.createLinearGradient(0, y, 0, y + h); sky.addColorStop(0, `rgb(${t[0]},${t[1]},${t[2]})`); sky.addColorStop(1, `rgb(${t[0] - 70},${t[1] - 70},${t[2] - 68})`); g.fillStyle = sky; g.fillRect(x, y, w, h);
-  const kind = Math.floor(R() * 3), hz = y + h * (0.35 + R() * 0.25);
-  g.fillStyle = 'rgba(60,52,44,.55)'; g.beginPath(); g.moveTo(x, hz); for (let i = 0; i <= 8; i++) g.lineTo(x + w * i / 8, hz - R() * h * 0.22); g.lineTo(x + w, y + h); g.lineTo(x, y + h); g.fill();
-  if (kind === 0) for (let i = 0; i < 14; i++) { const bx = x + R() * w, bw = w * (0.06 + R() * 0.12), bh = h * (0.08 + R() * 0.2); g.fillStyle = `rgba(${30 + R() * 50},${28 + R() * 40},${24 + R() * 30},.85)`; g.fillRect(bx, hz + h * 0.1 - bh + R() * h * 0.3, bw, bh); }
-  if (kind === 1) for (let i = 0; i < 60; i++) { const px = x + R() * w, py = y + h * (0.5 + R() * 0.45), s = h * (0.03 + R() * 0.03); g.fillStyle = R() < 0.6 ? 'rgba(235,230,215,.9)' : 'rgba(40,34,30,.85)'; g.fillRect(px, py, s * 0.6, s * 1.6); g.beginPath(); g.arc(px + s * 0.3, py - s * 0.3, s * 0.35, 0, 7); g.fill(); }
-  if (kind === 2) { g.fillStyle = 'rgba(160,165,160,.6)'; g.fillRect(x, hz + h * 0.05, w, h); for (let i = 0; i < 5; i++) { g.fillStyle = 'rgba(40,36,32,.8)'; const sx = x + R() * w; g.fillRect(sx, hz - h * 0.25, 2, h * 0.3); g.beginPath(); g.moveTo(sx - w * 0.06, hz + h * 0.08); g.lineTo(sx + w * 0.06, hz + h * 0.08); g.lineTo(sx + w * 0.04, hz + h * 0.14); g.lineTo(sx - w * 0.04, hz + h * 0.14); g.fill(); } }
-  for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(${R() < 0.5 ? '255,255,255' : '0,0,0'},${R() * 0.08})`; g.fillRect(x + R() * w, y + R() * h, 2, 2); }
-  g.restore(); g.strokeStyle = 'rgba(20,18,16,.6)'; g.lineWidth = 2; g.strokeRect(x, y, w, h);
+function oldPhoto(g,x,y,w,h,seed,tone) {
+  g.save(); g.fillStyle='#ddd4c1'; g.fillRect(x,y,w,h);
+  g.strokeStyle='#88785e'; g.lineWidth=2; g.strokeRect(x+2,y+2,w-4,h-4);
+  g.fillStyle='#514431'; g.textAlign='center'; g.textBaseline='middle';
+  g.font='700 '+Math.max(8,Math.min(w/8,h/5))+'px sans-serif';
+  g.fillText('학습용 도안',x+w/2,y+h*.43); g.fillText('실제 사진 아님',x+w/2,y+h*.68); g.restore();
 }
 // 어두운 설명판(금색·붉은 띠 제목, 흰 글씨) — 실제 1관의 검은 패널
 function darkText(g, W, H, title, en, lines, accent, x0, y0, w) {
@@ -6944,16 +6962,22 @@ function darkText(g, W, H, title, en, lines, accent, x0, y0, w) {
   lines.forEach((t, i) => mxText(g, t, x0, y0 + H * (0.13 + i * 0.038), H * 0.024, 'rgba(240,236,228,.92)', false));
   for (let i = 0; i < 7; i++) { g.fillStyle = 'rgba(230,226,218,.28)'; g.fillRect(x0, y0 + H * (0.15 + lines.length * 0.038 + i * 0.022), w * (0.7 + mxRnd() * 0.3), H * 0.006); }
 }
+const MX_PANEL_TEXT = {"목포진":["서남해를 지키던 조선 수군 진영"],"목포의 개항":["1897년 고종의 칙령으로 개항"],"개항장 목포":["개항 뒤 변화한 도시를 살펴봐요"],"삼백의 고장":["쌀 · 목화 · 소금"],"1919. 4. 8. 목포 만세운동":["시민들의 저항을 기억해요"],"종교의 전파":["개항 이후 여러 종교가 들어왔어요"],"근대 교육의 시작":["여러 학교가 문을 열었어요"],"일본인들의 학교":["학교와 교육의 변화를 살펴봐요"]};
 function darkPanelTex(title, en, lines, accent, seed) {
+  const verified = MX_PANEL_TEXT[title];
+  if (verified) { lines = verified; en = ''; }
+  else { title = '근대 목포 살펴보기'; en = ''; lines = ['공식 안내의 전시 주제로 배워요', '공간과 모형은 학습용 재구성이에요']; }
+
   return (g, W, H) => {
     const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#3a393d'); bg.addColorStop(1, '#2a292d'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    g.globalAlpha = 0.16; oldPhoto(g, 0, H * 0.55, W, H * 0.45, seed || 7, [200, 196, 190]); g.globalAlpha = 1;
+    mxText(g, '공식 안내 기반 · 학습용 설명판', W*.1, H*.9, H*.025, '#e9d4a6', false);
     const lg = g.createLinearGradient(0, 0, 0, H * 0.18); lg.addColorStop(0, 'rgba(255,240,210,.28)'); lg.addColorStop(1, 'rgba(255,240,210,0)'); g.fillStyle = lg; g.fillRect(0, 0, W, H * 0.18);
     darkText(g, W, H, title, en, lines, accent, W * 0.1, H * 0.2, W * 0.8);
   };
 }
 // 세로 띠(금색·붉은색) 제목
 function stripTex(title, color) {
+  if (!['목포진으로 출발하다','개항장으로 재출발하다','저항의 제일선이 되다','외래 문화가 전파되다','대중 문화의 시대','만세운동 함께 해요','근대 도시 특별전'].includes(title)) title = '근대 목포';
   return (g, W, H) => {
     g.fillStyle = color; g.fillRect(0, 0, W, H);
     const s = W * 0.42; g.font = `700 ${s}px "Gowun Batang", serif`; g.fillStyle = '#f7e9c8'; g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -6993,14 +7017,11 @@ function mxVitrine(x, y, z, ry, w, d, draw, seed) {
   return g;
 }
 // 누렇게 바랜 옛 문서(세로 한자 줄)
-function paperTex(g, W, H, seed, opt = {}) {
-  const R = rng(seed);
-  g.fillStyle = '#e6d3a4'; g.fillRect(0, 0, W, H);
-  for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(120,80,30,${R() * 0.08})`; g.fillRect(R() * W, R() * H, 3, 3); }
-  if (opt.book) { g.fillStyle = 'rgba(90,60,20,.25)'; g.fillRect(W / 2 - 2, 0, 4, H); }
-  g.strokeStyle = opt.red ? 'rgba(170,50,40,.6)' : 'rgba(0,0,0,0)'; g.lineWidth = 2; if (opt.red) for (let i = 1; i < 12; i++) { g.beginPath(); g.moveTo(W * i / 12, H * 0.08); g.lineTo(W * i / 12, H * 0.92); g.stroke(); }
-  g.fillStyle = 'rgba(30,22,16,.75)';
-  for (let c = 0; c < 11; c++) for (let k = 0; k < 14; k++) if (R() < 0.85) g.fillRect(W * (0.07 + c * 0.08) + R() * 3, H * (0.1 + k * 0.058), W * 0.04, H * 0.035);
+function paperTex(g,W,H,seed,opt={}) {
+  g.fillStyle='#e6d3a4';g.fillRect(0,0,W,H);
+  g.strokeStyle='#9d8760';g.strokeRect(W*.08,H*.08,W*.84,H*.84);
+  mxText(g,'학습용 문서 도안',W/2,H*.42,H*.07,'#514431',true,'center');
+  mxText(g,'실제 사료 원문 아님',W/2,H*.6,H*.06,'#514431',false,'center');
 }
 // 비석(화강암에 새긴 글씨)
 function mxStoneTex(text, sub, light) {
@@ -7099,7 +7120,7 @@ function mxModelCase(x, y, z, ry, kind) {
     g.fillStyle = '#efe7d6'; g.fillRect(0, 0, W, H);
     mxText(g, '붉은 벽돌 건물이 걸어온 시간', W * 0.05, H * 0.13, H * 0.085, '#1f1a16', true);
     mxText(g, '구 목포 일본영사관 · 사적', W * 0.05, H * 0.25, H * 0.05, '#a8462f', true);
-    const ev = [['1897', '목포 개항'], ['1900', '일본영사관 완공'], ['1914', '목포부청'], ['1947', '목포시청'], ['1990', '목포문화원'], ['2014', '목포근대역사관']];
+    const ev = [['1897', '목포 개항'], ['1900', '일본영사관 완공'], ['', '목포부청'], ['1947', '목포시청'], ['1990', '목포문화원'], ['2014', '목포근대역사관']];
     const y = H * 0.6, x0 = W * 0.07, x1 = W * 0.93;
     g.strokeStyle = '#a8462f'; g.lineWidth = H * 0.012; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
     ev.forEach(([yr, t], i) => { const x = x0 + (x1 - x0) * i / (ev.length - 1); g.fillStyle = '#a8462f'; g.beginPath(); g.arc(x, y, H * 0.03, 0, 7); g.fill();
@@ -7110,8 +7131,8 @@ function mxModelCase(x, y, z, ry, kind) {
   dk(0.7, 1.0, 1.8, MXM.white, 0, 0.5, 0, desk); dk(0.78, 0.04, 1.9, M.darkwood, 0, 1.02, 0, desk);
   const dsign = textPlane([{ t: 'INFORMATION', size: 0.12, bold: true }, { t: '관람 순서 · 1층 → 2층 → 방공호', size: 0.07 }], 1.4, 0.45, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' });
   mxAdd(dsign, -0.36, 0.62, 0, -PI / 2, desk); colR(2.3, 4.2, 0.8, 1.9, 1);
-  mxDef({ id: 'mx0', extra: true, name: '건물 연표', place: '1층 현관 홀', lv: 1, obj: tl, at: [-1.6, 3.0], title: '붉은 벽돌 건물이 걸어온 시간',
-    facts: ['1897년 목포항이 문을 열자(개항), 일본은 1900년 이 자리에 붉은 벽돌로 영사관을 지었어요. 목포에서 가장 오래된 근대 건축물이에요.', '그 뒤 이사청과 목포부청으로 쓰였고, 광복 뒤 1947년 목포시청, 1990년 목포문화원이 되었어요.', '2014년 목포근대역사관 1관으로 다시 문을 열었어요. 관람은 1층 오른쪽 방(1·2 전시실)에서 시작해요.'] });
+  mxDef({ id: 'mx0', extra: true, name: "건물 연혁 안내", place: '1층 현관 홀', lv: 1, obj: tl, at: [-1.6, 3.0], title: "붉은 벽돌 건물이 걸어온 시간",
+    facts: ["이 건물은 1900년 12월 일본영사관으로 완공되었어요.","목포이사청과 목포부청을 거쳐, 1947년부터 목포시청으로 사용되었어요.","1990년 목포문화원이 되었고, 2014년 목포근대역사관 1관으로 문을 열었어요."], sourceIds: ["mokpo","heritage"] });
 
   /* ════════ 1층 오른쪽 방 ════════ */
   // 1 zone · 목포진으로 출발하다 (호두나무 가벽 + 목포진 모형 + 조계 경계비)
@@ -7132,9 +7153,9 @@ function mxModelCase(x, y, z, ry, kind) {
   colR(6.9, 2.4, 1.8, 1.4, 1);
   mxStele(9.0, 0, 1.5, -PI / 2, '各國居留地界', '', 0.34, 1.25);
   mxStele(9.0, 0, 3.4, -PI / 2, '各國居留地界', '', 0.34, 1.1);
-  mxDef({ id: 'mx1', name: '목포진 모형과 조계 경계비', place: '1층 오른쪽 방 앞쪽', lv: 1, obj: ft, at: [6.9, 1.0], title: '목포진으로 출발하다',
-    facts: ['목포의 이야기는 조선 수군의 진영 「목포진(만호진)」에서 시작돼요. 서남해 바다를 지키던 방어 기지였고, 1895년에 문을 닫았어요.', '1897년 10월 1일 목포항이 열렸어요(개항). 외국인이 모여 사는 「각국공동조계」가 만들어졌어요.', '전시실의 돌기둥은 조계의 경계를 알리던 비석이에요. 이곳부터 외국인 거주지라는 표시였어요.'],
-    q: '목포진은 어떤 곳이었을까요?', o: ['조선 수군이 바다를 지키던 진영', '일본 상인들의 시장', '서양 선교사의 학교', '쌀을 쌓아 두는 창고'], a: 0 });
+  mxDef({ id: 'mx1', name: "목포진 이야기", place: '1층 오른쪽 방 앞쪽', lv: 1, obj: ft, at: [6.9, 1.0], title: "목포진으로 출발하다",
+    facts: ["목포진은 조선 수군의 진영이었어요.","서남해를 지키던 목포진의 역할이 이 전시의 주제예요."],
+    q: "목포진은 어떤 역할을 했을까요?", o: ["바다 방어","영화 상영","은행 업무","철도 운행"], a: 0, sourceIds: ["mokpo"] });
 
   // 2 zone · 개항장으로 재출발하다 (회색 벽 · 육지면 발상지비 · 측량기 · 무안보첩)
   mxUnit(6.75, 0, -5.75, 0, [MXS('개항장으로 재출발하다', '#a8462f'),
@@ -7152,9 +7173,9 @@ function mxModelCase(x, y, z, ry, kind) {
     const tg = textPlane([{ t, size: 0.14, bold: true }], 0.3, 0.16, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' }); tg.position.set(9.15, 0.32, z); tg.rotation.y = -PI / 2; R.add(tg);
   });
   addCol(9.15, -4.8, 9.8, -2.9, 1);
-  mxDef({ id: 'mx2', name: '무안보첩과 육지면 발상지비', place: '1층 오른쪽 방 안쪽', lv: 1, obj: vt2, at: [7.2, -1.3], title: '개항장으로 재출발하다',
-    facts: ['1897년 고종 황제의 칙령으로 목포항이 외국 배에 문을 열었어요. 개항장의 일은 무안감리서가 맡았고, 그 기록이 「무안보첩」에 남아 있어요.', '목포는 쌀 · 목화 · 소금, 흰빛 나는 세 가지 물건으로 이름나 「삼백(三白)의 고장」이라 불렸어요.', '1904년 목포 앞바다 고하도에서 미국 목화(육지면)를 처음 심었어요. 그러나 일제강점기에는 많은 쌀과 목화가 목포항을 거쳐 일본으로 실려 갔어요.'],
-    q: '목포를 「삼백의 고장」이라 부른 까닭인 세 가지는 무엇일까요?', o: ['쌀 · 목화 · 소금', '김 · 미역 · 굴', '배 · 기차 · 자동차', '종이 · 붓 · 먹'], a: 0 });
+  mxDef({ id: 'mx2', name: "개항과 삼백 이야기", place: '1층 오른쪽 방 안쪽', lv: 1, obj: vt2, at: [7.2, -1.3], title: "개항장으로 재출발하다",
+    facts: ["목포는 1897년 고종의 칙령으로 개항했어요.","쌀·목화·소금은 목포를 삼백의 고장으로 알린 물산이에요."],
+    q: "삼백에 해당하는 물산은?", o: ["쌀·목화·소금","김·미역·굴","종이·먹·붓","배·기차·자동차"], a: 0, sourceIds: ["mokpo"] });
 
   /* ════════ 1층 왼쪽 방 ════════ */
   // 안내도: 뒤쪽 가운데 6 zone · 뒤쪽 구석 작은 방 · 앞쪽 큰 7 zone
@@ -7182,6 +7203,7 @@ function mxModelCase(x, y, z, ry, kind) {
     for (let i = 0; i < 40; i++) { const t = new THREE.Mesh(new THREE.SphereGeometry(0.02, 5, 4), new THREE.MeshLambertMaterial({ color: 0x5a6a48 })); const along = Rr() < 0.5; t.position.set(along ? -1.4 + Rr() * 2.8 : -0.12, 0.9, along ? -0.03 : -0.9 + Rr() * 1.8); city.add(t); }
     const g = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.5, 1.95), MXM.glass); g.position.y = 1.13; city.add(g);
     const st = dk(0.18, 1.0, 0.06, MXM.white, 1.0, 0.5, 1.12, city); st.rotation.x = 0.0; }
+  const modelLabel = mxPanel('학습용 도시 모형', '실제 지도 아님', ['건물과 도로의 위치는 재구성이에요.'], 2.3, .6); modelLabel.position.set(0,1.65,1.08); city.add(modelLabel);
   colR(-6.4, 1.4, 3.15, 2.15, 1);
   const OL = '#6f6a3a';
   const bp = (title, en, lines, seed) => MXP(title, en, lines, '#c9b46a', 0.75, seed);
@@ -7197,9 +7219,9 @@ function mxModelCase(x, y, z, ry, kind) {
     MXS('북교동 문익수 가옥', OL), bp('1908년', 'Mun Ik-su House', ['근대 초기 한옥', 'ㄱ자 안채와 대청'], 53),
     MXS('정명여학교 선교사 사택', OL), bp('1905년 무렵', 'Missionary House', ['목포에 처음 지어진', '서양식 석조 주택'], 55)]);
   [4.02, 2.9, 1.78].forEach((z, i) => mxModelCase(-8.9, 0, z, PI / 2, ['church', 'hanok', 'mission'][i]));
-  mxDef({ id: 'mx7', name: '근대 도시 모형', place: '1층 왼쪽 방', lv: 1, obj: city, at: [-4.5, 1.4], title: '근대 도시 건축 특별전',
-    facts: ['방 가운데의 큰 모형은 개항 뒤 반듯한 길이 난 근대 도시 목포의 모습이에요.', '둘레 진열장에는 지금도 목포에 남아 있는 근대 건축물 모형이 있어요. 양동교회(1910), 정명여학교 선교사 사택(1905 무렵), 목포 청년회관(1925), 호남은행 목포지점(1929) 등이에요.', '목포 청년회관은 시민들의 성금으로 지었고, 호남은행은 우리 민족의 돈(민족 자본)으로 세운 은행이에요. 동양척식주식회사는 우리 땅과 자원을 빼앗던 회사였어요.'],
-    q: '시민들의 성금으로 지어 민족운동의 산실이 된 건물은?', o: ['동양척식주식회사', '목포 청년회관', '동본원사 목포별원', '목포부립병원 관사'], a: 1 });
+  mxDef({ id: 'mx7', name: "근대 건축 이야기", place: '1층 왼쪽 방', lv: 1, obj: city, at: [-4.5, 1.4], title: "근대 도시 특별전",
+    facts: ["목포역과 오거리 일대의 건축물 모형을 소개하는 전시예요.","동본원사·호남은행·양동교회·일본영사관 등이 다뤄져요.","게임 속 모형은 학습용으로 단순화했어요. 실제 거리나 전시 배치를 나타내지 않아요."],
+    q: "공식 안내가 소개하는 도시 모형의 지역은?", o: ["목포역과 오거리 일대","서울 강남 일대","부산 해운대 일대","제주 성산 일대"], a: 0, sourceIds: ["mokpo"] });
 
   // 6 zone · 만세운동 함께해요 (홍보관)
   const mural = (w, h, seed) => mxBoard(w, h, (g, W, H) => {
@@ -7227,15 +7249,14 @@ function mxModelCase(x, y, z, ry, kind) {
   [-0.4, -0.25, -0.1, 0.1, 0.25, 0.4].forEach((x, i) => dk(0.13, 0.65, 0.05, new THREE.MeshLambertMaterial({ color: i < 3 ? 0xf4f0e6 : 0x1f1f22 }), x, 1.15, 0.14, rack));
   [-0.36, -0.12, 0.12, 0.36].forEach(x => cyl(0.09, 0.09, 0.09, new THREE.MeshLambertMaterial({ color: 0x151515 }), x, 1.95, 0.05, rack));
   colR(-3.45, -2.4, 0.6, 1.3, 1);
-  mxDef({ id: 'mx6', name: '만세운동 체험 코너', place: '1층 왼쪽 방 안쪽 홍보관', lv: 1, obj: mw, at: [-5.0, -3.0], title: '만세운동 함께해요', photo: true,
-    facts: ['1층 왼쪽 방 안쪽 홍보관에는 태극기를 든 만세운동 그림 벽이 있어요.', '옷걸이에 걸린 흰 저고리와 검은 교복, 모자를 입고 그날의 만세운동을 체험하며 기념사진을 찍을 수 있어요.'] });
+  mxDef({ id: 'mx6', name: "만세운동 학습 체험", place: '1층 왼쪽 방 안쪽 홍보관', lv: 1, obj: mw, at: [-5.0, -3.0], title: "만세운동 함께 해요", photo: true,
+    facts: ["1919년 4월 8일 만세운동을 배경으로 한 체험 주제예요.","공식 안내에는 교복과 모자 등의 체험 소품이 소개돼요.","아래 카드는 게임에서 만든 학습용 기념 카드예요. 실제 전시 사진은 아니에요."], sourceIds: ["mokpo"] });
 
   /* ════════ 2층 왼쪽 방 · 3 zone 저항의 제일선이 되다 ════════ */
   mxWalnut(2.6, 3.0, '저항의 제일선이 되다', '3 zone', -4.87, 4, -1.94, PI / 2); addCol(-5.02, -3.97, -4.72, 0.09, 2);
   // 안내도의 3 zone 칸막이
   mxPartition(-4.87, -3.97, -4.87, 0.09, 4); mxPartition(-10, 0.09, -7.0, 0.09, 4); mxPartition(-4.87, 0.09, -3.3, 0.09, 4);
-  const rice = mxBoard(1.2, 1.6, (g, W, H) => { g.fillStyle = '#2f2e32'; g.fillRect(0, 0, W, H); mxText(g, '목포항에서 일본으로 나간 쌀', W * 0.08, H * 0.08, H * 0.045, '#f3eee4', true);
-    const v = [0.18, 0.3, 0.42, 0.55, 0.7, 0.88]; v.forEach((t, i) => { const x = W * (0.12 + i * 0.13); g.fillStyle = '#c0392b'; g.fillRect(x, H * 0.85 - H * 0.6 * t, W * 0.08, H * 0.6 * t); mxText(g, `19${1 + i * 2}0`.slice(0, 4), x + W * 0.04, H * 0.9, H * 0.025, '#ddd', false, 'center'); }); }, 180);
+  const rice = mxBoard(1.2, 1.6, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "저항의 역사를 읽는 질문", W*.07,H*.15,H*.055,'#2a211a',true); ["사람들은 어떤 억압을 받았을까요?","시민들은 어떻게 맞섰을까요?","만세운동과 청년운동을 살펴봐요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(rice, -5.0, 5.9, -1.94, -PI / 2, R);
   mxUnit(-6.6, 4, 5.75, PI, [MXS('저항의 제일선이 되다', '#8a2a22'),
     MXP('일제의 통치 기관', 'Ruling Institutions', ['영사관 · 이사청 · 목포부청', '동양척식주식회사 · 경찰서 · 형무소'], '#c0392b', 1.0, 71),
@@ -7251,16 +7272,11 @@ function mxModelCase(x, y, z, ry, kind) {
     MXP('남촌의 일본인', 'The Japanese in Namchon', ['바다를 메운 반듯한 거리', '학교 · 병원 · 은행이 모이다'], '#d98a2a', 1.5, 83),
     MXP('남촌과 북촌의 차별 심화', 'Discrimination', ['같은 도시, 다른 삶', '조선인의 불만이 커지다'], '#d98a2a', 1.2, 85)]);
   const vt3 = [-8.4, -6.9, -5.4].map((x, i) => mxVitrine(x, 4, -4.55, 0, 0.9, 0.75, null, 90 + i))[1];
-  const ppl = mxBoard(1.6, 1.3, (g, W, H) => {
-    g.fillStyle = '#2a2420'; g.fillRect(0, 0, W, H);
-    mxText(g, '기억해야 할 이름', W * 0.08, H * 0.12, H * 0.075, '#ffd98a', true);
-    const rows = [['강석봉', '정명여학교 한문 교사 · 4·8 만세운동 주동'], ['곽희주 김나열 김옥실 박복술', '정명여학교 학생 (1921년 만세)'], ['박음전 이남순 주유금', '2012년 독립유공자로 포상']];
-    rows.forEach(([a, b], i) => { mxText(g, a, W * 0.08, H * (0.33 + i * 0.22), H * 0.068, '#f1ece2', true); mxText(g, b, W * 0.08, H * (0.42 + i * 0.22), H * 0.048, 'rgba(241,236,226,.7)', false); });
-  });
+  const ppl = mxBoard(1.6, 1.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "시민들의 저항", W*.07,H*.15,H*.055,'#2a211a',true); ["만세운동과 청년운동","억압에 맞선 사람들을 기억해요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(ppl, -9.83, 6.0, -2.6, PI / 2, R);
-  mxDef({ id: 'mx3', name: '조면기와 독립운동 자료', place: '2층 왼쪽 방 (계단 올라 오른쪽)', lv: 2, obj: gin, at: [-7.6, 1.2], title: '저항의 제일선이 되다',
-    facts: ['일제는 영사관 · 이사청 · 목포부청, 동양척식주식회사, 경찰서와 형무소를 통해 목포 사람들을 억눌렀어요. 「조선곡물검사령」으로 쌀을 검사해 일본으로 실어 갔어요.', '목화씨를 빼는 기계 「조면기」는 목포에 모인 목화가 공장을 거쳐 실려 나간 역사를 보여 줘요.', '조선인은 유달산 북쪽 「북촌」, 일본인은 바다를 메운 「남촌」에 살았어요. 시설과 대우의 차별이 컸어요.', '1919년 4월 8일, 정명여학교 · 영흥학교 학생들과 양동교회 사람들이 「대한독립 만세」를 외쳤어요.'],
-    q: '목포에서 만세운동이 크게 일어난 날은 언제일까요?', o: ['1919년 3월 1일', '1919년 4월 8일', '1945년 8월 15일', '1950년 6월 25일'], a: 1 });
+  mxDef({ id: 'mx3', name: "저항의 역사 안내", place: '2층 왼쪽 방 (계단 올라 오른쪽)', lv: 2, obj: gin, at: [-7.6, 1.2], title: "저항의 제일선이 되다",
+    facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.","만세운동과 청년운동이 주요 내용이에요."],
+    q: "이 전시가 다루는 시민들의 활동은?", o: ["만세운동과 청년운동","우주 탐사","고속도로 건설","인터넷 개발"], a: 0, sourceIds: ["mokpo"] });
 
   /* ════════ 2층 가운데(현관 위) · 유성기 ════════ */
   const ph = mxGlassCase(2.1, 4, 6.75, 0, 0.95, 0.95, 1.6);
@@ -7284,11 +7300,7 @@ function mxModelCase(x, y, z, ry, kind) {
   // 1930년대 목포 지도 가벽 / 뒷면은 황국신민화 · 강제 동원
   // 안내도의 4·5 zone 칸막이
   mxPartition(4.71, 0.46, 8.0, 0.46, 4, 2.8); mxPartition(4.71, -1.57, 4.71, 3.23, 4, 2.8); mxPartition(8.0, -3.8, 8.0, 0.46, 4, 2.8);
-  const map30 = mxBoard(2.9, 2.3, (g, W, H) => { g.fillStyle = '#cdbf9e'; g.fillRect(0, 0, W, H); for (let i = 0; i < 2500; i++) { g.fillStyle = `rgba(90,70,40,${Math.random() * 0.1})`; g.fillRect(Math.random() * W, Math.random() * H, 2, 2); }
-    g.strokeStyle = 'rgba(110,70,40,.55)'; g.lineWidth = 2; for (let i = 0; i < 160; i++) { const x = W * (0.3 + Math.random() * 0.35), y = H * (0.15 + Math.random() * 0.75); g.strokeRect(x, y, 6 + Math.random() * 10, 4 + Math.random() * 8); }
-    mxText(g, '1930년대 목포의 주요시설', W / 2, H * 0.06, H * 0.04, '#2a1e14', true, 'center');
-    ['목포양동교회', '목포정명여학교', '목포역', '오거리', '목포부청', '목포우편국', '동양척식주식회사 목포지점', '목포상업회의소'].forEach((t, i) => { const x = W * (0.42 + (i % 2) * 0.12), y = H * (0.25 + i * 0.08); g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 6, 0, 7); g.fill(); mxText(g, t, x + 10, y, H * 0.022, '#1a1410', true); });
-    for (let s = 0; s < 2; s++) for (let i = 0; i < 9; i++) oldPhoto(g, s ? W * 0.86 : W * 0.03, H * (0.05 + i * 0.1), W * 0.11, H * 0.09, 140 + i + s * 9); }, 150);
+  const map30 = mxBoard(2.9, 2.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "목포의 근대, 전시 주제로 살펴보기", W*.07,H*.15,H*.055,'#2a211a',true); ["목포진 · 개항장 · 시민들의 저항","종교와 교육 · 영화와 공연","만세운동 체험 · 근대 도시","7개 주제로 연결하는 학습 안내"].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(map30, 6.35, 5.45, 0.57, 0, R);
   mxUnit(6.35, 4, 0.04, PI, [MXS('미나미 총독의 황국신민화 정책', '#8a6a32'), MXP('신사 참배 강요', 'Shinto Shrines', ['1936년 미나미 지로 총독', '신사 참배를 거부한 정명 · 영흥학교', '끝내 문을 닫다(1937)'], '#c9a157', 0.75, 151),
     MXP('창씨개명', 'Name Changing', ['1939년 11월', '우리 이름을 일본식으로 바꾸게 하다'], '#c9a157', 0.75, 153),
@@ -7304,6 +7316,7 @@ function mxModelCase(x, y, z, ry, kind) {
     g.strokeStyle = '#3a3430'; g.lineWidth = 3; g.beginPath(); g.moveTo(W * 0.92, H * 0.1); g.lineTo(W * 0.92, H * 0.9); g.stroke(); g.beginPath(); g.moveTo(W * 0.92, H * 0.15); g.lineTo(W * 0.4, H * 0.3); g.stroke();
   }, 120);
   mxAdd(street, 7.6, 5.45, -5.83, 0, R);
+  const streetLabel = mxPanel('학습용 거리 그림', '실제 기록 사진 아님', ['거리와 건물의 모습은 재구성이에요.'], 3.0, .65); mxAdd(streetLabel,7.6,4.45,-5.78,0,R);
   const shop = grp(9.8, 4, -3.6, -PI / 2); R.add(shop);
   { const pine = new THREE.MeshLambertMaterial({ color: 0xc9a066 }), dark = new THREE.MeshLambertMaterial({ color: 0x8a6a3a });
     dk(4.4, 2.8, 0.1, pine, 0, 1.4, 0, shop); for (let i = 0; i < 18; i++) dk(0.03, 2.8, 0.02, dark, -2.1 + i * 0.25, 1.4, 0.06, shop);
@@ -7319,12 +7332,12 @@ function mxModelCase(x, y, z, ry, kind) {
     const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.72, 14, 1, true, 0, PI), new THREE.MeshLambertMaterial({ color: 0x1e1a18, side: THREE.DoubleSide })); hood.rotation.x = PI / 2; hood.rotation.z = PI / 2; hood.position.set(-0.2, 1.1, 0); rk.add(hood);
     [-0.3, 0.3].forEach(z => dk(1.5, 0.04, 0.04, rkM, 0.95, 0.5, z, rk)); dk(0.5, 0.5, 0.5, MXM.white, 1.6, 0.25, 0, rk); }
   colR(6.5, -3.5, 2.4, 1.2, 2);
-  mxDef({ id: 'mx4', name: '외래 문화 자료 진열장', place: '2층 오른쪽 방 앞쪽', lv: 2, obj: vt4, at: [6.6, 3.3], title: '외래 문화가 전파되다',
-    facts: ['1898년 미국 남장로교 선교사들이 목포에 와서 교회를 세웠어요. 1910년 지은 양동교회의 석조 예배당이 지금도 남아 있어요.', '1903년 선교사들이 정명여학교와 영흥학교를 세웠어요. 두 학교는 1937년 신사 참배를 거부해 문을 닫았다가 광복 뒤 다시 열었어요.', '병원, 우편국, 전화가 들어왔어요. 1929년 목포의 전화 가입자는 666명이었고, 자동차 14대 · 인력거 43대가 거리를 다녔어요.'],
-    q: '정명여학교와 영흥학교가 1937년 문을 닫게 된 까닭은?', o: ['신사 참배를 거부해서', '학생이 없어서', '홍수가 나서', '학교를 옮겨서'], a: 0 });
-  mxDef({ id: 'mx5', name: '인력거와 옛 거리', place: '2층 오른쪽 방 안쪽', lv: 2, obj: rk, at: [6.4, -2.0], title: '대중 문화의 시대',
-    facts: ['1911년 목포에 처음 인력거가 들어왔어요. 1930년 무렵에는 인력거 회사 세 곳이 경쟁했지만, 자동차가 늘면서 1920년대 말부터 점점 줄었어요.', '1920년 목포극장, 1927년 평화관이 문을 열어 영화와 연극을 볼 수 있었어요. 유성기로 음반을 들었고, 이난영의 「목포의 눈물」이 널리 불렸어요.', '가벽 뒤에는 「황국신민화 정책」 자료가 있어요. 일제는 1930년대 후반 신사 참배와 창씨개명을 강요하고, 사람과 물자를 전쟁에 강제로 동원했어요.'],
-    q: '목포에 인력거가 처음 들어온 해는?', o: ['1897년', '1911년', '1945년', '1970년'], a: 1 });
+  mxDef({ id: 'mx4', name: "종교와 교육 이야기", place: '2층 오른쪽 방 앞쪽', lv: 2, obj: vt4, at: [6.6, 3.3], title: "외래 문화가 전파되다",
+    facts: ["개항 이후 여러 종교와 학교가 목포에 들어왔어요.","종교·교육·문화의 변화를 살펴보는 주제예요."],
+    q: "이 전시에서 살펴볼 변화는?", o: ["종교와 교육의 변화","빙하기의 기후","공룡의 진화","화산의 생성"], a: 0, sourceIds: ["mokpo"] });
+  mxDef({ id: 'mx5', name: "극장과 공연 이야기", place: '2층 오른쪽 방 안쪽', lv: 2, obj: rk, at: [6.4, -2.0], title: "대중 문화의 시대",
+    facts: ["목포극장은 1920년, 평화관은 1927년에 세워졌어요.","영화·연극·대중가요 등 문화활동이 펼쳐졌어요."],
+    q: "근대 목포의 대중문화 활동은?", o: ["영화와 연극 관람","온라인 게임 방송","우주여행","스마트폰 영상통화"], a: 0, sourceIds: ["mokpo"] });
 }
 
 
@@ -7333,12 +7346,12 @@ function mxModelCase(x, y, z, ry, kind) {
   const gp = interactables.gate ? interactables.gate.pos : new THREE.Vector3(0, 1.4, -20);
   const sg = grp(gp.x + 2.4, 0, gp.z + 1.6, -0.3); mxRoot.add(sg);
   dk(0.08, 1.3, 0.08, M.darkwood, -0.85, 0.65, 0, sg); dk(0.08, 1.3, 0.08, M.darkwood, 0.85, 0.65, 0, sg);
-  const bp = mxPanel('방공호 특별전시', '건물 뒤편', ['일제 말기(1944~1945) 공습에 대비해 판 굴', '총 길이 85m · 밖으로 통하는 문 3개', '굴을 판 사람들은 강제로 동원된 조선 사람들'], 1.9, 1.15, '#5a5048');
+  const bp = mxPanel('방공호 특별전시', '건물 뒤편', ['공습에 대비해 만든 방어시설', '강제동원된 조선인의 노동을 기억해요', '게임 속 공간은 학습용 재구성이에요'], 1.9, 1.15, '#5a5048');
   bp.position.set(0, 1.55, 0.05); sg.add(bp); dk(1.95, 1.2, 0.06, M.darkwood, 0, 1.55, 0, sg);
   addCol(gp.x + 1.4, gp.z + 1.3, gp.x + 3.4, gp.z + 1.9, 1);
-  mxDef({ id: 'mx8', name: '방공호 안내판', place: '뒤뜰 방공호 앞', lv: 1, obj: sg, at: [gp.x + 2.2, gp.z + 3.0], title: '방공호 특별전시',
-    facts: ['건물 뒤 유달산 밑의 방공호는 일제 말기인 1944~1945년 무렵, 공습에 대비해 만든 것으로 추정돼요. 총 길이는 85m이고 밖으로 통하는 문이 3개 있어요.', '굴을 파는 일에는 많은 조선 사람들이 강제로 동원되었어요. 당시 유달산에 주둔하던 일본군 150사단 사령부가 쓰려고 만든 것으로 보여요.', '지금은 하늘색 철문으로 들어가 볼 수 있어요. 안에는 방공호 피난 체험, 굴을 파던 노동 현장, 1945년을 새긴 추모 표지석이 있어요.'],
-    q: '이 방공호를 판 사람들은 누구였을까요?', o: ['스스로 원해서 온 일꾼', '강제로 동원된 조선 사람들', '일본 군인들만', '외국 관광객'], a: 1 });
+  mxDef({ id: 'mx8', name: "방공호 이야기", place: '뒤뜰 방공호 앞', lv: 1, obj: sg, at: [gp.x + 2.2, gp.z + 3.0], title: "전쟁준비의 흔적, 방공호",
+    facts: ["역사관 뒤편에는 공습에 대비해 만든 방공호가 있어요.","공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요.","게임의 굴은 실제 길이와 구조를 측량해 만든 공간이 아니에요."],
+    q: "방공호를 만든 목적은?", o: ["공습에 대비하기 위해","공연을 열기 위해","목화를 재배하기 위해","은행 업무를 보기 위해"], a: 0, sourceIds: ["mokpo"] });
 }
 regEra(mxRoot, ['present'], colliders.slice(mxCol0));
 mxRoot.updateMatrixWorld(true);
@@ -7367,8 +7380,8 @@ function startMuseum() {
   $('hud').hidden = false; $('joy').hidden = !coarse; $('keys').hidden = coarse;
   updateHUD();
   setTimeout(() => openModal(body => {
-    head(body, '2026년 가을 · 목포근대역사관 1관', '오늘의 역사관 관람');
-    body.appendChild(el('p', '', '민승이의 수첩이 지켜 낸 붉은 벽돌 건물이 오늘은 역사관이 되었어요.<br>전시실을 돌며 전시물을 살펴보고, 질문에 답해 <b>관람 도장 ' + MXN + '개</b>를 모아 보세요.'));
+    head(body, '목포근대역사관 1관 · 가상 학습', '공식 안내로 둘러보기'); mxEvidence(body);
+    body.appendChild(el('p', '', '공식 안내에 소개된 7개 전시 주제와 방공호 이야기를 살펴봐요.<br>이 게임의 학습 지점에서 질문과 체험을 완료해 <b>학습 도장 ' + MXN + '개</b>를 모아 보세요.'));
     const ol = el('div', 'mxList'); MX_STAMP.forEach((m, i) => ol.appendChild(el('div', 'mxRow' + (MUSEUM.stamps.has(m.id) ? ' done' : ''), `<i>${i + 1}</i><b>${m.title}</b><span>${m.place}</span>`))); body.appendChild(ol);
     const b = el('button', 'pbtn', '관람 시작'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b);
   }), 400);
@@ -7384,7 +7397,7 @@ updateHUD = function () {
   $('dots').innerHTML = ''; $('inv').hidden = true;
   const n = MUSEUM.stamps.size, nx = mxNext();
   $('goalTxt').textContent = nx ? `${nx.place}의 「${nx.title}」 살펴보기 (${n}/${MXN})` : `관람 완료 (${n}/${MXN})`;
-  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = (state.team ? state.team + ' · ' : '') + '관람 미션';
+  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = (state.team ? state.team + ' · ' : '') + '가상 관람 · 학습용 재구성';
 };
 const _mtMx = markerTarget;
 markerTarget = function () {
@@ -7413,7 +7426,7 @@ useInteract = function (id) {
 }
 function mxGuide() {
   openModal(body => {
-    head(body, `관람 도장 ${MUSEUM.stamps.size} / ${MXN}`, '역사관 관람 안내도');
+    head(body, `학습 도장 ${MUSEUM.stamps.size} / ${MXN}`, '가상 관람 안내'); mxEvidence(body);
     const ol = el('div', 'mxList'); MX_STAMP.forEach((m, i) => ol.appendChild(el('div', 'mxRow' + (MUSEUM.stamps.has(m.id) ? ' done' : ''), `<i>${MUSEUM.stamps.has(m.id) ? '✓' : i + 1}</i><b>${m.title}</b><span>${m.place}</span>`))); body.appendChild(ol);
     const b = el('button', 'pbtn', '닫기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b);
   });
@@ -7437,13 +7450,13 @@ function mxStamp(m) {
 function mxOpen(m) {
   if (m.arts) return mxArts();
   openModal(body => {
-    head(body, m.place, m.title); tagHead(body, 'real');
+    head(body, '가상 공간 · ' + m.place, m.title); mxEvidence(body, m.sourceIds);
     const ul = el('div', 'mxFacts'); m.facts.forEach(f => ul.appendChild(el('p', '', f))); body.appendChild(ul);
     if (!m.q && !m.photo) { const b = el('button', 'pbtn', '닫기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); return; }
     if (m.photo) {
       const card = el('div', 'mxPhoto', `<div class="mxPh">${REG_PHOTO ? `<img src="${REG_PHOTO}" alt="">` : ''}</div><div class="mxPc"><b>${esc(state.team || '')}</b><span>1919년 4월 8일 · 목포</span><em>대한독립 만세</em></div>`);
-      body.appendChild(el('div', 'glab', '나의 1919년 기념사진')); body.appendChild(card);
-      const b = el('button', 'pbtn', MUSEUM.stamps.has(m.id) ? '닫기' : '기념사진 찍기'); b.style.marginTop = '12px';
+      body.appendChild(el('div', 'glab', '나의 만세운동 학습 카드')); body.appendChild(card);
+      const b = el('button', 'pbtn', MUSEUM.stamps.has(m.id) ? '닫기' : '학습 카드 남기기'); b.style.marginTop = '12px';
       b.onclick = () => { card.classList.add('flash'); tone([1600], 0.05, 'square', 0); setTimeout(() => { closeModal(); mxStamp(m); }, 500); };
       body.appendChild(b); return;
     }
@@ -7479,8 +7492,8 @@ function mxArts() {
 function mxDone() {
   const d = new Date();
   openModal(body => {
-    head(body, '2026년 · 목포근대역사관 1관', '관람 확인증');
-    const card = el('div', 'mxCert', `<div class="mxCt">관 람 확 인 증</div><div class="mxCn">${esc(state.team || '')}</div><p>위 사람은 목포근대역사관 1관의 전시실 ${MXN}곳을 모두 둘러보고, 붉은 벽돌 건물이 기억하는 이야기를 마음에 새겼음을 확인합니다.</p><div class="mxSt">${MX_STAMP.map(() => '<i>관람</i>').join('')}</div><div class="mxCd">${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일</div>`);
+    head(body, '2026년 · 목포근대역사관 1관', '가상 관람 학습 기록');
+    const card = el('div', 'mxCert', `<div class="mxCt">가 상 관 람 학 습 기 록</div><div class="mxCn">${esc(state.team || '')}</div><p>이 게임의 가상 관람 학습 지점 ${MXN}곳을 완료했어요. 실제 역사관 방문이나 기관이 발급한 관람 증명서는 아니에요.</p><div class="mxSt">${MX_STAMP.map(() => '<i>관람</i>').join('')}</div><div class="mxCd">${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일</div>`);
     body.appendChild(card);
     const row = el('div', 'mxBtns');
     const b1 = el('button', 'pbtn', '기억할 이름 보기'); b1.onclick = () => { closeModal(); openBH('names', {}); };
@@ -8171,11 +8184,11 @@ const GLARE = (() => {
   blue.position.set(cellX(9) + S / 2 - 0.03, 1.35, cellZ(6)); blue.rotation.y = -Math.PI / 2; scene.add(blue);
   const bl = new THREE.PointLight(0x5aa0ff, 0.7, 4); bl.position.set(cellX(9) + 0.4, 1.5, cellZ(6)); scene.add(bl);
   // 안내판 「유달산 방공호」
-  const yp = textPlane([{ t: '유달산 방공호', size: 0.11, bold: true }, { t: '1944~1945년 무렵 · 길이 85m', size: 0.055 }, { t: '밖으로 통하는 문 3개', size: 0.055 }, { t: '일본군 150사단 사령부가 쓰려 한 것으로 추정', size: 0.05 }], 0.9, 0.7, { bg: '#efe8dc', fg: '#6a1e14', fg2: '#2a1e14' });
+  const yp = textPlane([{ t: '유달산 방공호', size: 0.11, bold: true }, { t: '공습에 대비해 만든 방어시설', size: 0.055 }, { t: '강제동원의 역사를 기억해요', size: 0.055 }, { t: '게임 속 공간은 학습용 재구성', size: 0.05 }], 0.9, 0.7, { bg: '#efe8dc', fg: '#6a1e14', fg2: '#2a1e14' });
   yp.position.set(cellX(5) - S / 2 + 0.04, 1.4, cellZ(1)); yp.rotation.y = Math.PI / 2; scene.add(yp);
   // 줄에 매단 철망 전구 선
   [[2, 1, 2, 9], [9, 1, 9, 9]].forEach(([r1, c1, r2, c2]) => { const x1 = cellX(c1), x2 = cellX(c2), z = cellZ(r1) + 0.9; dk(Math.abs(x2 - x1), 0.012, 0.012, wire, (x1 + x2) / 2, TH - 0.3, z); });
-  const sign = textPlane([{ t: '방공호 피난 체험', size: 0.12, bold: true }, { t: '노동 현장 · 추모 표지석 · 미디어아트', size: 0.06 }], 1.0, 0.4, { bg: '#1d1d20', fg: '#f1ece2', fg2: '#c9a157' });
+  const sign = textPlane([{ t: '방공호 피난 체험', size: 0.12, bold: true }, { t: '가상 체험 · 실제 전시 구조와 다를 수 있어요', size: 0.06 }], 1.0, 0.4, { bg: '#1d1d20', fg: '#f1ece2', fg2: '#c9a157' });
   sign.position.set(cellX(5) - 1.1, 1.6, cellZ(2) + 1.15); scene.add(sign);
   regSince(N0, ['present']);
   // 1944년 수수께끼 글자와 '출구' 팻말은 지금은 보이지 않아요
@@ -8395,8 +8408,7 @@ TICK.push(() => { if (typeof work !== 'undefined') work.visible = !MUSEUM.on; })
   const banner = (seed, title) => mxBoard(0.75, 3.6, (g, W, H) => { g.fillStyle = '#d9d0c0'; g.fillRect(0, 0, W, H);
     oldPhoto(g, 0, H * 0.08, W, H * 0.3, seed, [222, 214, 198]); oldPhoto(g, 0, H * 0.4, W, H * 0.28, seed + 1, [222, 214, 198]); oldPhoto(g, 0, H * 0.7, W, H * 0.28, seed + 2, [222, 214, 198]);
     g.fillStyle = '#8a7a3a'; g.fillRect(title ? 0 : W - W * 0.12, 0, W * 0.12, H * 0.2);
-    g.font = `400 ${W * 0.06}px "Gowun Batang", serif`; g.fillStyle = 'rgba(255,255,255,.55)';
-    for (let c = 0; c < 8; c++) for (let k = 0; k < 60; k++) if ((c * 7 + k) % 5) g.fillText('목포개항만세근대도시'[(c + k) % 10], W * (0.12 + c * 0.1), H * (0.05 + k * 0.015)); }, 150);
+    mxText(g,'학습용 도안',W/2,H*.98,W*.08,'#514431',true,'center'); }, 150);
   [[-2.6, 31, true], [2.6, 41, false]].forEach(([x, s, t]) => { const b = banner(s, t); b.position.set(x, 6.0, -5.82); scene.add(b); });
   const brass = new THREE.MeshPhongMaterial({ color: 0xc9a040, specular: 0xfff0c0, shininess: 80 }), alab = new THREE.MeshLambertMaterial({ color: 0xf4eee2, emissive: 0x3a3428 });
   const ch = grp(0, 7.98, -3.2);
@@ -8896,6 +8908,57 @@ if (window.MIRROR && MIRROR.mg) {
     if (bk !== null) cineBook.visible = bk; mg.visible = vis; refl._busy = false;
   };
   glass.visible = false;
+}
+
+
+/* 첫 탐색 안내: 이동 → 둘러보기 → 첫 분필 조사. 기존 퍼즐 흐름은 그대로 사용해요. */
+{
+  const panel = document.createElement('aside');
+  panel.id = 'firstSteps'; panel.hidden = true;
+  panel.setAttribute('aria-label', '처음 조작 연습');
+  const message = document.createElement('div');
+  message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
+  const skip = document.createElement('button'); skip.type = 'button'; skip.textContent = '안내 건너뛰기';
+  panel.append(message, skip); $('hud').appendChild(panel);
+  const progress = document.createElement('div'); progress.id = 'chalkProgress'; progress.hidden = true;
+  progress.setAttribute('role', 'status'); progress.setAttribute('aria-live', 'polite'); $('goal').appendChild(progress);
+  const practiceKey = 'rb-controls-practiced-v1';
+  let finished = !!LS.get(practiceKey), step = 0, origin = null, lastStep = -1, progressKey = '';
+  function finish() { finished = true; panel.hidden = true; LS.set(practiceKey, true); }
+  skip.onclick = finish;
+  TICK.push(() => {
+    const active = state.mode === 'play' && !MUSEUM.on;
+    const showProgress = active && state.stage === 1;
+    progress.hidden = !showProgress;
+    const key = [...FX.bricks].sort().join(',');
+    if (showProgress && key !== progressKey || showProgress && !progress.textContent) {
+      progressKey = key;
+      progress.innerHTML = '분필 표시 ' + FX.bricks.size + '/4 · ' + [0,1,2,3].map(i =>
+        '<span class="' + (FX.bricks.has(i) ? 'found' : '') + '">' + '①②③④'[i] + (FX.bricks.has(i) ? ' 발견' : ' 미발견') + '</span>').join(' · ');
+    }
+    if (finished || !active || state.modal || state.fading || FX.scope || (typeof vn !== 'undefined' && vn.on)) { panel.hidden = true; return; }
+    // 이어하기와 이미 진행한 게임에는 첫 안내를 다시 띄우지 않아요.
+    if (state.stage !== 1 || FX.bricks.size > 0) { finish(); return; }
+    if (!origin) origin = {x:player.x,z:player.z,yaw:player.yaw,pitch:player.pitch};
+    if (step === 0 && Math.hypot(player.x-origin.x,player.z-origin.z) >= 1.2) {
+      step = 1; origin.yaw = player.yaw; origin.pitch = player.pitch;
+    }
+    if (step === 1 && (Math.abs(Math.atan2(Math.sin(player.yaw-origin.yaw),Math.cos(player.yaw-origin.yaw))) > .3 || Math.abs(player.pitch-origin.pitch) > .2)) step = 2;
+    panel.hidden = false;
+    if (lastStep !== step) {
+      lastStep = step;
+      const instructions = coarse ? [
+        '왼쪽 아래 조이스틱을 밀어 몇 걸음 걸어 보세요.',
+        '오른쪽 게임 화면을 손가락으로 끌어 주위를 둘러보세요.',
+        '건물 바깥벽의 분필 표시를 찾아 가까이 간 뒤 조사 버튼을 누르세요.'
+      ] : [
+        'W·A·S·D 키로 몇 걸음 걸어 보세요.',
+        '게임 화면에서 마우스를 움직여 주위를 둘러보세요. 시점이 움직이지 않으면 화면을 클릭하거나 드래그하세요.',
+        '건물 바깥벽의 분필 표시를 찾아 가까이 간 뒤 클릭하거나 E 키로 조사하세요.'
+      ];
+      message.innerHTML = '<strong>조작 연습 ' + (step+1) + '/3</strong><br>' + instructions[step];
+    }
+  });
 }
 
 </script>
