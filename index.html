@@ -1054,7 +1054,7 @@ body.plFree #view{cursor:none}
   </div>
   <div id="fin" hidden>
     <div class="fBook" id="fBook"><div class="fPage" id="fPage"></div><div class="fCover"></div><div class="fFront"><div class="fRule"></div><div class="fEmb">붉은 벽돌의<br>기억</div><div class="fRule"></div><div class="fBot">이 건물이 본 것을 기억해 줄 사람에게</div><div class="fSign">정민승</div></div></div>
-    <div class="fGal" id="fGal"><div class="gRail"></div><div class="gDust"></div><div class="gKick">기억의 전시실<small>목포근대역사관 1관 · 특별 전시 「1919–1945, 붉은 벽돌이 본 것」</small></div><div class="gRow" id="gRow"></div><div class="gCap" id="gCap"></div></div>
+    <div class="fGal" id="fGal"><div class="gRail"></div><div class="gDust"></div><div class="gKick">기억의 전시실<small>게임 속 가상 전시 · 「1919–1945, 붉은 벽돌이 본 것」</small></div><div class="gRow" id="gRow"></div><div class="gCap" id="gCap"></div></div>
     <div class="fTitle" id="fTitle"><div class="fKick">목포근대역사관 1관 · 교실 방탈출</div><h1>붉은 벽돌의 기억</h1><div class="fEnd">끝</div>
       <div class="fCred" id="fCred"></div>
       <div class="fBtns"><button class="big" id="fAgain">처음부터 다시</button><button class="pbtn alt dk" id="fBack">편지 다시 보기</button></div></div>
@@ -2646,11 +2646,11 @@ const FACTS = [
   null,
   { t: '1900년에 태어난 집', b: '1관은 1900년에 완공된 목포 일본영사관 건물이에요. 목포에서 가장 오래된 근대 건축물로, 붉은 벽돌과 흰 벽돌을 번갈아 쌓아 지었어요. 목포 시내를 내려다보는 언덕 위에 세웠어요.' },
   { t: '좌우 대칭의 현관', b: '가운데 현관과 세모난 박공지붕을 중심으로 왼쪽과 오른쪽이 똑같은 대칭 구조예요. 건물 안에는 나무 바닥, 천장 장식, 벽난로가 옛 모습 그대로 남아 있어요.' },
-  { t: '이름이 여러 번 바뀐 건물', b: '일본영사관(1900) → 목포 이사청(1906) → 목포부청(1914) → 목포시청(1947) → 시립도서관 → 목포문화원 → 목포근대역사관(2014). 한 건물이 시대에 따라 다른 역할을 맡았어요.' },
+  { t: '이름이 여러 번 바뀐 건물', b: '대한민국역사박물관은 1900년 완공, 1906년 이사청, 1914년 부청 청사 사용을 소개해요. 광복 뒤에는 목포시청, 시립도서관(1974), 목포문화원(1990)을 거쳐 2014년 역사관이 되었어요. 기관 전환과 청사 사용 시점은 자료별 표기가 달라요.' },
   { t: '1897년, 목포항이 열리다', b: '목포항은 1897년 10월 1일에 개항했어요. 그 뒤 호남 지방의 쌀과 면화가 이 항구를 거쳐 일본으로 많이 실려 나갔어요. 그래서 목포는 쌀·면화·소금이 흰색이라 "삼백(三白)의 고장"이라 불리기도 했어요.' },
   { t: '1919년 4월 8일 목포 만세운동', b: '3·1 운동의 물결은 목포에도 이어졌어요. 1919년 4월 8일, 정명여학교·영흥학교 학생들과 목포 사람들이 거리로 나와 "대한독립 만세"를 외쳤어요. 1관 전시실에서 이 이야기를 만날 수 있어요.' },
   { t: '봉안전 터와 서고', b: '봉안전은 일본 왕의 사진 등을 보관하던 곳이에요. 사람들은 그 앞을 지날 때 절을 해야 했어요. 지금은 1관 뒤뜰에 터만 남아 있어요. 옆의 돌 건물은 1932년에 화강암으로 지은 목포부청 서고(문서 창고)예요. 방금 서고 문이 열렸어요!' },
-  { t: '길이 85m의 방공호', b: '1관 뒤 방공호는 태평양 전쟁 말기에 폭격을 피하려고 만든 굴이에요. 총 길이가 85m이고, 굴을 파는 일에 많은 조선 사람들이 강제로 동원되었어요. 지금은 방문객이 직접 걸어 볼 수 있어요.' }
+  { t: '전쟁준비의 흔적, 방공호', b: '1관 뒤에는 일제강점기에 공습에 대비해 만든 방공호가 있어요. 목포시 공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요. 게임 속 굴의 길이와 구조는 학습을 위해 재구성했어요.' }
 ];
 const HINTS = [
   '',
@@ -2805,6 +2805,10 @@ function showFact(n, fresh) {
     head(body, `역사 카드 ${'①②③④⑤⑥⑦'[n - 1]}`, FACTS[n].t); tagHead(body, 'real');
     if (typeof CARD_IMG !== 'undefined' && CARD_IMG[n]) { const im = el('img', 'cardimg'); im.src = CARD_IMG[n]; im.alt = FACTS[n].t; im.title = '눌러서 크게 보기'; im.onclick = () => im.classList.toggle('zoom'); body.appendChild(im); }
     body.appendChild(el('div', 'fact', FACTS[n].b));
+    body.appendChild(el('p', 'srcNote', '카드 그림은 학습용 재현 그림이에요. 실제 전시 사진이나 원본 사료가 아니에요.'));
+    if (n === 3) body.appendChild(el('p', 'srcNote', '<a href="https://archive.much.go.kr/data/01/folderView.do?jobdirSeq=1233" target="_blank" rel="noopener noreferrer">연혁 출처: 대한민국역사박물관</a> · <a href="https://encykorea.aks.ac.kr/Article/E0018736" target="_blank" rel="noopener noreferrer">도서관 연혁: 한국민족문화대백과사전</a>'));
+    if (n === 7) body.appendChild(el('p', 'srcNote', '<a href="https://biz.mokpo.go.kr/tour/attraction/museum?idx=7449&amp;mode=view" target="_blank" rel="noopener noreferrer">방공호 안내 출처: 목포시 문화관광</a>'));
+
     const row = el('div', 'row'); row.style.marginTop = '14px'; body.appendChild(row);
     let label = '닫기';
     if (fresh && n === 5) { const done = typeof FX !== 'undefined' && FX.cameoDone; label = done ? '수첩이 다시 뜨거워진다…' : '창밖에서 함성이 들려요…'; act = () => { const go = () => timeJump(() => openNotebook(6)); if (done) go(); else cameo(go); }; }
@@ -4323,7 +4327,7 @@ const ARTS = [
   { e: '🏷', t: '쌀 검사표', d: '항구로 가는 쌀가마에 붙이던 표예요. 목포항으로 많은 쌀이 일본에 실려 갔어요.', at: [-10.0, 0.5, 13.0], era: ['y1919'] }, // 정명여학교 학생 옆 벤치 위
   { e: '✉', t: '옛 우표', d: '1관 앞 우체통으로 편지를 부쳤어요. 편지도 몰래 검사받곤 했어요.', at: [7.7, 0.06, 10.5], era: ['y1919'] },
   { e: '🎀', t: '여학생의 댕기', d: '정명여학교 학생들은 1919년 4월 8일 목포 만세운동에 함께했어요.', at: [2.3, 4.06, 6.4], era: ['y1919'] },
-  { e: '🔑', t: '부청 서랍 열쇠', d: '목포부청 직원이 쓰던 놋쇠 열쇠예요. 이 건물은 1914년부터 목포부청이었어요.', at: [8.5, 0.83, 1.2], era: ['y1919'] },
+  { e: '🔑', t: '부청 서랍 열쇠', d: '목포부청 직원이 쓰던 놋쇠 열쇠예요. 목포부청으로 쓰이던 시절의 열쇠를 상상해 만든 게임 소품이에요.', at: [8.5, 0.83, 1.2], era: ['y1919'] },
   { e: '⛑', t: '방공 두건', d: '공습 때 머리를 보호하려고 쓴 두건이에요. 1944년 무렵 사람들은 공습 훈련에 동원되었어요.', at: [-9.0, 0.06, -12.0], era: ['y1944'] },
   { e: '⛏', t: '녹슨 곡괭이', d: '방공호를 파는 데 쓰인 곡괭이예요. 굴을 파는 일에 많은 조선 사람들이 강제로 동원되었어요.', at: [cellX(8) + 0.4, 0.06, cellZ(5) + 0.5], era: ['y1944', 'present'] }
 ];
@@ -4812,7 +4816,7 @@ const WHY = [null,
     o: [['빼앗긴 나라를 되찾고 싶은 마음을 함께 알리려고', 1, '맞아요. 3·1 운동의 물결이 목포까지 이어졌고, 학생들은 독립을 바라는 마음을 함께 외쳤어요.'], ['학교 행사여서', 0, '붙잡히면 벌을 받을 수 있었다는 점을 생각해 보세요. 학교가 시킨 일이 아니었어요.'], ['구경하려고', 0, '태극기를 몰래 그려 흔들었다는 점을 떠올려 보세요.']] },
   { src: '공고: "봉안전 앞을 지날 때는 반드시 고개를 숙여 절해야 한다." 봉안전에는 일본 왕의 사진이 모셔져 있었다.', q: '일본은 왜 조선 사람들에게 봉안전 앞에서 절하게 했을까?',
     o: [['일본 왕을 섬기게 해서 우리 민족의 정신을 약하게 만들려고', 1, '맞아요. 일본은 조선 사람을 "일본 왕의 백성"으로 만들려는 정책을 폈고, 절을 강요한 것도 그 하나였어요.'], ['건물을 깨끗하게 지키려고', 0, '공고문이 무엇에게 절하라고 했는지 다시 읽어 보세요.'], ['예절을 가르치려고', 0, '스스로 하는 예절이 아니라, 강제로 시킨 일이었다는 점을 생각해 보세요.']] },
-  { src: '1관 뒤 방공호는 총 길이 85m. 태평양 전쟁 말기, 폭격을 피하려고 만들었다. 굴을 파는 일에는 조선 사람들이 동원되었다.', q: '조선 사람들은 왜 이 굴을 파야 했을까?',
+  { src: '1관 뒤 방공호는 공습에 대비해 만든 시설이다. 목포시 공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개한다.', q: '조선 사람들은 왜 이 굴을 파야 했을까?',
     o: [['전쟁을 일으킨 일본이 조선 사람들을 강제로 동원했기 때문에', 1, '맞아요. 일본은 전쟁을 위해 많은 조선 사람들을 노동에 강제로 동원했어요. 민승이의 굴 벽 글자에는 그 시절의 소원이 담겨 있어요.'], ['굴을 파면 돈을 많이 벌 수 있어서', 0, '민승이의 수첩에는 "끌려왔다"고 적혀 있었어요.'], ['조선 사람들이 피난처가 필요해서 스스로', 0, '누가 일으킨 전쟁이었는지, 누가 시킨 일이었는지 생각해 보세요.']] }];
 FX.why = {};   // 퍼즐 완료(state.solved)와 별개: 답한 질문만 기록(true=첫 번에 맞힘, false=다시 골라 맞힘)
 const whyPending = n => !!state.solved[n] && !!WHY[n] && FX.why[n] == null;
@@ -6624,10 +6628,10 @@ const BH_BGM = '제작자가 준비한 배경음악 6곡';      // 음원 출처
 
 const BH_NAMES = [
   { who: '강석봉', sub: '1890 ~ 1956 · 정명여학교 한문 교사', tag: '1919년 4월 8일',
-    txt: '목포 4·8 만세운동을 계획하고 앞장섰어요.<br>일본 경찰을 피해 몸을 숨겼지만, 재판에서 주동자 가운데 가장 무거운 <b>징역 2년</b>을 선고받았어요.<br>지금은 국립대전현충원 애국지사 묘역에 잠들어 있어요.' },
-  { who: '정명여학교 학생 일곱 명', sub: '1921년 · 14살부터 19살까지', tag: '2012년 독립유공자 포상',
+    txt: '목포 4·8 만세운동을 계획하고 앞장섰어요.<br>일본 경찰을 피해 몸을 숨겼지만, 일제의 재판에서 징역형을 선고받았어요.<br>지금은 국립대전현충원 애국지사 묘역에 잠들어 있어요.' },
+  { who: '정명여학교 학생들', sub: '1921년 · 함께 만세를 외친 학생들', tag: '2012년 독립유공자 포상',
     names: ['곽희주', '김나열', '김옥실', '박복술', '박음전', '이남순', '주유금'],
-    txt: '여러분과 비슷한 나이의 학생들이 몰래 태극기를 만들고 목포 시내에서 만세를 불렀어요.<br>붙잡혀 6~10개월 동안 감옥살이를 했어요.<br>90년이 지난 2012년, 나라는 이들을 독립유공자로 기렸어요.' },
+    txt: '여러분과 비슷한 나이의 학생들이 몰래 태극기를 만들고 목포 시내에서 만세를 불렀어요.<br>붙잡혀 6~10개월 동안 감옥살이를 했어요.<br>2012년, 나라는 아래 이름의 일곱 학생을 독립유공자로 기렸어요. 이들 외에도 여러 학생이 함께 만세운동에 참여했어요.' },
   { who: '이름이 남지 않은 사람들', sub: '1919년 4월 8일 · 양동교회 앞', tag: '80여 명이 붙잡힘',
     txt: '양동교회와 영흥학교·정명여학교를 중심으로 만세를 부른 날, 80여 명이 붙잡혀 갔어요.<br>다음 날에도 사람들은 "붙잡힌 사람들을 풀어 달라"며 다시 거리로 나왔어요.<br>이름이 기록되지 않은 많은 사람들도 함께였어요.' }
 ];
@@ -6646,7 +6650,7 @@ const BH_PLEDGE = [
 const BH_Q = [
   { q: '목포에서 사람들이 거리로 나와 "대한독립 만세"를 크게 외친 날은 언제일까요?', o: ['1919년 3월 1일', '1919년 4월 8일', '1945년 8월 15일', '1950년 6월 25일'], a: 1, e: '1919년 4월 8일, 3·1 운동의 물결이 목포까지 이어졌어요.' },
   { q: '4·8 만세운동에 함께한 목포의 학교는 어디일까요?', o: ['정명여학교와 영흥학교', '서울의 배재학당', '평양의 숭실학교', '부산의 동래고보'], a: 0, e: '정명여학교·영흥학교 학생과 교사들이 함께 만세를 불렀어요.' },
-  { q: '정명여학교 한문 교사로, 4·8 만세운동을 계획하고 앞장선 사람은 누구일까요?', o: ['안중근', '강석봉', '윤봉길', '유관순'], a: 1, e: '강석봉은 4·8 만세운동 주동자 가운데 가장 무거운 형을 받았어요.' },
+  { q: '정명여학교 한문 교사로, 4·8 만세운동을 계획하고 앞장선 사람은 누구일까요?', o: ['안중근', '강석봉', '윤봉길', '유관순'], a: 1, e: '강석봉은 목포 4·8 만세운동을 준비하고 참여한 인물이에요.' },
   { q: '태극기에서 하늘을 뜻하는 괘(☰)는 어디에 있을까요?', o: ['왼쪽 위', '오른쪽 위', '왼쪽 아래', '오른쪽 아래'], a: 0, e: '하늘(☰)은 왼쪽 위, 그 맞은편 오른쪽 아래에 땅(☷)이 있어요.' },
   { q: '우리나라가 일본에게서 나라를 되찾은 날(광복)은 언제일까요?', o: ['1919년 4월 8일', '1945년 8월 15일', '1948년 7월 17일', '1953년 7월 27일'], a: 1, e: '1945년 8월 15일, 민승이도 굴 밖에서 만세 소리를 들었어요.' },
   { q: '"보훈"의 뜻으로 가장 알맞은 것은 무엇일까요?', o: ['옛날 물건을 모아 전시하는 것', '나라를 위해 희생하고 애쓴 분들을 기억하고, 그 뜻을 이어 가는 것', '외국으로 여행을 떠나는 것', '어려운 문제를 빨리 푸는 것'], a: 1, e: '보훈은 기억하고, 감사하고, 그 뜻을 이어 가는 일이에요.' }
@@ -6927,7 +6931,7 @@ function mxPanel(title, sub, lines, w, h, accent = '#a8462f') {
 function mxAdd(o, x, y, z, ry, parent) { o.position.set(x, y, z); if (ry) o.rotation.y = ry; (parent || scene).add(o); return o; }
 
 
-const MX_SOURCES = {"mokpo":{"label":"목포시 문화관광 · 근대역사관 1관","url":"https://biz.mokpo.go.kr/tour/attraction/museum?idx=7449&mode=view"},"heritage":{"label":"국가유산포털 · 구 목포 일본영사관","url":"https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1333602890000&pageNo=1_1_2_0"}};
+const MX_SOURCES = {"mokpo":{"label":"목포시 문화관광 · 근대역사관 1관","url":"https://biz.mokpo.go.kr/tour/attraction/museum?idx=7449&mode=view"},"heritage":{"label":"국가유산포털 · 구 목포 일본영사관","url":"https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1333602890000&pageNo=1_1_2_0"},"archive":{"label":"대한민국역사박물관 · 영사관 연혁","url":"https://archive.much.go.kr/data/01/folderView.do?jobdirSeq=1233"}};
 function mxEvidence(body, ids = ['mokpo']) {
   const box = el('aside', 'mxEvidence');
   box.appendChild(el('p', '', '공식 안내로 살펴보는 가상 관람이에요. 공간과 모형은 학습용 재구성이며, 실제 전시 배치·사진·유물 원본과 다를 수 있어요.'));
@@ -6943,7 +6947,7 @@ function mxDef(def) { MX.push(def); return def; }
 
 const mxRoot = new THREE.Group(); scene.add(mxRoot);
 const mxCol0 = colliders.length;
-/* ───────── 실제 1관 전시실 모습(2026 사진)을 따라 만든 전시 도구 ───────── */
+/* ───────── 공식 전시 주제를 학습하는 가상 전시 도구: 위치·치수는 재구성 ───────── */
 const MXM = {
   black: new THREE.MeshLambertMaterial({ color: 0x1d1d20 }),
   frame: new THREE.MeshLambertMaterial({ color: 0x26262a }),
@@ -7100,11 +7104,13 @@ function mxFireplace(x, y, z, ry, mirror) {
   colR(x, z, 1.5, 0.6, y > 2 ? 2 : 1, ry);
   return g;
 }
-// 회색 가벽(실제 전시실의 칸막이)
+// 가상 전시 가벽: 실제 배치를 실측해 복원한 구조물이 아니에요.
 function mxPartition(x1, z1, x2, z2, y0, h = 3.25, mat = MXM.gray) {
   const lx = Math.abs(x2 - x1), lz = Math.abs(z2 - z1);
   const m = dk(Math.max(lx, 0.14), h, Math.max(lz, 0.14), mat, (x1 + x2) / 2, y0 + h / 2, (z1 + z2) / 2, mxRoot);
-  addCol(Math.min(x1, x2) - 0.07, Math.min(z1, z2) - 0.07, Math.max(x1, x2) + 0.07, Math.max(z1, z2) + 0.07, y0 > 2 ? 2 : 1);
+  m.userData.wall = true; WALLS.push(m);
+  const halfX = Math.max(lx, 0.14) / 2, halfZ = Math.max(lz, 0.14) / 2;
+  addCol(m.position.x - halfX, m.position.z - halfZ, m.position.x + halfX, m.position.z + halfZ, y0 > 2 ? 2 : 1);
   dk(Math.max(lx, 0.14) + 0.01, 0.12, Math.max(lz, 0.14) + 0.01, new THREE.MeshLambertMaterial({ color: 0x1c1c1e }), (x1 + x2) / 2, y0 + 0.06, (z1 + z2) / 2, mxRoot);
   return m;
 }
@@ -7163,13 +7169,13 @@ function mxModelCase(x, y, z, ry, kind) {
   const dsign = textPlane([{ t: 'INFORMATION', size: 0.12, bold: true }, { t: '관람 순서 · 1층 → 2층 → 방공호', size: 0.07 }], 1.4, 0.45, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' });
   mxAdd(dsign, -0.36, 0.62, 0, -PI / 2, desk); colR(2.3, 4.2, 0.8, 1.9, 1);
   mxDef({ id: 'mx0', extra: true, name: "건물 연혁 안내", place: '1층 현관 홀', lv: 1, obj: tl, at: [-1.6, 3.0], title: "붉은 벽돌 건물이 걸어온 시간",
-    facts: ["이 건물은 1900년 12월 일본영사관으로 완공되었어요.","목포이사청과 목포부청을 거쳐, 1947년부터 목포시청으로 사용되었어요.","1990년 목포문화원이 되었고, 2014년 목포근대역사관 1관으로 문을 열었어요."], sourceIds: ["mokpo","heritage"] });
+    facts: ["이 건물은 1900년 12월 일본영사관으로 완공되었어요.","목포이사청과 목포부청을 거쳐, 1947년부터 목포시청으로 사용되었어요.","시립도서관을 거쳐 1990년 목포문화원이 되었고, 2014년 목포근대역사관 1관으로 문을 열었어요."], sourceIds: ["mokpo","heritage","archive"] });
 
   /* ════════ 1층 오른쪽 방 ════════ */
   // 1 zone · 목포진으로 출발하다 (호두나무 가벽 + 목포진 모형 + 조계 경계비)
   mxWalnut(3.2, 3.0, '목포진으로 출발하다', '1 zone', 6.5, 0, 1.05, 0); addCol(4.83, 0.9, 8.17, 1.2, 1);
   // 안내도의 1·2 zone 칸막이: ㄷ자(앞은 1 zone, 뒤는 2 zone)
-  mxPartition(4.83, -1.35, 4.83, 0.97, 0); mxPartition(8.17, -3.1, 8.17, 0.97, 0);
+  mxPartition(4.83, -3.1, 4.83, -1.5, 0); mxPartition(8.17, -3.1, 8.17, 0.97, 0);
   mxUnit(6.75, 0, 5.75, PI, [MXS('목포진으로 출발하다', '#8a6a32'),
     MXP('목포진', 'Mokpojin', ['조선 수군이 서남해를 지키던 진영', '만호가 다스리던 바다 방어 기지', '1895년에 문을 닫았어요'], '#c9a157', 1.0, 3),
     MXP('목포의 개항', 'Opening of Mokpo Port', ['1897년 10월 1일 목포항이 열리다', '외국인이 사는 「각국공동조계」', '근대 도시 목포가 출발하다'], '#c9a157', 1.0, 5),
@@ -7214,7 +7220,7 @@ function mxModelCase(x, y, z, ry, kind) {
   mxPartition(-4.3, -1.0, -3.0, -1.0, 0, 3.6, new THREE.MeshLambertMaterial({ color: 0xece8e0 }));
   mxPartition(-6.58, -6, -6.58, -1.0, 0, 3.6, new THREE.MeshLambertMaterial({ color: 0xece8e0 }));
   // 7 zone · 근대 도시 건축 특별전 (큰 도시 모형 + 건물 모형 진열장)
-  const city = grp(-6.4, 0, 1.4); R.add(city);
+  const city = grp(-6.4, 0, 2.35); R.add(city);
   { const fr = MXM.black; dk(3.1, 0.08, 2.1, fr, 0, 0.82, 0, city); dk(3.0, 0.24, 2.0, fr, 0, 0.68, 0, city);
     [[-1.45, -0.95], [1.45, -0.95], [-1.45, 0.95], [1.45, 0.95]].forEach(([x, z]) => dk(0.05, 0.56, 0.05, fr, x, 0.28, z, city));
     const brace = (x) => { const b = dk(0.04, 0.04, 2.3, fr, x, 0.3, 0, city); b.rotation.x = 0.5; }; brace(-1.45); brace(1.45);
@@ -7235,7 +7241,7 @@ function mxModelCase(x, y, z, ry, kind) {
     const g = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.5, 1.95), MXM.glass); g.position.y = 1.13; city.add(g);
     const st = dk(0.18, 1.0, 0.06, MXM.white, 1.0, 0.5, 1.12, city); st.rotation.x = 0.0; }
   const modelLabel = mxPanel('학습용 도시 모형', '실제 지도 아님', ['건물과 도로의 위치는 재구성이에요.'], 2.3, .6); modelLabel.position.set(0,1.65,1.08); city.add(modelLabel);
-  colR(-6.4, 1.4, 3.15, 2.15, 1);
+  colR(-6.4, 2.35, 3.15, 2.15, 1);
   const OL = '#6f6a3a';
   const bp = (title, en, lines, seed) => MXP(title, en, lines, '#c9b46a', 0.75, seed);
   mxUnit(-6.6, 0, 5.75, PI, [MXS('조선은행 목포지점', OL), bp('1924년', 'Joseon Bank', ['르네상스 양식 2층 조적조', '정면의 도리스 양식 기둥 넷'], 31),
@@ -7250,7 +7256,7 @@ function mxModelCase(x, y, z, ry, kind) {
     MXS('북교동 문익수 가옥', OL), bp('1908년', 'Mun Ik-su House', ['근대 초기 한옥', 'ㄱ자 안채와 대청'], 53),
     MXS('정명여학교 선교사 사택', OL), bp('1905년 무렵', 'Missionary House', ['목포에 처음 지어진', '서양식 석조 주택'], 55)]);
   [4.02, 2.9, 1.78].forEach((z, i) => mxModelCase(-8.9, 0, z, PI / 2, ['church', 'hanok', 'mission'][i]));
-  mxDef({ id: 'mx7', name: "근대 건축 이야기", place: '1층 왼쪽 방', lv: 1, obj: city, at: [-4.5, 1.4], title: "근대 도시 특별전",
+  mxDef({ id: 'mx7', name: "근대 건축 이야기", place: '1층 왼쪽 방', lv: 1, obj: city, at: [-4.5, 2.35], title: "근대 도시 특별전",
     facts: ["목포역과 오거리 일대의 건축물 모형을 소개하는 전시예요.","동본원사·호남은행·양동교회·일본영사관 등이 다뤄져요.","게임 속 모형은 학습용으로 단순화했어요. 실제 거리나 전시 배치를 나타내지 않아요."],
     q: "공식 안내가 소개하는 도시 모형의 지역은?", o: ["목포역과 오거리 일대","서울 강남 일대","부산 해운대 일대","제주 성산 일대"], a: 0, sourceIds: ["mokpo"] });
 
@@ -7284,9 +7290,9 @@ function mxModelCase(x, y, z, ry, kind) {
     facts: ["1919년 4월 8일 만세운동을 배경으로 한 체험 주제예요.","공식 안내에는 교복과 모자 등의 체험 소품이 소개돼요.","아래 카드는 게임에서 만든 학습용 기념 카드예요. 실제 전시 사진은 아니에요."], sourceIds: ["mokpo"] });
 
   /* ════════ 2층 왼쪽 방 · 3 zone 저항의 제일선이 되다 ════════ */
-  mxWalnut(2.6, 3.0, '저항의 제일선이 되다', '3 zone', -4.87, 4, -1.94, PI / 2); addCol(-5.02, -3.97, -4.72, 0.09, 2);
+  mxWalnut(2.6, 3.0, '저항의 제일선이 되다', '3 zone', -4.87, 4, -2.24, PI / 2); addCol(-5.02, -3.54, -4.72, -0.94, 2);
   // 안내도의 3 zone 칸막이
-  mxPartition(-4.87, -3.97, -4.87, 0.09, 4); mxPartition(-10, 0.09, -7.0, 0.09, 4); mxPartition(-4.87, 0.09, -3.3, 0.09, 4);
+  mxPartition(-4.87, -3.97, -4.87, -1.0, 4); mxPartition(-10, 0.09, -7.0, 0.09, 4); // 문 앞 짧은 가벽은 제거해 중앙 통로를 열어요.
   const rice = mxBoard(1.2, 1.6, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "저항의 역사를 읽는 질문", W*.07,H*.15,H*.055,'#2a211a',true); ["사람들은 어떤 억압을 받았을까요?","시민들은 어떻게 맞섰을까요?","만세운동과 청년운동을 살펴봐요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(rice, -5.0, 5.9, -1.94, -PI / 2, R);
   mxUnit(-6.6, 4, 5.75, PI, [MXS('저항의 제일선이 되다', '#8a2a22'),
@@ -7330,10 +7336,10 @@ function mxModelCase(x, y, z, ry, kind) {
   { const red = new THREE.MeshLambertMaterial({ color: 0xb02020 }), blk = new THREE.MeshLambertMaterial({ color: 0x151515 }); dk(0.12, 0.08, 0.26, red, -0.15, 0.36, 0, carC); dk(0.14, 0.1, 0.28, blk, 0.12, 0.37, 0, carC); dk(0.12, 0.08, 0.15, blk, 0.12, 0.45, -0.03, carC); }
   // 1930년대 목포 지도 가벽 / 뒷면은 황국신민화 · 강제 동원
   // 안내도의 4·5 zone 칸막이
-  mxPartition(4.71, 0.46, 8.0, 0.46, 4, 2.8); mxPartition(4.71, -1.57, 4.71, 3.23, 4, 2.8); mxPartition(8.0, -3.8, 8.0, 0.46, 4, 2.8);
+  mxPartition(4.71, -1.61, 8.0, -1.61, 4, 2.8); mxPartition(4.71, -3.8, 4.71, -1.61, 4, 2.8); mxPartition(8.0, -3.8, 8.0, -1.61, 4, 2.8);
   const map30 = mxBoard(2.9, 2.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "목포의 근대, 전시 주제로 살펴보기", W*.07,H*.15,H*.055,'#2a211a',true); ["목포진 · 개항장 · 시민들의 저항","종교와 교육 · 영화와 공연","만세운동 체험 · 근대 도시","7개 주제로 연결하는 학습 안내"].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
-  mxAdd(map30, 6.35, 5.45, 0.57, 0, R);
-  mxUnit(6.35, 4, 0.04, PI, [MXS('미나미 총독의 황국신민화 정책', '#8a6a32'), MXP('신사 참배 강요', 'Shinto Shrines', ['1936년 미나미 지로 총독', '신사 참배를 거부한 정명 · 영흥학교', '끝내 문을 닫다(1937)'], '#c9a157', 0.75, 151),
+  mxAdd(map30, 6.35, 5.45, -1.5, 0, R);
+  mxUnit(6.35, 4, -2.03, PI, [MXS('미나미 총독의 황국신민화 정책', '#8a6a32'), MXP('신사 참배 강요', 'Shinto Shrines', ['1936년 미나미 지로 총독', '신사 참배를 거부한 정명 · 영흥학교', '끝내 문을 닫다(1937)'], '#c9a157', 0.75, 151),
     MXP('창씨개명', 'Name Changing', ['1939년 11월', '우리 이름을 일본식으로 바꾸게 하다'], '#c9a157', 0.75, 153),
     MXS('강제 동원', '#8a6a32'), MXP('인력의 강제 동원', 'Forced Mobilization', ['징병 · 징용 · 근로보국대', '쌀과 놋그릇까지 빼앗다(공출)'], '#c9a157', 0.75, 155)], { col: false });
   // 5 zone · 대중 문화의 시대 (옛 거리 세트 · 인력거)
