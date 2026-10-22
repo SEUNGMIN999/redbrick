@@ -964,6 +964,17 @@ body.plFree #view{cursor:none}
 .bhRes p{margin:6px 0 0}.bhRes .bhSmall{color:#d8c8a8}
 .bhResN{font:700 42px/1 "Gowun Batang",serif;color:#ffd98a}.bhResN small{font-size:20px;color:#d8c8a8}
 .bhCmp{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:8px}.bhCmp div{display:flex;flex-direction:column}.bhCmp small{font-size:12px;color:#d8c8a8}.bhCmp b{font-size:26px;color:#ffd98a}.bhCmp span{font-size:22px;color:#d8b25a}
+.srcNote{font-size:13.5px;color:#6b5a42;background:#f3ecdc;border-left:3px solid #6a4a8a;padding:6px 10px;border-radius:4px;margin-top:6px}
+.srcTag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 11px/1 "Pretendard",sans-serif;padding:4px 7px;border-radius:999px;letter-spacing:0;white-space:nowrap}
+.srcTag.real{background:#1f5a3a;color:#fff}.srcTag.recon{background:#8a6a32;color:#fff}.srcTag.story{background:#6a4a8a;color:#fff}
+.bhTl{position:relative;display:flex;flex-direction:column;gap:8px;padding-left:18px;margin:4px 0 6px}.bhTl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:#d6c39a}
+.bhTl>div{position:relative;display:grid;grid-template-columns:96px 1fr;gap:2px 10px;background:#fbf5e6;border:1px solid #e3d3ad;border-radius:8px;padding:8px 10px}.bhTl>div::before{content:"";position:absolute;left:-17px;top:13px;width:10px;height:10px;border-radius:50%;background:#a8462f;border:2px solid #fbf5e6}
+.bhTl b{color:#a8462f;font-variant-numeric:tabular-nums}.bhTl span{font-weight:700}.bhTl small{grid-column:2;color:#6b5a42;font-size:13px;line-height:1.45}.bhTl .fu{border-style:dashed;background:#f3ecdc}.bhTl .fu::before{background:#c9a157}
+.mxFacts p.hl{background:linear-gradient(transparent 60%,rgba(242,199,107,.6) 60%);}
+#edgeArrow{position:fixed;z-index:6;width:46px;height:46px;margin:-23px 0 0 -23px;pointer-events:none;display:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+#edgeArrow svg{width:100%;height:100%;display:block}#edgeArrow b{position:absolute;left:50%;top:100%;transform:translateX(-50%);font:700 11px/1.2 "Pretendard",sans-serif;color:#ffe2a0;white-space:nowrap;text-shadow:0 1px 2px #000}
+.tlamp{display:flex;align-items:center;gap:12px;margin:6px 0;padding:8px 12px;border-radius:8px;background:#2a1d14;color:#efe3c2;font-weight:700}.tlamp i{width:30px;height:30px;border-radius:50%;background:#5a3a20;flex:none;transition:background .05s,box-shadow .05s}.tlamp.on i{background:#ffd27a;box-shadow:0 0 18px 6px rgba(255,210,122,.6)}.tlamp em{font-style:normal;font-size:22px;letter-spacing:.2em;min-width:40px;color:#ffd27a}
+@media (max-width:560px){.bhTl>div{grid-template-columns:1fr}.bhTl small{grid-column:1}}
 .bhTwo{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bhTwo>div{background:#f8f1df;border:1px solid #d6c39a;border-radius:8px;padding:10px 12px}
 .bhTwo ul,.bhRef{margin:4px 0 0;padding-left:20px;font-size:14.5px}
 .ltTo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:0 0 10px}
@@ -2622,7 +2633,7 @@ const FACTS = [
   null,
   { t: '1900년에 태어난 집', b: '1관은 1900년에 완공된 목포 일본영사관 건물이에요. 목포에서 가장 오래된 근대 건축물로, 붉은 벽돌과 흰 벽돌을 번갈아 쌓아 지었어요. 목포 시내를 내려다보는 언덕 위에 세웠어요.' },
   { t: '좌우 대칭의 현관', b: '가운데 현관과 세모난 박공지붕을 중심으로 왼쪽과 오른쪽이 똑같은 대칭 구조예요. 건물 안에는 나무 바닥, 천장 장식, 벽난로가 옛 모습 그대로 남아 있어요.' },
-  { t: '이름이 여러 번 바뀐 건물', b: '일본영사관(1900) → 목포 이사청(1905) → 목포부청(1910) → 목포시청(1947) → 시립도서관 → 목포문화원 → 목포근대역사관(2014). 한 건물이 시대에 따라 다른 역할을 맡았어요.' },
+  { t: '이름이 여러 번 바뀐 건물', b: '일본영사관(1900) → 목포 이사청(1906) → 목포부청(1914) → 목포시청(1947) → 시립도서관 → 목포문화원 → 목포근대역사관(2014). 한 건물이 시대에 따라 다른 역할을 맡았어요.' },
   { t: '1897년, 목포항이 열리다', b: '목포항은 1897년 10월 1일에 개항했어요. 그 뒤 호남 지방의 쌀과 면화가 이 항구를 거쳐 일본으로 많이 실려 나갔어요. 그래서 목포는 쌀·면화·소금이 흰색이라 "삼백(三白)의 고장"이라 불리기도 했어요.' },
   { t: '1919년 4월 8일 목포 만세운동', b: '3·1 운동의 물결은 목포에도 이어졌어요. 1919년 4월 8일, 정명여학교·영흥학교 학생들과 목포 사람들이 거리로 나와 "대한독립 만세"를 외쳤어요. 1관 전시실에서 이 이야기를 만날 수 있어요.' },
   { t: '봉안전 터와 서고', b: '봉안전은 일본 왕의 사진 등을 보관하던 곳이에요. 사람들은 그 앞을 지날 때 절을 해야 했어요. 지금은 1관 뒤뜰에 터만 남아 있어요. 옆의 돌 건물은 1932년에 화강암으로 지은 목포부청 서고(문서 창고)예요. 방금 서고 문이 열렸어요!' },
@@ -2704,6 +2715,9 @@ $('modalClose').onclick = () => { if (!MODAL_OPT.lock) closeModal(); };
 $('modal').addEventListener('pointerdown', e => { if (e.target === $('modal') && MODAL_OPT.notebook && !MODAL_OPT.lock) closeModal(); });
 
 function head(body, eyebrow, title) { body.appendChild(el('div', 'eyebrow', eyebrow)); body.appendChild(el('h2', '', title)); }
+// 사료 성격 표식: real 실제 기록 · recon 사료 바탕 재현 · story 창작 이야기
+function srcTag(k) { const t = { real: '실제 기록', recon: '사료 바탕 재현', story: '창작 이야기' }[k]; return el('span', 'srcTag ' + k, t); }
+function tagHead(body, k) { const h = body.querySelector('h2'); if (h) h.appendChild(srcTag(k)); }
 function msgLine(body) { const m = el('div', 'msg'); body.appendChild(m); return m; }
 function say(m, text, ok) { m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'bad'); }
 function shake(node) { node.classList.remove('shake'); void node.offsetWidth; node.classList.add('shake'); }
@@ -2725,7 +2739,7 @@ const written = new Set();
 function openNotebook(page) {
   if (page == null) page = Math.min(state.stage, 7);
   openModal(body => {
-    head(body, '정민승의 수첩', '1관의 비밀 수첩');
+    head(body, '정민승의 수첩', '1관의 비밀 수첩'); tagHead(body, 'story');
     const tabs = el('div', 'tabs'); body.appendChild(tabs);
     const pg = el('div'); body.appendChild(pg);
     const show = i => {
@@ -2775,7 +2789,7 @@ function showFact(n, fresh) {
   let act = null, acted = false;
   const run = () => { if (acted || !act) return; acted = true; act(); };
   openModal(body => {
-    head(body, `역사 카드 ${'①②③④⑤⑥⑦'[n - 1]}`, FACTS[n].t);
+    head(body, `역사 카드 ${'①②③④⑤⑥⑦'[n - 1]}`, FACTS[n].t); tagHead(body, 'real');
     if (typeof CARD_IMG !== 'undefined' && CARD_IMG[n]) { const im = el('img', 'cardimg'); im.src = CARD_IMG[n]; im.alt = FACTS[n].t; im.title = '눌러서 크게 보기'; im.onclick = () => im.classList.toggle('zoom'); body.appendChild(im); }
     body.appendChild(el('div', 'fact', FACTS[n].b));
     const row = el('div', 'row'); row.style.marginTop = '14px'; body.appendChild(row);
@@ -2938,7 +2952,7 @@ function puzzle3() {
     hg.fillStyle = '#5a2b18'; hg.textAlign = 'center';
     hg.font = '700 40px "Nanum Pen Script","Gowun Batang",serif'; hg.fillText('이 집의 이름이 바뀐 차례', 440, 70);
     hg.font = '700 58px "Nanum Pen Script","Gowun Batang",serif';
-    hg.fillText('1905 · 이사청', 640, 210); hg.fillText('1900 · 영사관', 210, 300); hg.fillText('1910 · 부청', 470, 470);
+    hg.fillText('1906 · 이사청', 640, 210); hg.fillText('1900 · 영사관', 210, 300); hg.fillText('1914 · 부청', 470, 470);
     const mg = mask.getContext('2d');
     let pt = null;
     function draw() {
@@ -2966,7 +2980,7 @@ function puzzle3() {
     const check = () => {
       if (picked.some(p => !p)) return;
       if (picked.every((p, i) => p === order[i])) { setTimeout(() => { closeModal(); solve(3); }, 350); }
-      else { sfx.bad(); say(m, '순서가 달라요. 쪽지의 연도를 다시 확인해 보세요.'); shake(slots); setTimeout(reset, 700); }
+      else { sfx.bad(); say(m, '순서가 달라요. 이 건물은 외국 공관 → 감독하는 관청 → 지방을 다스리는 관청 순으로 바뀌었어요. 쪽지의 연도도 다시 확인해 보세요.'); shake(slots); setTimeout(reset, 700); }
     };
     const put = (c, name, i) => {
       if (i < 0 || i > 2) return;
@@ -3539,7 +3553,7 @@ const ctlHTML = coarse
   : `<div class="ctl2"><div class="wasd"><i></i>${kc('W')}<i></i>${kc('A')}${kc('S')}${kc('D')}</div><b>걷기</b><span>방향키도 돼요</span></div><div class="ctl2">${ICO.mouse}<b>둘러보기</b><span>화면을 한 번 클릭한 뒤 마우스 움직이기 · Shift 달리기 · Esc 멈춤</span></div><div class="ctl2"><div class="keys1">${kc('E')}<em>또는</em>${ICO.tap.replace('viewBox="0 0 48 40"', 'viewBox="0 0 48 40" class="sm"')}</div><b>조사하기</b><span>가운데 동그라미를 맞추고 클릭이나 E</span></div>`;
 const BRIEF = [
   { eb: '1919년 봄 · 목포부청', title: '수첩이 가리키는 곳으로', items: [
-    '<p>낯선 시대에 남은 건 손에 든 수첩 한 권뿐이에요. 수첩이 가리키는 곳으로 가 보세요.</p>',
+    '<p>낯선 시대에 남은 건 손에 든 수첩 한 권뿐이에요. 수첩이 가리키는 곳으로 가 보세요.</p><p class="srcNote">민승이와 수첩은 공부를 돕기 위해 만든 <b>창작 이야기</b>예요. 건물과 4·8 만세운동, 독립운동가는 <b>실제 역사</b>예요.</p>',
     `<div class="glab">이렇게 도움을 받아요</div><div class="guide"><div class="gtile"><span class="gico">${ICO.dia}</span><span><b>금색 표시</b>막히면 다음 장소 위에 떠요</span></div><div class="gtile"><span class="gico">${ICO.book}</span><span><b>수첩</b>이야기와 단서가 적혀 있어요</span></div><div class="gtile"><span class="gico">${ICO.bulb}</span><span><b>힌트</b>세 단계로 하나씩 열려요</span></div></div>`,
     `<div class="glab">${coarse ? '태블릿 조작' : '컴퓨터 조작'}</div><div class="ctrls">${ctlHTML}</div>`] },
   { eb: '1919년 목포 사람', title: '나의 통행증', reg: true, items: [
@@ -3822,7 +3836,7 @@ function drawMap() {
   // 방공호 입구
   if (player.lv === 1) { const [gx, gy] = P(0, TZ); mg.fillStyle = later ? '#111' : '#6c665c'; mg.fillRect(gx - 7, gy - 4, 14, 5); }
   mg.fillStyle = '#efe4cc'; mg.font = `700 ${inB ? 18 : 13}px "Gowun Batang",serif`; mg.textAlign = 'center';
-  const [sx, sy] = P(6.95, -5.2); mg.fillText('계단', sx, sy + 5);
+  const [sx, sy] = P(2.4, -3.0); mg.fillText('계단', sx, sy + 5);
   const mt = markerTarget(); if (mt) { const [tx, ty] = P(mt.x, mt.z); diamond(tx, ty, 8, '#f2c76b'); }
   const [px, py] = P(player.x, player.z); arrow(px, py, player.yaw, 9);
 }
@@ -4055,7 +4069,7 @@ PUZZLES[1] = () => {
 
 /* ---------- ③ 촛불 켜고 벽 글씨 찾기 ---------- */
 const candleLight = new THREE.PointLight(0xffb060, 0, 7, 1.6); candleLight.position.set(0.25, -0.25, -0.3); camera.add(candleLight);
-const MARKS = [['1900 · 영사관', -9.83, 2.0, -5.2, Math.PI / 2], ['1905 · 이사청', -3.17, 2.1, -2.2, -Math.PI / 2], ['1910 · 부청', -3.17, 2.0, -5.0, -Math.PI / 2]];
+const MARKS = [['1900 · 영사관', -9.83, 2.0, -5.2, Math.PI / 2], ['1906 · 이사청', -3.17, 2.1, -2.2, -Math.PI / 2], ['1914 · 부청', -3.17, 2.0, -5.0, -Math.PI / 2]];
 const markMeshes = MARKS.map(([t, x, y, z, ry], i) => {
   const m = textPlane([{ t, size: 0.17, bold: true, color: '#2a1d14' }], 0.85, 0.42, { bg: '#e6dab9', border: false });
   m.material.transparent = true; m.material.opacity = 0; m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); regPick(m, 'mark' + i);
@@ -4276,7 +4290,7 @@ POST.push(() => { if (state.dark) flash.intensity *= 0.3 + 0.7 * FX.battery; });
 const NPCS = [
   { name: '짐꾼 아저씨', fig: { top: 0xe6dcc6, bottom: 0xd2c6ad, jige: true, band: true }, at: [3.6, 0, 18.2, -2.4], lines: ['이 쌀가마들? 전부 항구로 간다네. 배에 실려 일본으로 가지.', '우리는 보리죽을 먹는데, 좋은 쌀은 다 바다 건너로 가는구먼.', '항구가 문을 연 지 벌써 스무 해가 넘었지. 그때부터 쌀이 저렇게 나갔어.'] },
   { name: '정명여학교 학생', fig: { top: 0xf4f0e6, bottom: 0x1f2233, skirt: true, braid: true, goreum: 0xf4f0e6 }, at: [-10.5, 0, 16.5, 2.2], lines: ['쉿… 4월 8일을 기억해. 그날이 오면 너도 알게 될 거야.', '태극기는 하늘과 땅, 물과 불이 서로 마주 보고 있어. 짝끼리 마주 보게!', '우리 학교 친구들도 함께 외쳤어. 대한독립 만세!'] },
-  { name: '부청 직원', fig: { top: 0x2a2826, bottom: 0x2a2826, hat: 'fedora', buttons: true, sleeve: 0x2a2826 }, at: [1.3, 0, 1.6, 0.3], lines: ['이 건물? 1900년에 일본 영사관으로 지었지. 1905년엔 이사청, 1910년부터 부청이야.', '2층 계단 앞 줄은 함부로 넘지 말게. 서쪽 방 벽난로 쪽이나 살펴보지 그러나.', '서쪽 방은 겨울엔 어두워서 촛불 없이는 아무것도 안 보여.'] }
+  { name: '부청 직원', fig: { top: 0x2a2826, bottom: 0x2a2826, hat: 'fedora', buttons: true, sleeve: 0x2a2826 }, at: [1.3, 0, 1.6, 0.3], lines: ['이 건물? 1900년에 일본 영사관으로 지었지. 1906년엔 이사청, 1914년부터 부청이야.', '2층 계단 앞 줄은 함부로 넘지 말게. 서쪽 방 벽난로 쪽이나 살펴보지 그러나.', '서쪽 방은 겨울엔 어두워서 촛불 없이는 아무것도 안 보여.'] }
 ];
 NPCS.forEach((n, i) => {
   const f = makeFigure(n.fig); f.position.set(n.at[0], n.at[1], n.at[2]); f.rotation.y = n.at[3]; scene.add(f);
@@ -4295,7 +4309,7 @@ const ARTS = [
   { e: '🏷', t: '쌀 검사표', d: '항구로 가는 쌀가마에 붙이던 표예요. 목포항으로 많은 쌀이 일본에 실려 갔어요.', at: [-10.0, 0.5, 13.0], era: ['y1919'] }, // 정명여학교 학생 옆 벤치 위
   { e: '✉', t: '옛 우표', d: '1관 앞 우체통으로 편지를 부쳤어요. 편지도 몰래 검사받곤 했어요.', at: [7.7, 0.06, 10.5], era: ['y1919'] },
   { e: '🎀', t: '여학생의 댕기', d: '정명여학교 학생들은 1919년 4월 8일 목포 만세운동에 함께했어요.', at: [2.3, 4.06, 6.4], era: ['y1919'] },
-  { e: '🔑', t: '부청 서랍 열쇠', d: '목포부청 직원이 쓰던 놋쇠 열쇠예요. 이 건물은 1910년부터 목포부청이었어요.', at: [8.5, 0.83, 1.2], era: ['y1919'] },
+  { e: '🔑', t: '부청 서랍 열쇠', d: '목포부청 직원이 쓰던 놋쇠 열쇠예요. 이 건물은 1914년부터 목포부청이었어요.', at: [8.5, 0.83, 1.2], era: ['y1919'] },
   { e: '⛑', t: '방공 두건', d: '공습 때 머리를 보호하려고 쓴 두건이에요. 1944년 무렵 사람들은 공습 훈련에 동원되었어요.', at: [-9.0, 0.06, -12.0], era: ['y1944'] },
   { e: '⛏', t: '녹슨 곡괭이', d: '방공호를 파는 데 쓰인 곡괭이예요. 굴을 파는 일에 많은 조선 사람들이 강제로 동원되었어요.', at: [cellX(8) + 0.4, 0.06, cellZ(5) + 0.5], era: ['y1944', 'present'] }
 ];
@@ -4322,7 +4336,7 @@ function takeArt(i) {
   sfx.pick();
   const a = ARTS[i];
   if (typeof findPop === 'function') findPop(i);
-  setTimeout(() => openModal(body => { head(body, `숨은 유물 ${FX.arts.size}/7`, `${a.e} ${a.t}`); if (typeof ART_IMG !== 'undefined' && ART_IMG[i + 1]) { const im = el('img', 'artimg'); im.src = ART_IMG[i + 1]; im.alt = a.t; body.appendChild(im); } if (ART_MEMO[i]) body.appendChild(el('p', 'hand kid artmemo', `“${ART_MEMO[i]}” <span>— 민승이의 수첩</span>`)); body.appendChild(el('div', 'fact', a.d)); const b = el('button', 'pbtn', '도감에 넣기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); }), typeof findPop === 'function' ? 1800 : 0);
+  setTimeout(() => openModal(body => { head(body, `숨은 유물 ${FX.arts.size}/7`, `${a.e} ${a.t}`); tagHead(body, 'recon'); if (typeof ART_IMG !== 'undefined' && ART_IMG[i + 1]) { const im = el('img', 'artimg'); im.src = ART_IMG[i + 1]; im.alt = a.t; body.appendChild(im); } if (ART_MEMO[i]) body.appendChild(el('p', 'hand kid artmemo', `“${ART_MEMO[i]}” <span>— 민승이의 수첩</span>`)); body.appendChild(el('div', 'fact', a.d)); const b = el('button', 'pbtn', '도감에 넣기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); }), typeof findPop === 'function' ? 1800 : 0);
 }
 
 /* ---------- 상호작용 연결 ---------- */
@@ -4722,7 +4736,7 @@ const SAVE_KEY = 'bm-save-v1', SET_KEY = 'bm-settings-v1';
 const HINT3 = [null,
   ['건물 바깥벽을 한 바퀴 돌아보세요. 왼쪽 벽, 오른쪽 벽, 뒤쪽 벽 두 곳에 분필로 그린 동그라미가 있어요.', '분필 번호 순서대로, 그림마다 흰 벽돌만 세어 숫자를 하나씩 만들어요.', '1번 그림의 흰 벽돌은 1개예요. 네 숫자를 이으면 이 집이 지어진 해가 돼요.'],
   ['건물 정면 현관문을 조사하세요.', '가운데 점선이 거울이에요. 조각마다 왼쪽에 있는 것과 방향이 반대인지(거울에 비친 모양인지) 확인하세요.', '박공은 가운데가 높고 오른쪽으로 내려가는 조각, 창문은 위가 둥근 아치창 두 줄, 모서리 돌은 벽 안쪽(왼쪽)으로 붙은 조각이에요.'],
-  ['1층 서쪽 방(들어가서 왼쪽) 벽난로에서 촛불을 켜고, 방 벽을 가까이 살펴보세요.', '벽에 숨은 건물 이름 3개를 찾은 뒤, 연도가 빠른 것부터 차례로 놓아요.', '1900 영사관 → 1905 이사청 → 1910 부청 순서예요.'],
+  ['1층 서쪽 방(들어가서 왼쪽) 벽난로에서 촛불을 켜고, 방 벽을 가까이 살펴보세요.', '벽에 숨은 건물 이름 3개를 찾은 뒤, 연도가 빠른 것부터 차례로 놓아요.', '1900 영사관 → 1906 이사청 → 1914 부청 순서예요.'],
   ['먼저 1층 동쪽 방 책상의 전신기, 그다음 2층 서쪽 방 창가의 망원경이에요.', '전보 부호는 부호표와 한 칸씩 비교해요. 항구가 열린 해 = 민승이가 태어난 해 − 10년이에요.', '전보 번호는 4·0·8이에요. 1919 − 12 = 1907, 1907 − 10 = 1897 → 18번 배, 그다음 97번 배.'],
   ['2층 바닥 곳곳에 떨어진 태극기 조각 5개(괘 4개와 태극)를 모은 뒤, 동쪽 방 서랍장을 조사하세요.', '태극기의 괘는 짝끼리 대각선으로 마주 봐요. 하늘 ↔ 땅, 물 ↔ 불.', '하늘 ☰ 왼쪽 위, 땅 ☷ 오른쪽 아래, 물 ☵ 오른쪽 위, 불 ☲ 왼쪽 아래예요.'],
   ['1층 뒷문으로 나가 봉안전 왼쪽 앞의 공고문을 찾으세요. 순사가 등을 돌렸을 때 움직이고, 돌 건물 뒤에 숨을 수 있어요.', '1관이 처음 누구를 위해 지어졌는지, 쌀이 어디로 실려 갔는지 떠올려 보세요.', '거짓은 2번(조선 사람을 위한 관청)과 5번(쌀 덕분에 밥상이 넉넉)이에요.'],
@@ -4755,8 +4769,8 @@ const WHY = [null,
     o: [['개항장 목포와 항구를 내려다보며 관리하고, 힘을 보여 주려고', 1, '맞아요. 높은 곳의 큰 벽돌 건물은 "우리가 이곳을 다스린다"는 것을 보여 주는 상징이었어요.'], ['땅값이 가장 싸서', 0, '언덕 위 땅이 싸서 고른 것은 아니에요. 어디에서나 잘 보이는 자리라는 점을 생각해 보세요.'], ['바닷물이 들어오지 않아서', 0, '그것도 이유가 될 수는 있지만, 왜 가장 눈에 띄는 곳이어야 했는지 다시 생각해 보세요.']] },
   { src: '가운데 현관과 세모 박공을 중심으로 좌우가 똑같은 서양식 붉은 벽돌 건물. 당시 목포의 집들은 대부분 나무와 흙으로 지은 초가와 기와집이었다.', q: '이런 건물을 본 목포 사람들은 어떤 느낌을 받았을까?',
     o: [['낯설고 위압적인, 새로운 힘이 들어왔다는 느낌', 1, '맞아요. 낯선 서양식 큰 건물은 일본의 힘과 근대 문물을 보여 주는 장치였어요.'], ['우리 동네 집과 비슷해서 편안한 느낌', 0, '당시 집들과 비교해 보세요. 재료도, 크기도, 모양도 많이 달랐어요.'], ['아무 느낌도 없었을 것', 0, '매일 올려다보는 언덕 위의 큰 건물이었다는 점을 떠올려 보세요.']] },
-  { src: '1900 일본영사관 → 1905 목포 이사청 → 1910 목포부청. 1905년 일본은 대한제국의 외교권을 빼앗았고, 1910년에는 나라를 빼앗았다.', q: '건물 이름이 이렇게 바뀐 것은 무엇을 보여 줄까?',
-    o: [['일본이 점점 우리나라를 직접 다스리게 된 과정', 1, '맞아요. 외국 공관(영사관) → 감독 기관(이사청) → 지방을 다스리는 관청(부청)으로, 일본의 지배가 깊어진 과정이 이름에 담겨 있어요.'], ['건물을 새로 고쳐 지은 횟수', 0, '건물은 그대로였어요. 바뀐 것은 이 건물이 하는 일이었어요.'], ['목포 인구가 늘어난 과정', 0, '연도 옆에 적힌 1905년, 1910년의 사건을 다시 읽어 보세요.']] },
+  { src: '1900 일본영사관 → 1906 목포 이사청 → 1914 목포부청. 1905년 을사늑약으로 외교권을 빼앗은 일본은 이듬해 이사청을 두었고, 1910년 나라를 빼앗은 뒤 1914년 이 건물을 목포부청으로 썼다.', q: '건물 이름이 이렇게 바뀐 것은 무엇을 보여 줄까?',
+    o: [['일본이 점점 우리나라를 직접 다스리게 된 과정', 1, '맞아요. 외국 공관(영사관) → 감독 기관(이사청) → 지방을 다스리는 관청(부청)으로, 일본의 지배가 깊어진 과정이 이름에 담겨 있어요.'], ['건물을 새로 고쳐 지은 횟수', 0, '건물은 그대로였어요. 바뀐 것은 이 건물이 하는 일이었어요.'], ['목포 인구가 늘어난 과정', 0, '1905년(을사늑약), 1910년(국권 피탈)의 사건을 다시 읽어 보세요.']] },
   { src: '짐꾼: "이 쌀가마들 전부 배에 실려 일본으로 가지. 좋은 쌀은 다 바다 건너로 가고, 우리는 보리죽을 먹는구먼."', q: '쌀이 많이 나는데도 목포 사람들은 왜 보리죽을 먹었을까?',
     o: [['생산된 쌀이 일본으로 많이 실려 나가 정작 먹을 쌀이 부족했기 때문에', 1, '맞아요. 항구를 통해 호남의 쌀이 많이 빠져나가면서, 쌀을 기른 사람들은 오히려 쌀을 먹기 어려웠어요.'], ['사람들이 보리를 더 좋아해서', 0, '짐꾼의 말을 다시 읽어 보세요. "좋은 쌀은 다 바다 건너로 간다"고 했어요.'], ['그해 쌀농사가 모두 망해서', 0, '배에 쌀가마가 가득 실려 있었다는 점을 떠올려 보세요.']] },
   { src: '1919년 4월 8일, 정명여학교·영흥학교 학생들과 목포 사람들이 거리로 나와 "대한독립 만세"를 외쳤다. 붙잡히면 큰 벌을 받을 수 있었다.', q: '학생들은 왜 위험을 무릅쓰고 만세를 외쳤을까?',
@@ -4882,7 +4896,7 @@ function settingsModal() {
       opts.forEach(([v, t]) => { const b = el('button', SET[key] === v ? 'on' : '', t); b.onclick = () => { SET[key] = v; [...w.children].forEach(x => x.classList.toggle('on', x === b)); LS.set(SET_KEY, SET); if (key === 'q') setQuality(v); applyControls(); sfx.click(); }; w.appendChild(b); });
       if (note) body.appendChild(el('div', 'setnote', note));
     };
-    seg('그래픽', 'q', [['auto', '자동'], ['low', '낮음'], ['med', '보통'], ['high', '높음']], '태블릿이나 크롬북이 버벅이면 "낮음"을 고르세요. 자동은 느려지면 스스로 낮춰요.');
+    seg('그래픽', 'q', [['auto', '자동'], ['low', '가볍게'], ['med', '보통'], ['high', '선명하게']], '태블릿이나 크롬북이 버벅이면 "가볍게"를 고르세요. 자동은 느려지면 스스로 낮춰요.');
     seg('걷는 속도', 'move', [['slow', '느리게'], ['mid', '보통'], ['fast', '빠르게']]);
     seg('둘러보기 감도', 'look', [[1, '아주 천천히'], [2, '천천히'], [3, '보통'], [4, '빠르게'], [5, '아주 빠르게']]);
     seg('가까운 물체 안내', 'guide', [[true, '켜기'], [false, '끄기']], '조사할 수 있는 물건에 노란 테두리를 두르고, 근처에 있으면 알려 줘요.');
@@ -5051,7 +5065,7 @@ function resumeGame() {
 const GLOSS = {
   '일본영사관': '다른 나라에 사는 자기 나라 사람을 돌보고 무역 일을 맡던 일본의 관청이에요. 1관은 1900년에 이 영사관으로 지어졌어요.',
   '영사관': '다른 나라에 사는 자기 나라 사람을 돌보고 무역 일을 맡던 관청이에요.',
-  '이사청': '1905년 을사늑약 뒤 일본이 우리나라 곳곳에 둔 관청이에요. 일본 사람의 일을 맡아보며 지방을 감시했어요.',
+  '이사청': '1905년 을사늑약 뒤 일본이 1906년부터 우리나라 곳곳에 둔 관청이에요. 일본 사람의 일을 맡아보며 지방을 감시했어요.',
   '목포부청': '일제 강점기 목포를 다스리던 관청이에요. 지금의 시청과 비슷해요.',
   '부청': '일제 강점기 도시(부)를 다스리던 관청이에요. 지금의 시청과 비슷해요.',
   '개항': '항구를 열어 다른 나라 배가 드나들며 무역할 수 있게 하는 것이에요. 목포는 1897년에 개항했어요.',
@@ -6627,6 +6641,12 @@ function bhShow(tab) {
       + BH_NAMES.map(p => `<div class="bhP"><div class="bhPh"><div><b>${p.who}</b><small>${p.sub}</small></div><span class="bhTag">${p.tag}</span></div>`
         + (p.names ? `<div class="bhNames">${p.names.map(n => `<span>${n}</span>`).join('')}</div>` : '')
         + `<p>${p.txt}</p></div>`).join('')
+      + `<h4 class="bhH">목포의 독립운동, 한 번에 보기</h4><div class="bhTl">
+        <div><b>1919. 4. 8.</b><span>목포 4·8 만세운동</span><small>정명여학교·영흥학교 학생과 양동교회 사람들이 함께 만세를 외쳤어요.</small></div>
+        <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
+        <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
+        <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>오늘 쌓은 기억의 벽돌을 여는 날이에요.</small></div></div>`
       + `<p class="bhSmall">더 알아보기: 국가보훈부 <b>공훈전자사료관</b>에서 이름으로 찾아볼 수 있어요.</p>`;
     if (BH.opt.story) {
       const b = el('button', 'big', '고마운 마음 담아 편지 쓰기 ▶');
@@ -6652,7 +6672,13 @@ function bhShow(tab) {
     F.appendChild(b);
   } else if (tab === 'quiz') bhQuiz(B, F);
   else if (tab === 'ref') {
-    B.innerHTML = `<h4 class="bhH">이야기와 역사, 무엇이 다를까요?</h4>
+    B.innerHTML = `<h4 class="bhH">목포의 독립운동, 한 번에 보기</h4><div class="bhTl">
+        <div><b>1919. 4. 8.</b><span>목포 4·8 만세운동</span><small>정명여학교·영흥학교 학생과 양동교회 사람들이 함께 만세를 외쳤어요.</small></div>
+        <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
+        <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
+        <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>오늘 쌓은 기억의 벽돌을 여는 날이에요.</small></div></div>
+      <h4 class="bhH">이야기와 역사, 무엇이 다를까요?</h4><p class="bhSmall">게임 속 설명에는 <span class="srcTag real">실제 기록</span> <span class="srcTag recon">사료 바탕 재현</span> <span class="srcTag story">창작 이야기</span> 표식이 붙어 있어요.</p>
       <div class="bhTwo"><div><b>✔ 실제 역사</b><ul><li>1919년 4월 8일 목포 만세운동</li><li>정명여학교·영흥학교·양동교회</li><li>강석봉, 정명여학교 학생 일곱 명</li><li>목포근대역사관 1관 붉은 벽돌 건물과 뒤편 방공호</li><li>1945년 8월 15일 광복</li></ul></div>
       <div><b>✎ 이야기로 만든 것</b><ul><li>정민승과 그의 수첩</li><li>순사·짐꾼·이웃 등 게임 속 인물</li><li>퍼즐, 전보 번호, 시간 여행</li></ul></div></div>
       <h4 class="bhH">참고한 자료</h4><ul class="bhRef">
@@ -6668,7 +6694,7 @@ function bhShow(tab) {
         <li>인물·유물 그림: 생성형 AI로 만든 뒤 다듬은 그림 (실제 인물 사진이 아니에요)</li>
         <li>글꼴: 고운바탕 · 개구 · 나눔손글씨 펜 (SIL 오픈 폰트 라이선스)</li>
         <li>3D 그래픽: three.js (MIT 라이선스)</li>
-        <li>학생 이름·개인 정보는 모으지도, 보내지도 않아요. 퀴즈와 다짐은 이 기기에만 저장돼요.</li></ul>`;
+        <li>플레이 수와 기억의 담벼락 벽돌(이름·한마디)만 담벼락 서버에 저장돼요. 실명 대신 통행증 이름을 써 주세요. 「2045년의 나에게」는 2045년까지 공개되지 않아요. 퀴즈와 다짐 카드는 이 기기에만 저장돼요.</li></ul>`;
   }
 }
 
@@ -7057,7 +7083,7 @@ function mxModelCase(x, y, z, ry, kind) {
     g.fillStyle = '#efe7d6'; g.fillRect(0, 0, W, H);
     mxText(g, '붉은 벽돌 건물이 걸어온 시간', W * 0.05, H * 0.13, H * 0.085, '#1f1a16', true);
     mxText(g, '구 목포 일본영사관 · 사적', W * 0.05, H * 0.25, H * 0.05, '#a8462f', true);
-    const ev = [['1897', '목포 개항'], ['1900', '일본영사관 완공'], ['1910년대', '목포부청'], ['1947', '목포시청'], ['1990', '목포문화원'], ['2014', '목포근대역사관']];
+    const ev = [['1897', '목포 개항'], ['1900', '일본영사관 완공'], ['1914', '목포부청'], ['1947', '목포시청'], ['1990', '목포문화원'], ['2014', '목포근대역사관']];
     const y = H * 0.6, x0 = W * 0.07, x1 = W * 0.93;
     g.strokeStyle = '#a8462f'; g.lineWidth = H * 0.012; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
     ev.forEach(([yr, t], i) => { const x = x0 + (x1 - x0) * i / (ev.length - 1); g.fillStyle = '#a8462f'; g.beginPath(); g.arc(x, y, H * 0.03, 0, 7); g.fill();
@@ -7395,7 +7421,7 @@ function mxStamp(m) {
 function mxOpen(m) {
   if (m.arts) return mxArts();
   openModal(body => {
-    head(body, m.place, m.title);
+    head(body, m.place, m.title); tagHead(body, 'real');
     const ul = el('div', 'mxFacts'); m.facts.forEach(f => ul.appendChild(el('p', '', f))); body.appendChild(ul);
     if (!m.q && !m.photo) { const b = el('button', 'pbtn', '닫기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); return; }
     if (m.photo) {
@@ -7413,7 +7439,7 @@ function mxOpen(m) {
       if (done) b.disabled = true;
       b.onclick = () => {
         if (j === m.a) { b.classList.add('ok'); os.querySelectorAll('button').forEach(x => x.disabled = true); sfx.ok(); setTimeout(() => { closeModal(); mxStamp(m); }, 700); }
-        else { b.classList.add('no'); b.disabled = true; sfx.bad(); toast('설명을 다시 읽어 보세요.', 1500); }
+        else { b.classList.add('no'); b.disabled = true; sfx.bad(); const key = m.o[m.a].replace(/[·\s]/g, '').slice(0, 2); const hit = [...ul.children].find(p => p.textContent.replace(/[·\s]/g, '').includes(key)); ul.querySelectorAll('.hl').forEach(p => p.classList.remove('hl')); if (hit) { hit.classList.add('hl'); hit.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } toast(hit ? `「${t}」은(는) 답이 아니에요. 밑줄 친 설명에 실마리가 있어요.` : `「${t}」은(는) 답이 아니에요. 설명을 다시 읽어 보세요.`, 2200); }
       };
       os.appendChild(b);
     });
@@ -7539,7 +7565,8 @@ function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey
   const ENDS = { '그분들 덕분에 지금 나는 ': '', '2045년에도 나는 ': '를 지키고 있을 거야.', '광복 100주년에 나는 ': ' 하고 싶어.' };
   // '를/을'을 앞 글자 받침에 맞게 고쳐요(예: 날를 → 날을)
   const fixJosa = t => t.replace(/([가-힣])(를|을) 지키고 있을 거야/g, (m, ch) => ch + ((ch.charCodeAt(0) - 0xac00) % 28 ? '을' : '를') + ' 지키고 있을 거야');
-  $('wlLetter').addEventListener('input', () => { const t = $('wlLetter'), v = fixJosa(t.value); if (v !== t.value) { const p = t.selectionStart; t.value = v; t.setSelectionRange(p, p); } });
+  // 한글 입력(조합) 중에는 건드리지 않고, 다 쓴 뒤(칸을 벗어날 때)에만 고쳐요
+  $('wlLetter').addEventListener('blur', () => { const t = $('wlLetter'), v = fixJosa(t.value); if (v !== t.value) t.value = v; });
   $('wlLetterChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = $('wlLetter'), head = b.dataset.t, tail = ENDS[head];
     t.value = (t.value.trim() ? t.value.trim() + ' ' : '') + head + tail; t.value = t.value.slice(0, 60);
     const pos = t.value.length - tail.length; t.focus(); t.setSelectionRange(pos, pos); sfx.click();
@@ -8686,6 +8713,48 @@ if (!coarse) {
     const id = { KeyH: 'btnHint', KeyM: 'btnMap', KeyF: 'btnFS' }[e.code]; if (!id) return;
     e.preventDefault(); if (id !== 'btnMap' && document.pointerLockElement) document.exitPointerLock(); $(id).click();
   });
+}
+
+// ── 길 찾기: 다음 목표가 화면 밖에 있으면 가장자리에 방향 화살표 + 층 안내
+{
+  const a = el('div', '', '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="rgba(30,22,16,.75)" stroke="#f2c76b" stroke-width="2"/><path d="M20 8 L31 26 L20 21 L9 26 Z" fill="#f2c76b"/></svg><b></b>');
+  a.id = 'edgeArrow'; document.body.appendChild(a);
+  const v = new THREE.Vector3();
+  POST.push(() => {
+    const on = state.mode === 'play' && !state.modal && !$('hud').hidden && marker.visible && !(typeof vn !== 'undefined' && vn.on);
+    if (!on) { a.style.display = 'none'; return; }
+    v.copy(marker.position).project(camera);
+    const behind = v.z > 1, W = innerWidth, H = innerHeight;
+    let x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H;
+    const inside = !behind && x > 40 && x < W - 40 && y > 70 && y < H - 60;
+    if (inside) { a.style.display = 'none'; return; }
+    if (behind) { x = W - x; y = H - y; }
+    const L0 = 50, T0 = 170, R0 = W - 50, B0 = H - 90, cx = (L0 + R0) / 2, cy = (T0 + B0) / 2; let dx = x - cx, dy = y - cy; if (behind && Math.abs(dx) < 1 && Math.abs(dy) < 1) dy = 1;
+    const k = Math.min((R0 - cx) / Math.abs(dx || 1e-6), (B0 - cy) / Math.abs(dy || 1e-6));
+    a.style.left = (cx + dx * k) + 'px'; a.style.top = (cy + dy * k) + 'px'; a.style.display = 'block';
+    a.querySelector('svg').style.transform = `rotate(${Math.atan2(dy, dx) + Math.PI / 2}rad)`;
+    const tl = marker.position.y > 4 ? 2 : 1, txt = tl !== player.lv ? `${tl}층으로` : '다음 장소';
+    const lb = a.querySelector('b'); if (lb.textContent !== txt) lb.textContent = txt;
+  });
+  // 미니 지도 위 장소 이름 옆에 층과 다음 목표 층
+  TICK.push(() => { const L = $('mapLoc'); if (!L || state.mode !== 'play') return; const tl = marker.visible ? (marker.position.y > 4 ? 2 : 1) : 0; const t = `${L.textContent.split(' · ')[0]} · ${player.lv}층${tl && tl !== player.lv ? ` → 목표 ${tl}층` : ''}`; if (L.textContent !== t) L.textContent = t; });
+}
+// ── 모스 부호를 눈으로도: 전보가 울릴 때 큰 불빛이 짧게(·)/길게(−) 깜빡여요
+{
+  const _pm = playMorse;
+  playMorse = function (code, ui, done) {
+    if (ui && ui.cv && !ui.cv.previousElementSibling?.classList?.contains('tlamp')) { ui.lamp = el('div', 'tlamp', '<i></i><span>소리 대신 불빛으로 보기</span><em></em>'); ui.cv.before(ui.lamp); }
+    const lamp = ui && ui.lamp;
+    if (lamp) {
+      const unit = 0.13, ev = []; let t = 0.6;
+      [...code].forEach((d, i) => { if (i) t += unit * 6; [...MORSE[d]].forEach(s2 => { const dur = (s2 === '·' ? 1 : 3) * unit; ev.push({ t, dur, s: s2 }); t += dur + unit; }); });
+      const t0 = performance.now() / 1000 + 0.9, total = t + 0.4, em = lamp.querySelector('em');
+      const step = () => { const now = performance.now() / 1000 - t0, e = ev.find(e => now >= e.t && now < e.t + e.dur);
+        lamp.classList.toggle('on', !!e); em.textContent = e ? e.s : ''; if (now < total && lamp.isConnected) requestAnimationFrame(step); else { lamp.classList.remove('on'); em.textContent = ''; } };
+      requestAnimationFrame(step);
+    }
+    return _pm.call(this, code, ui, done);
+  };
 }
 
 </script>
