@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="붉은 벽돌의 기억">
 <meta name="theme-color" content="#16120f">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' data: blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://redbrick-api.tsjeong917.workers.dev; media-src 'self' data: blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
 <script>
 // No persistent identity, input or learning history. These maps live only in the current page.
 const PRIVACY_MEMORY = (() => { const data = new Map(); return Object.freeze({
@@ -3699,6 +3699,7 @@ function wireReg() {
 }
 function startGame() {
   if (state.mode === 'play') return;
+  cntCall(true);
   const nm = REG_NAME || (REG_NAME = rollName()); $('teamName').value = nm;
   if (!nm) { diceName(); return; }
   state.team = nm;
@@ -6856,12 +6857,26 @@ function findPop(i) {
   clearTimeout(fpT); fpT = setTimeout(() => P.classList.remove('on'), 1900);
 }
 
-/* ---------- 플레이 수: Cloudflare Worker(D1)에 '시작'과 '끝까지 읽음'을 세어요. 주소가 없거나 연결이 안 되면 조용히 숨어요 ---------- */
-// 'counter'가 들어간 주소는 휴대폰 광고 차단에 막힐 수 있어서, 새 이름(redbrick-api)을 먼저 써 보고 안 되면 옛 주소로
-// No counters, tracking endpoints, public posts or background retry queues.
-const COUNTER_URLS = [], COUNTER_URL = '';
-const CNT = { sentPlay: false, sentFin: false };
-function cntCall() { return Promise.resolve(null); }
+/* Aggregate counter: no body, cookies, identifiers or student activity payload. */
+const COUNTER_URL = 'https://redbrick-api.tsjeong917.workers.dev';
+const CNT = { started:false, total:null, pending:null, failed:false };
+function cntCall(start=false) {
+  if (start && CNT.started) return CNT.pending || Promise.resolve(CNT.total);
+  if (start) CNT.started=true;
+  if (!start && CNT.pending) return CNT.pending;
+  const request=fetch(COUNTER_URL+(start?'/play':'/count'), {
+    method:start?'POST':'GET', credentials:'omit', referrerPolicy:'no-referrer',
+    cache:'no-store', signal:AbortSignal.timeout(7000)
+  }).then(r=>{if(!r.ok)throw Error('counter');return r.json();}).then(data=>{
+    if(!Number.isSafeInteger(data.play)||data.play<0)throw Error('count');
+    CNT.total=CNT.total===null?data.play:Math.max(CNT.total,data.play);CNT.failed=false;
+    return CNT.total;
+  }).catch(()=>{CNT.failed=true;return CNT.total;}).finally(()=>{
+    if(CNT.pending===request)CNT.pending=null;
+    if(!$('wallScreen').hidden)wallLoad(false, false);
+  });
+  CNT.pending=request;return request;
+}
 const MUSEUM = { on: false, stamps: new Set() };
 const mxGlass = new THREE.MeshLambertMaterial({ color: 0xd9eef2, transparent: true, opacity: 0.16, depthWrite: false });
 const mxPlinth = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
@@ -7428,6 +7443,7 @@ const MXN = MX_STAMP.length;
 /* ---------- 관람 모드 ---------- */
 function mxNext() { return MX_STAMP.find(m => !MUSEUM.stamps.has(m.id)); }
 function startMuseum() {
+  cntCall(true);
   ['startScreen', 'endScreen', 'introScreen'].forEach(id => { if ($(id)) $(id).hidden = true; });
   if ($('fin')) $('fin').hidden = true; if ($('achPop')) $('achPop').hidden = true; if ($('bh')) $('bh').hidden = true;
   MUSEUM.on = true; document.body.classList.add('museum');
@@ -7619,11 +7635,11 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
       <div class="wlTt"><span class="wlK">광복 100주년을 상상하며 · <b id="wlLeft"></b></span><h2>2045 기억의 담벼락</h2></div>
       <div class="wlTabs" role="tablist" hidden style="display:none"><button data-r="room" class="on">우리 반</button><button data-r="all">모두</button></div>
       <div class="wlRoom" hidden style="display:none"><span>반 코드</span><input id="wlRoom" maxlength="20" placeholder="예: 무안초4-2" autocomplete="off"><button id="wlRoomGo" type="button">들어가기</button></div>
-      <div class="wlCnt"><b id="wlN">0</b><span>개</span><em id="wlMode"></em></div>
+      <div class="wlCnt"><span>함께한 시간 여행</span><b id="wlN">—</b><span>회</span><em id="wlMode"></em></div>
       <button class="wlHome" id="wlHome" type="button">처음 화면</button>
     </div>
     <div class="wlBody">
-      <div class="wlWallWrap" id="wlWrap"><p class="wlNote" id="wlDone" role="status" hidden></p><div class="wlWall" id="wlWall"></div><div class="wlGround"></div><div class="wlEmpty" id="wlEmpty">아직 쌓인 벽돌이 없어요. 첫 벽돌을 놓아 주세요.</div></div>
+      <div class="wlWallWrap" id="wlWrap"><p class="wlNote" id="wlDone" role="status" hidden></p><div class="wlWall" id="wlWall"></div><div class="wlGround"></div><div class="wlEmpty" id="wlEmpty">첫 시간 여행의 기억을 벽돌로 이어 주세요.</div></div>
       <aside class="wlMake" id="wlMake">
         <div class="wlMk">내 기억을 미래에 남기기</div><p class="wlNote" id="wlBridge">민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?</p><p class="wlNote">과거의 기록을 읽은 내가, 미래에 전하고 싶은 마음을 남겨 보아요.</p>
         <div class="wlPrev" id="wlPrev"></div>
@@ -7714,14 +7730,21 @@ function openWall() {
   wallPrev(); wallTab('room');
   clearInterval(WALL.poll);
 }
-function wallLoad(scroll) {
+function wallLoad(scroll, refresh=true) {
   WALL.online = false;
-  $('wlMode').textContent = '이번 게임에서만 보는 담벼락';
+  $('wlMode').textContent = CNT.total===null ? (CNT.failed?'횟수를 불러오지 못했어요':'횟수 불러오는 중') :
+    '자동 벽돌은 여행 횟수 · 내 글은 이번 게임에서만 보기'+(CNT.total>360?' · 최근 360회 표시':'');
   wallRender(scroll);
+  if(refresh)cntCall();
 }
 
 function wallRender(scroll) {
-  const W = $('wlWall'), list = WALL.bricks;
+  const W = $('wlWall');
+  const automatic=Array.from({length:Math.min(CNT.total||0,360)},(_,i)=>{
+    const n=Math.max(0,(CNT.total||0)-360)+i;
+    return {color:((n*17+3)%11)%4,motif:n%7===0?5:0};
+  });
+  const list = [...automatic,...WALL.bricks];
   const per = innerWidth < 700 ? 6 : 9;
   const rows = []; for (let i = 0; i < list.length; i += per) rows.push(list.slice(i, i + per));
   const minRows = Math.max(rows.length + 1, innerHeight < 500 ? 4 : 6);
@@ -7733,9 +7756,9 @@ function wallRender(scroll) {
     h += '</div>';
   }
   W.innerHTML = h;
-  $('wlN').textContent = (WALL.view === 'all' && WALL.total != null ? WALL.total : list.length).toLocaleString('ko-KR');
+  $('wlN').textContent = CNT.total===null?'—':CNT.total.toLocaleString('ko-KR');
   $('wlEmpty').hidden = list.length > 0;
-  if (scroll) { const wr = $('wlWrap'); wr.scrollTop = wr.scrollHeight; }
+  if (scroll) { const wr = $('wlWrap'); wr.scrollTop = wr.scrollHeight; const mine=W.querySelector('.mine'); if(mine)mine.scrollIntoView({block:'nearest'}); }
 }
 const OPEN2045 = new Date(2045, 7, 15).getTime();
 const wallNow = () => Date.now() + (WALL.skew || 0); // 서버 시각이 있으면 서버 기준
@@ -9015,7 +9038,7 @@ function privacyValidate(value,node) {
   const note=el('p','privacyNote','이름 대신 게임 속 별명을 써요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.');note.id='privacyStartNote';document.querySelector('#startScreen .startrow').after(note);
   const button=el('button','pbtn alt dk','개인정보 안내');button.id='btnPrivacy';button.onclick=()=>openModal(body=>{
     head(body,'안심하고 놀아요','내 정보를 지켜요');
-    ['이름 대신 게임에서 만든 별명을 써요.','글에는 이름·학교·전화번호·주소를 쓰지 마세요.','쓴 글은 다른 사람에게 보내지지 않아요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.'].forEach(text=>{const p=el('p','');p.textContent=text;body.appendChild(p);});
+    ['이름 대신 게임에서 만든 별명을 써요. 여행 횟수만 모두 합쳐 세어요.','글에는 이름·학교·전화번호·주소를 쓰지 마세요.','쓴 글은 다른 사람에게 보내지지 않아요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.'].forEach(text=>{const p=el('p','');p.textContent=text;body.appendChild(p);});
     const close=el('button','pbtn','알겠어요');close.onclick=closeModal;body.appendChild(close);
   });$('btnWall').after(button);
 }
