@@ -557,6 +557,7 @@ body.museum #timer{display:none}
 .wlCnt b{font-size:24px;color:#ffd98a;font-variant-numeric:tabular-nums}.wlCnt span{font-size:13px}
 .wlCnt em{font-style:normal;font-size:12px;color:rgba(236,226,204,.7);margin-left:10px;white-space:normal;max-width:260px;line-height:1.3}
 .wlHome{border:1px solid rgba(236,226,204,.4);background:transparent;color:#f3ead6;border-radius:6px;padding:7px 12px;font-size:13.5px;white-space:nowrap}
+#wlDone{position:absolute;top:14px;left:16px;right:16px;padding:12px;background:rgba(20,25,33,.9);color:#f3ead6;border:1px solid #d1aa5e;border-radius:8px;z-index:1;line-height:1.6}
 .wlBody{flex:1;min-height:0;display:flex}
 .wlWallWrap{position:relative;flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 24px 0}
 .wlWall{display:flex;flex-direction:column;gap:4px;width:100%;max-width:980px;margin:0 auto}
@@ -621,8 +622,8 @@ body.museum #timer{display:none}
 .wlMsgBig{font-size:24px;line-height:1.5;text-align:center;margin:10px 0}
 .wlKey{width:100%;box-sizing:border-box;padding:10px;border:1px solid #c9b48a;border-radius:6px;font-size:15px}
 @media (max-width:820px),(max-height:520px){
-  .wlTop{gap:8px;padding:8px 12px}.wlTt h2{font-size:19px}.wlK{font-size:10px;letter-spacing:.14em}.wlCnt em{display:none}.wlRoom input{width:100px}
-  .wlMake{position:fixed;right:0;top:0;bottom:0;width:min(320px,86vw);z-index:5;transform:translateX(105%);transition:transform .3s ease}
+  .wlTop{gap:8px;padding:8px 12px}.wlTt h2{font-size:19px}.wlK{font-size:10px;letter-spacing:.08em;white-space:normal;line-height:1.5}.wlTt{min-width:0;max-width:100%}.wlCnt em{display:none}.wlRoom input{width:100px}
+  .wlMake{position:fixed;right:0;top:0;bottom:0;width:min(356px,94vw);box-sizing:border-box;padding-bottom:80px;z-index:5;transform:translateX(105%);transition:transform .3s ease}
   #wallScreen.mk .wlMake{transform:none}
   .wlOpenMk{display:block;position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;background:#d1aa5e;color:#1a140f;border:0;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;box-shadow:0 6px 16px rgba(0,0,0,.4);white-space:nowrap}
   #wallScreen.mk .wlOpenMk{right:auto;left:14px;background:#2a2420;color:#f3ead6}
@@ -6725,7 +6726,7 @@ function bhShow(tab) {
         <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
         <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
         <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
-        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>오늘 쌓은 기억의 벽돌을 여는 날이에요.</small></div></div>`
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>선택해서 남긴 미래 편지를 게임에서 여는 날이에요.</small></div></div>`
       + `<p class="bhSmall">더 알아보기: 국가보훈부 <b>공훈전자사료관</b>에서 이름으로 찾아볼 수 있어요.</p>`;
     if (BH.opt.story) {
       const b = el('button', 'big', '고마운 마음 담아 편지 쓰기 ▶');
@@ -6756,7 +6757,7 @@ function bhShow(tab) {
         <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
         <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
         <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
-        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>오늘 쌓은 기억의 벽돌을 여는 날이에요.</small></div></div>
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>선택해서 남긴 미래 편지를 게임에서 여는 날이에요.</small></div></div>
       <h4 class="bhH">이야기와 역사, 무엇이 다를까요?</h4><p class="bhSmall">게임 속 설명에는 <span class="srcTag real">실제 기록</span> <span class="srcTag recon">사료 바탕 재현</span> <span class="srcTag story">창작 이야기</span> 표식이 붙어 있어요.</p>
       <div class="bhTwo"><div><b>✔ 실제 역사</b><ul><li>1919년 4월 8일 목포 만세운동</li><li>정명여학교·영흥학교·양동교회</li><li>강석봉, 정명여학교 학생 일곱 명</li><li>목포근대역사관 1관 붉은 벽돌 건물과 뒤편 방공호</li><li>1945년 8월 15일 광복</li></ul></div>
       <div><b>✎ 이야기로 만든 것</b><ul><li>정민승과 그의 수첩</li><li>순사·짐꾼·이웃 등 게임 속 인물</li><li>퍼즐, 전보 번호, 시간 여행</li></ul></div></div>
@@ -6773,7 +6774,7 @@ function bhShow(tab) {
         <li>인물·유물 그림: 생성형 AI로 만든 뒤 다듬은 그림 (실제 인물 사진이 아니에요)</li>
         <li>글꼴: 고운바탕 · 개구 · 나눔손글씨 펜 (SIL 오픈 폰트 라이선스)</li>
         <li>3D 그래픽: three.js (MIT 라이선스)</li>
-        <li>플레이 수와 기억의 담벼락 벽돌(이름·한마디)만 담벼락 서버에 저장돼요. 실명 대신 통행증 이름을 써 주세요. 「2045년의 나에게」는 2045년까지 공개되지 않아요. 퀴즈와 다짐 카드는 이 기기에만 저장돼요.</li></ul>`;
+        <li>플레이 수와 기억의 담벼락 벽돌(이름·한마디)만 담벼락 서버에 저장돼요. 실명 대신 통행증 이름을 써 주세요. 선택해서 쓰는 「2045년의 나에게」 편지는 서버에 보내지 않고 이 기기에만 보관돼요. 게임 안에서는 2045년 8월 15일부터 열 수 있어요. 퀴즈와 다짐 카드는 이 기기에만 저장돼요.</li></ul>`;
   }
 }
 
@@ -7656,30 +7657,30 @@ function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocal
 (function wallBuild() {
   const w = el('section', 'screen', `
     <div class="wlTop">
-      <div class="wlTt"><span class="wlK">광복 100주년 2045. 8. 15. 개봉 · <b id="wlLeft"></b></span><h2>2045 기억의 담벼락</h2></div>
+      <div class="wlTt"><span class="wlK">미래 편지 개봉 · 광복 100주년 2045. 8. 15. · <b id="wlLeft"></b></span><h2>2045 기억의 담벼락</h2></div>
       <div class="wlTabs" role="tablist" hidden style="display:none"><button data-r="room" class="on">우리 반</button><button data-r="all">모두</button></div>
       <div class="wlRoom" hidden style="display:none"><span>반 코드</span><input id="wlRoom" maxlength="20" placeholder="예: 무안초4-2" autocomplete="off"><button id="wlRoomGo" type="button">들어가기</button></div>
-      <div class="wlCnt"><b id="wlN">0</b><span>장</span><em id="wlMode"></em></div>
+      <div class="wlCnt"><b id="wlN">0</b><span>개</span><em id="wlMode"></em></div>
       <button class="wlHome" id="wlHome" type="button">처음 화면</button>
     </div>
     <div class="wlBody">
-      <div class="wlWallWrap" id="wlWrap"><div class="wlWall" id="wlWall"></div><div class="wlGround"></div><div class="wlEmpty" id="wlEmpty">아직 쌓인 벽돌이 없어요. 첫 벽돌을 놓아 주세요.</div></div>
+      <div class="wlWallWrap" id="wlWrap"><p class="wlNote" id="wlDone" role="status" hidden></p><div class="wlWall" id="wlWall"></div><div class="wlGround"></div><div class="wlEmpty" id="wlEmpty">아직 쌓인 벽돌이 없어요. 첫 벽돌을 놓아 주세요.</div></div>
       <aside class="wlMake" id="wlMake">
-        <div class="wlMk">나의 벽돌</div>
+        <div class="wlMk">내 기억을 미래에 남기기</div><p class="wlNote" id="wlBridge">민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?</p><p class="wlNote">오늘의 기록을 함께 쌓고, 광복 100주년인 2045년까지 기억을 이어 가요.</p>
         <div class="wlPrev" id="wlPrev"></div>
+        <label class="wlLab" for="wlMsg">오늘의 기록 · 함께 보는 글</label>
+        <input id="wlMsg" maxlength="30" placeholder="예: 기록 속 이름들을 오래 기억할게요" autocomplete="off">
+        <label class="wlLab" for="wlLetter">2045년의 나에게 <span class="wlSeal">선택</span></label>
+        <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
+        <textarea id="wlLetter" maxlength="60" rows="3" placeholder="원하면 미래의 나에게 한마디 남겨 주세요"></textarea>
+        <p class="wlEx" id="wlEx"></p>
+        <p class="wlNote">미래 편지는 쓰지 않아도 벽돌을 쌓을 수 있어요. 작성한 편지는 서버에 보내지 않고 이 기기에만 보관하며, 게임 안에서 2045년 8월 15일부터 열 수 있어요. 기기를 바꾸거나 사이트 데이터를 지우면 사라질 수 있어요.</p>
         <label class="wlLab">벽돌 색</label><div class="wlSw" id="wlSw"></div>
         <label class="wlLab">무늬</label><div class="wlMo" id="wlMo"></div>
-        <label class="wlLab" for="wlMsg">그날의 사람들에게</label>
-        <input id="wlMsg" maxlength="30" placeholder="예: 용기 내 주셔서 고맙습니다" autocomplete="off">
-        <label class="wlLab" for="wlLetter">2045년의 나에게 <span class="wlSeal">봉인</span></label>
-        <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
-        <textarea id="wlLetter" maxlength="60" rows="3" placeholder="서른 살의 나에게 한마디"></textarea>
-        <p class="wlEx" id="wlEx"></p>
-        <p class="wlNote">2045년 8월 15일까지 봉인돼요. 쓴 사람도 그 전에는 열 수 없어요. 편지는 이 기기에만 보관되어 기기를 바꾸거나 방문 기록을 지우면 사라질 수 있어요.</p>
         <label class="wlLab" for="wlName">새길 이름</label>
         <input id="wlName" maxlength="10" autocomplete="off">
         <button class="big" id="wlPut" type="button">벽돌 쌓기</button>
-        <p class="wlNote" id="wlNote"></p>
+        <p class="wlNote" id="wlNote">오늘의 기록과 별명은 다른 사람에게 공개돼요. 실명 대신 별명을 써 주세요. 미래 편지는 공개되지 않아요.</p>
       </aside>
     </div>
     <button class="wlOpenMk" id="wlOpenMk" type="button">벽돌 만들기</button>`);
@@ -7701,8 +7702,8 @@ function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocal
     [...$('wlLetterChips').children].forEach(x => x.classList.toggle('on', x === b)); $('wlEx').textContent = '예: ' + EXS[head]; };
   setInterval(() => { const e = $('wlLeft'); if (e) e.textContent = wallLeft(); }, 60000);
   $('wlPut').onclick = wallPut;
-  $('wlHome').onclick = () => location.reload();
-  $('wlOpenMk').onclick = () => { $('wallScreen').classList.toggle('mk'); };
+  $('wlHome').onclick = closeWall;
+  $('wlOpenMk').onclick = () => { const open = $('wallScreen').classList.toggle('mk'); $('wlOpenMk').textContent = open ? '담벼락 보기' : '벽돌 만들기'; };
   w.querySelector('.wlTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; wallTab(b.dataset.r); };
   $('wlRoomGo').onclick = () => { const v = $('wlRoom').value.trim().slice(0, 20); if (!v) { toast('반 코드를 적어 주세요.', 1600); return; } WALL.room = v; try { localStorage.setItem('rb_room', v); } catch (e) {} wallTab('room'); };
   $('wlRoom').addEventListener('keydown', e => { if (e.key === 'Enter') $('wlRoomGo').click(); });
@@ -7714,10 +7715,10 @@ function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocal
   // 홈 · 엔딩 · 관람 확인증에서 들어가기
   const h = el('button', 'pbtn alt dk', '기억의 담벼락'); h.id = 'btnWall'; h.onclick = e => { e.stopPropagation(); openWall(); };
   ($('btnMuseum') || $('btnPlay')).after(h);
-  const f = el('button', 'pbtn alt dk', '기억의 담벼락'); f.id = 'fWall'; f.onclick = () => openWall(); $('fAgain').after(f);
+  const f = el('button', 'pbtn alt dk', '내 기억을 미래에 남기기'); f.id = 'fWall'; f.onclick = () => openWall(); $('fAgain').after(f);
 })();
 function wallPrev() {
-  const name = ($('wlName').value || '').trim() || '이름', msg = ($('wlMsg').value || '').trim() || '그날의 사람들에게';
+  const name = ($('wlName').value || '').trim() || '이름', msg = ($('wlMsg').value || '').trim() || '오늘 내가 기억할 한 가지';
   $('wlPrev').innerHTML = wallBrickHTML({ color: WALL.color, motif: WALL.motif, name, msg }, true);
 }
 function wallBrickHTML(b, big) {
@@ -7730,7 +7731,20 @@ function wallTab(r) {
   WALL.view = r; $('wallScreen').classList.toggle('all', r === 'all');
   wallLoad(true);
 }
+function closeWall() {
+  if (WALL.busy) { toast('벽돌을 저장하고 있어요. 잠시만 기다려 주세요.', 1800); return; }
+  clearInterval(WALL.poll); WALL.rid = (WALL.rid || 0) + 1;
+  $('wallScreen').hidden = true; $('wallScreen').classList.remove('mk');
+  if ($('modal')) closeModal();
+  (WALL.returnTo || ['startScreen']).forEach(id => { if ($(id)) $(id).hidden = false; });
+  state.mode = WALL.returnMode || 'orbit';
+}
 function openWall() {
+  WALL.returnTo = ['startScreen', 'endScreen', 'introScreen', 'hud', 'fin'].filter(id => $(id) && !$(id).hidden);
+  WALL.returnMode = state.mode;
+  const fromEnding = WALL.returnTo.includes('fin') || WALL.returnTo.includes('endScreen');
+  $('wlHome').textContent = fromEnding ? '엔딩으로 돌아가기' : '이전 화면으로';
+  $('wlBridge').textContent = fromEnding ? '민승이에게 답장을 보냈어요. 이제 당신의 기록을 미래에 전해 볼까요?' : '민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?';
   ['startScreen', 'endScreen', 'introScreen', 'hud'].forEach(id => { if ($(id)) $(id).hidden = true; });
   if ($('fin')) $('fin').hidden = true; if ($('modal')) closeModal();
   state.mode = 'orbit'; if (typeof MUSEUM !== 'undefined') MUSEUM.on = false;
@@ -7781,8 +7795,9 @@ function wallLeft() { const d = Math.ceil((OPEN2045 - wallNow()) / 864e5); retur
 function wallShow(b) {
   let mine = null; try { mine = JSON.parse(localStorage.getItem('rb_letters') || '{}')[b.dataset.id]; } catch (e) {}
   openModal(body => {
-    const eb = el('div', 'eyebrow'); eb.textContent = b.dataset.name || ''; body.appendChild(eb); body.appendChild(el('h2', '', '그날의 사람들에게'));
+    const eb = el('div', 'eyebrow'); eb.textContent = b.dataset.name || ''; body.appendChild(eb); body.appendChild(el('h2', '', '오늘의 기록'));
     const mp = el('p', 'hand wlMsgBig'); mp.textContent = `“${b.dataset.msg || ''}”`; body.appendChild(mp);
+    if (mine && !mine.letter) { body.appendChild(el('p', 'wlNote', '미래 편지 없이 오늘의 기록을 남긴 벽돌이에요.')); const bt = el('button', 'pbtn', '닫기'); bt.onclick = closeModal; body.appendChild(bt); return; }
     const sealed = wallNow() < OPEN2045;
     body.appendChild(el('div', 'glab', '2045년의 나에게'));
     if (sealed) {
@@ -7796,8 +7811,7 @@ function wallShow(b) {
 function wallPut() {
   if (WALL.busy) return;
   const msg = $('wlMsg').value.trim(), letter = ($('wlLetter').value || '').trim().slice(0, 60).replace(/([가-힣])(를|을) 지키고 있을 거야/g, (m, ch) => ch + ((ch.charCodeAt(0) - 0xac00) % 28 ? '을' : '를') + ' 지키고 있을 거야'), name = ($('wlName').value.trim() || state.team || REG_NAME || '').slice(0, 10);
-  if (!msg) { toast('그날의 사람들에게 한마디 적어 주세요.', 1800); $('wlMsg').focus(); return; }
-  if (!letter) { toast('2045년의 나에게 한마디 적어 주세요.', 1800); $('wlLetter').focus(); return; }
+  if (!msg) { toast('오늘 기억할 한 가지를 적어 주세요.', 1800); $('wlMsg').focus(); return; }
   if (!name) { toast('벽돌에 새길 이름을 적어 주세요.', 1800); $('wlName').focus(); return; }
   if (wallBad(msg) || wallBad(name) || wallBad(letter)) { sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
   if (WALL.view === 'all' && !WALL.room) { toast('반 코드를 먼저 넣어 주세요. 우리 반 담벼락에 쌓이고, 모두의 담벼락에도 함께 쌓여요.', 3000); $('wlRoom').focus(); return; }
@@ -7806,11 +7820,12 @@ function wallPut() {
   const done = id => {
     WALL.busy = false; $('wlPut').disabled = false;
     if (id) { WALL.mine.add(id); try { localStorage.setItem('rb_mybricks', JSON.stringify([...WALL.mine])); const L = JSON.parse(localStorage.getItem('rb_letters') || '{}'); L[id] = { letter, msg, name, t: Date.now() }; localStorage.setItem('rb_letters', JSON.stringify(L)); } catch (e) {} }
-    $('wlMsg').value = ''; $('wlLetter').value = ''; wallPrev(); $('wallScreen').classList.remove('mk');
+    $('wlDone').hidden = false; $('wlDone').textContent = '민승이의 기록이 당신에게 닿았듯, 오늘 남긴 기억도 다음 사람에게 이어집니다.';
+    $('wlMsg').value = ''; $('wlLetter').value = ''; wallPrev(); $('wallScreen').classList.remove('mk'); $('wlOpenMk').textContent = '벽돌 만들기';
     tone([196, 147], 0.3, 'sine', 0.05); setTimeout(() => tone([523, 659, 784], 0.6, 'triangle', 0.1), 250);
     if (WALL.view === 'all') wallTab('room'); else wallLoad(true);
     setTimeout(() => { const m = document.querySelector('.wb.mine:last-of-type') || [...document.querySelectorAll('.wb.mine')].pop(); if (m) m.classList.add('drop'); }, 900);
-    toast(WALL.offlineSave ? '서버에 닿지 않아 이 기기에 임시 저장했어요. 연결되면 다시 보내요.' : '서버에 저장했어요. 2045년까지 봉인돼요.', 2600); WALL.offlineSave = false;
+    toast(WALL.offlineSave ? '서버에 닿지 않아 이 기기에 임시 저장했어요. 연결되면 다시 보내요.' : (letter ? '오늘의 기록을 공유했어요. 미래 편지는 이 기기에 보관했어요.' : '오늘의 기록을 함께 쌓았어요.'), 2600); WALL.offlineSave = false;
   };
   const anim = wallSealAnim(b);
   const _done = done; const done2 = id => anim.then(() => _done(id));
@@ -7858,6 +7873,11 @@ window.addEventListener('resize', () => { if (!$('wallScreen').hidden) wallRende
 
 // 봉인 장면: 편지가 접혀 벽돌 속으로 들어가고 '2045. 8. 15. 개봉' 도장이 찍혀요
 function wallSealAnim(b) {
+  if (!b.letter) {
+    const ov = el('div', 'wlSealFx', '<div class="sfBrick" style="background-color:' + (WALL_COLORS[b.color] || WALL_COLORS[0]) + '"><span>' + esc(b.name) + '</span></div><div class="sfStamp">기 억<small>오늘의 기록을 남겼어요</small></div>');
+    $('wallScreen').appendChild(ov); requestAnimationFrame(() => ov.classList.add('s1', 's2', 's3'));
+    const p = new Promise(resolve => setTimeout(() => { ov.remove(); resolve(); }, 1200)); p.cancel = () => ov.remove(); return p;
+  }
   const ov = el('div', 'wlSealFx', `<div class="sfBrick" style="background-color:${WALL_COLORS[b.color] || WALL_COLORS[0]}"><span>${esc(b.name)}</span></div><div class="sfPaper"><b>2045년의 나에게</b><p>${esc(b.letter)}</p><i>${esc(b.name)}</i></div><div class="sfStamp">봉 인<small>2045. 8. 15. 개봉</small></div>`);
   $('wallScreen').appendChild(ov);
   let cancel = false;
