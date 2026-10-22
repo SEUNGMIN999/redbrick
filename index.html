@@ -16,9 +16,9 @@
 /* 첫 로딩: 붉은 벽돌 쌓기 */
 #boot{position:fixed;inset:0;z-index:999;background:#0f0c0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .7s ease}
 #boot.out{opacity:0;pointer-events:none}
-.bootWall{position:relative;width:132px;height:96px;overflow:hidden}
+.bootWall{position:relative;width:129px;height:96px;overflow:hidden}
 .bootRow{position:absolute;left:0;display:flex;gap:3px}
-.bootRow.odd{left:-16px}
+.bootRow.odd{left:-16.5px}
 .bootRow i{display:block;width:30px;height:13px;border-radius:1.5px;background:#a8462f;box-shadow:inset 0 -2px 0 rgba(0,0,0,.22),inset 0 1px 0 rgba(255,210,180,.18);opacity:0;animation:brickIn 6.4s cubic-bezier(.3,1.4,.5,1) infinite}
 .bootRow i:nth-child(3n){background:#9a3e29}.bootRow i:nth-child(4n+1){background:#b4513a}
 @keyframes brickIn{0%{opacity:0;transform:translateY(-40px)}6%{opacity:1;transform:none}86%{opacity:1;transform:none}94%,100%{opacity:0;transform:none}}
@@ -584,6 +584,7 @@ body.museum #timer{display:none}
 .wb.big .wm{width:24px;height:24px}.wb.big .wn{font-size:16px}
 .wb .wseal{position:absolute;right:3px;top:2px;font:700 8.5px/1 "Gowun Batang",serif;color:#ffd98a;border:1px solid rgba(255,217,138,.7);border-radius:2px;padding:1px 2px;letter-spacing:.04em;z-index:1;opacity:.85}
 .wb.lt .wseal{color:#7a2a1a;border-color:rgba(122,42,26,.5)}
+.wlChips{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 2px}.wlChips button{font:inherit;font-size:12.5px;padding:5px 9px;border-radius:999px;border:1px solid #c9b48a;background:#fffaf0;color:#5a4630;cursor:pointer;white-space:nowrap;user-select:none}.wlChips button:active{background:#f1e4c8}.wlChips.st button{border-color:#a8462f;color:#7a2a1a;font-weight:700}
 .wlSeal{display:inline-block;margin-left:4px;font-size:11px;padding:1px 6px;border-radius:3px;background:#7a2a1a;color:#fff4e2}
 .wlMake textarea{width:100%;box-sizing:border-box;border:1px solid #c9b48a;background:#fffaf0;border-radius:6px;padding:9px 10px;font:inherit;font-size:15px;color:var(--text);resize:none;min-height:68px;flex:none;line-height:1.4}
 .wlSealed{display:flex;flex-direction:column;gap:4px;padding:14px;border:1.5px dashed #a8462f;border-radius:8px;background:#f7efe0;text-align:center}.wlSealed b{color:#a8462f;font-size:18px;letter-spacing:.3em}.wlSealed span{font-size:13.5px;color:#6b5a42}
@@ -617,6 +618,12 @@ body.museum #timer{display:none}
 body.nowLook #view{filter:none}
 body.nowLook::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse 75% 70% at 50% 45%,transparent 55%,rgba(10,14,22,.32) 100%)}
 /* 미니맵 */
+.hbtn kbd{font:700 10.5px/1 sans-serif;margin-left:6px;padding:2px 4px;border-radius:3px;background:rgba(42,36,32,.12);color:#6b5a42;vertical-align:1px}
+body.deskUI #hud .btnrow:has(#btnMap){display:none}
+body.deskUI #btnNote::after{content:"N";font:700 10.5px/1 sans-serif;margin-left:6px;padding:2px 4px;border-radius:3px;background:rgba(42,36,32,.12);color:#6b5a42;vertical-align:1px}
+#btnMenu{display:none}body.deskUI #btnMenu{display:inline-block}
+.pauseMenu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.pauseMenu .pbtn{display:flex;justify-content:space-between;align-items:center;white-space:nowrap}.pauseMenu .pbtn kbd{font:700 11px/1 sans-serif;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.12)}
+.pauseMenu .go{grid-column:1/-1;justify-content:center;font-size:18px;padding:14px}
 .hbtn.mini{padding:7px 10px;font-size:15px}
 #mapBox{pointer-events:none;background:rgba(22,18,15,.78);border:1px solid rgba(209,170,94,.45);border-radius:6px;padding:6px;width:150px}
 #mapBox[hidden]{display:none}
@@ -987,7 +994,7 @@ body.plFree #view{cursor:none}
     <button id="interact" hidden>🔍 조사하기</button>
     <button id="near" hidden></button>
     <div id="joy" hidden><b></b></div>
-    <div id="keys">WASD 이동 · Shift 달리기 · 마우스 둘러보기 · 클릭/E 조사 · Esc 마우스 꺼내기</div>
+    <div id="keys">WASD 이동 · Shift 달리기 · 클릭/E 조사 · Esc 메뉴 · N 수첩 · H 힌트</div>
     <div id="plHint" hidden><b>🖱 화면을 클릭하세요</b><span>마우스를 움직이면 바로 둘러볼 수 있어요 · Esc를 누르면 마우스가 다시 나와요</span></div>
   </div>
   <div id="toast"></div>
@@ -1034,7 +1041,7 @@ body.plFree #view{cursor:none}
     <div class="intro">
       <div class="kick">목포근대역사관 1관 · 교실 방탈출</div>
       <h1>붉은 벽돌의<br><span>기억</span></h1>
-      <p class="lead">체험학습으로 찾은 목포근대역사관 1관. 계단 밑 옛 거울 서랍에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
+      <p class="lead">체험학습으로 찾은 목포근대역사관 1관.<br>계단 밑 옛 거울 서랍에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
       <div class="startrow"><button class="big" id="btnResume" hidden>▶ 이어하기</button><button class="big" id="btnPlay">▶ 시작하기</button><button class="pbtn alt dk" id="btnSndStart" aria-pressed="true">🔊 소리 켜짐</button><button class="pbtn alt dk" id="btnSet">⚙ 설정</button><div id="playCnt" hidden><div class="pcIn"><span class="pcDot"></span><span>지금까지 <b id="pcPlay">0</b> 명이 붉은 벽돌의 기억을 찾아 떠났어요</span><b id="pcFin" hidden></b></div></div><span class="small" id="resumeInfo">배경음악과 효과음이 있어요. 스피커 버튼으로 켜고 끌 수 있어요.</span></div>
     </div>
   </section>
@@ -2286,10 +2293,13 @@ function buildHarbor() {
     for (let k = 0; k < 4; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 3), M.darkwood); d.position.set(x - 7 + k * 4.7, SEA_Y + 1.5, z + 4.52); scene.add(d); }
   });
   // 쌀가마 더미
+  // 쌀가마: 길 한가운데 흩어 두지 않고, 창고 앞에 반듯하게 쌓아 둬요(볏짚 가마니)
   const pile = []; const R = rng(201);
-  for (let i = 0; i < 160; i++) pile.push([-55 + R() * 110, SEA_Y + 2.0 + Math.floor(R() * 3) * 0.42, 63 + R() * 5, R() * 3]);
-  const ps = new THREE.InstancedMesh(sackGeo, shipMats.sack, pile.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
-  pile.forEach(([a, b, c, r], i) => { q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), r); m4.compose(new THREE.Vector3(a, b, c), q, new THREE.Vector3(0.95, 0.45, 0.6)); ps.setMatrixAt(i, m4); }); scene.add(ps);
+  [-50, -36, -22, 22, 36, 50].forEach(cx => { for (let lv = 0; lv < 3; lv++) for (let col = 0; col < 4 - lv; col++) for (let row = 0; row < 2; row++) pile.push([cx + (col - (3 - lv) / 2) * 1.0 + (R() - 0.5) * 0.06, SEA_Y + 1.82 + lv * 0.44, 67.4 + row * 0.66, (R() - 0.5) * 0.08]); });
+  const strawT = canvasTex(64, 32, (g, w, h) => { g.fillStyle = '#cdb98a'; g.fillRect(0, 0, w, h); for (let i = 0; i < 70; i++) { g.strokeStyle = `rgba(${120 + Math.random() * 60},${100 + Math.random() * 40},50,.45)`; g.beginPath(); const y = Math.random() * h; g.moveTo(0, y); g.lineTo(w, y + (Math.random() - 0.5) * 3); g.stroke(); } g.fillStyle = 'rgba(90,64,30,.7)'; [w * 0.28, w * 0.72].forEach(x => g.fillRect(x - 1.5, 0, 3, h)); });
+  const baleGeo = new THREE.CylinderGeometry(0.5, 0.5, 1, 10); baleGeo.rotateZ(Math.PI / 2);
+  const ps = new THREE.InstancedMesh(baleGeo, new THREE.MeshLambertMaterial({ map: strawT }), pile.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+  pile.forEach(([a, b, c, r], i) => { q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), r); m4.compose(new THREE.Vector3(a, b, c), q, new THREE.Vector3(0.95, 0.44, 0.62)); ps.setMatrixAt(i, m4); }); scene.add(ps);
   // 마을: 2층 목조 가옥, 기와집, 길
   const street = new THREE.Mesh(new THREE.PlaneGeometry(160, 4), new THREE.MeshLambertMaterial({ color: 0x9a9184 })); street.rotation.x = -Math.PI / 2; street.position.set(0, SEA_Y + 0.03, 49); scene.add(street);
   const wallA = new THREE.MeshLambertMaterial({ color: 0xd8ccb2 }), wallB = new THREE.MeshLambertMaterial({ color: 0x8a6a4a }), roofA = new THREE.MeshLambertMaterial({ color: 0x3e3a38 }), roofB = new THREE.MeshLambertMaterial({ color: 0x54504a });
@@ -3451,7 +3461,7 @@ function bell() { tone([523.3, 784], 1.4, 'sine', 0.18); }
 function startCine() {
   state.mode = 'cine'; cine.i = 0; cine.t = 0; cine.lastChars = -1; cine.era = null; $('cineText').dataset.shot = '';
   $('startScreen').hidden = true; $('cine').hidden = false; $('cineTitle').classList.remove('on');
-  cineBook.visible = true; $('fade').style.transition = 'none'; $('flash').style.transition = 'none'; startDrone(); bell();
+  cineBook.visible = true; $('fade').style.transition = 'none'; $('flash').style.transition = 'none'; // 인트로는 배경음악만(웅웅거리는 소리 · 종소리 없이)
 }
 function endCine() {
   if (state.mode !== 'cine') return;
@@ -3467,7 +3477,6 @@ function updateCine(dt) {
   if (cine.t >= sh.d) {
     cine.i++; cine.t = 0; cine.lastChars = -1;
     if (cine.i >= CINE.length) { endCine(); return; }
-    if (!CINE[cine.i].title) bell();
     return updateCine(0);
   }
   if (sh.era && cine.era !== sh.era) { cine.era = sh.era; goEra(sh.era); }
@@ -4118,6 +4127,7 @@ const SHIP_NUMS = [['18', -30, 88, 38, 0.08], ['97', 16, 96, 32, -0.06], ['19', 
 SHIP_NUMS.forEach(([n, x, z, L, ry]) => {
   const host = STEAMERS.find(h => Math.abs(h.position.x - x) < 0.1 && Math.abs(h.position.z - z) < 0.1);
   const g = new THREE.Group(); (host || scene).add(g); if (!host) { g.position.set(x, SEA_Y, z); g.rotation.y = ry; }
+  (window.SHIP_NUM_G = window.SHIP_NUM_G || []).push(g);
   for (const s of [-1, 1]) {
     const nt = canvasTex(256, 160, g => { g.clearRect(0, 0, 256, 160); g.fillStyle = '#f3ecdb'; g.fillRect(6, 6, 244, 148); g.fillStyle = '#b3261e'; g.font = '700 132px Georgia,serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(n, 128, 86); });
     nt.wrapS = nt.wrapT = THREE.ClampToEdgeWrapping;
@@ -7445,7 +7455,7 @@ POST.push(() => {
 
 
 /* =====================================================================
-   미래 · 2045 기억의 담벼락 — 오늘 기억한 것과 2045년의 나에게 쓴 말을 벽돌에 담아 광복 100주년까지 봉인해요
+   미래 · 2045 기억의 담벼락 — 그날의 사람들에게 보내는 말과 2045년의 나에게 쓴 말을 벽돌에 담아 광복 100주년까지 봉인해요
    - 서버(COUNTER_URL)에 연결되면 우리 반 · 모두의 담벼락을 함께 쌓고, 안 되면 이 기기에만 쌓아요.
    ===================================================================== */
 const WALL_COLORS = ['#a8462f', '#8e3424', '#b9653f', '#6d3a2a', '#d8cbb4'];
@@ -7491,10 +7501,11 @@ function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey
         <div class="wlPrev" id="wlPrev"></div>
         <label class="wlLab">벽돌 색</label><div class="wlSw" id="wlSw"></div>
         <label class="wlLab">무늬</label><div class="wlMo" id="wlMo"></div>
-        <label class="wlLab" for="wlMsg">오늘 내가 기억한 것</label>
-        <input id="wlMsg" maxlength="30" placeholder="예: 4·8 만세운동의 학생들" autocomplete="off">
+        <label class="wlLab" for="wlMsg">그날의 사람들에게</label>
+        <input id="wlMsg" maxlength="30" placeholder="예: 강석봉 선생님, 용기 내 주셔서 고맙습니다" autocomplete="off">
         <label class="wlLab" for="wlLetter">2045년의 나에게 <span class="wlSeal">봉인</span></label>
-        <textarea id="wlLetter" maxlength="60" rows="3" placeholder="예: 서른 살의 나, 오늘의 다짐을 지키고 있니?"></textarea>
+        <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
+        <textarea id="wlLetter" maxlength="60" rows="3" placeholder="예: 그분들 덕분에 지금 나는 마음껏 우리말로 공부해. 2045년에도 태극기를 달고 있을 거야."></textarea>
         <p class="wlNote">2045년 8월 15일까지 봉인돼요. 이 기기에서만 다시 열어 볼 수 있어요.</p>
         <label class="wlLab" for="wlName">새길 이름</label>
         <input id="wlName" maxlength="10" autocomplete="off">
@@ -7509,6 +7520,10 @@ function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey
   $('wlSw').onclick = e => { const b = e.target.closest('button'); if (!b) return; WALL.color = +b.dataset.i; [...$('wlSw').children].forEach(x => x.classList.toggle('on', x === b)); wallPrev(); sfx.click(); };
   $('wlMo').onclick = e => { const b = e.target.closest('button'); if (!b) return; WALL.motif = +b.dataset.i; [...$('wlMo').children].forEach(x => x.classList.toggle('on', x === b)); wallPrev(); sfx.click(); };
   ['wlMsg', 'wlName'].forEach(id => $(id).addEventListener('input', wallPrev));
+  const ENDS = { '그분들 덕분에 지금 나는 ': '', '2045년에도 나는 ': '를 지키고 있을 거야.', '광복 100주년에 나는 ': ' 하고 싶어.' };
+  $('wlLetterChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = $('wlLetter'), head = b.dataset.t, tail = ENDS[head];
+    t.value = (t.value.trim() ? t.value.trim() + ' ' : '') + head + tail; t.value = t.value.slice(0, 60);
+    const pos = t.value.length - tail.length; t.focus(); t.setSelectionRange(pos, pos); sfx.click(); };
   setInterval(() => { const e = $('wlLeft'); if (e) e.textContent = wallLeft(); }, 60000);
   $('wlPut').onclick = wallPut;
   $('wlHome').onclick = () => location.reload();
@@ -7527,7 +7542,7 @@ function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey
   const f = el('button', 'pbtn alt dk', '기억의 담벼락'); f.id = 'fWall'; f.onclick = () => openWall(); $('fAgain').after(f);
 })();
 function wallPrev() {
-  const name = ($('wlName').value || '').trim() || '이름', msg = ($('wlMsg').value || '').trim() || '오늘 기억한 것';
+  const name = ($('wlName').value || '').trim() || '이름', msg = ($('wlMsg').value || '').trim() || '그날의 사람들에게';
   $('wlPrev').innerHTML = wallBrickHTML({ color: WALL.color, motif: WALL.motif, name, msg }, true);
 }
 function wallBrickHTML(b, big) {
@@ -7586,7 +7601,7 @@ function wallLeft() { const d = Math.ceil((OPEN2045 - Date.now()) / 864e5); retu
 function wallShow(b) {
   let mine = null; try { mine = JSON.parse(localStorage.getItem('rb_letters') || '{}')[b.dataset.id]; } catch (e) {}
   openModal(body => {
-    head(body, b.dataset.name || '', '오늘 내가 기억한 것');
+    head(body, b.dataset.name || '', '그날의 사람들에게');
     body.appendChild(el('p', 'hand wlMsgBig', `“${b.dataset.msg}”`));
     const sealed = Date.now() < OPEN2045;
     body.appendChild(el('div', 'glab', '2045년의 나에게'));
@@ -7598,7 +7613,7 @@ function wallShow(b) {
 function wallPut() {
   if (WALL.busy) return;
   const msg = $('wlMsg').value.trim(), letter = ($('wlLetter').value || '').trim().slice(0, 60), name = ($('wlName').value.trim() || state.team || REG_NAME || '').slice(0, 10);
-  if (!msg) { toast('오늘 기억한 것을 한 줄 적어 주세요.', 1800); $('wlMsg').focus(); return; }
+  if (!msg) { toast('그날의 사람들에게 한마디 적어 주세요.', 1800); $('wlMsg').focus(); return; }
   if (!letter) { toast('2045년의 나에게 한마디 적어 주세요.', 1800); $('wlLetter').focus(); return; }
   if (!name) { toast('벽돌에 새길 이름을 적어 주세요.', 1800); $('wlName').focus(); return; }
   if (wallBad(msg) || wallBad(name) || wallBad(letter)) { sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
@@ -8455,14 +8470,29 @@ function askHome(byEsc) {
   openModal(body => { head(body, byEsc ? '잠깐 멈춤' : '처음 화면', MUSEUM.on ? '역사관 관람을 종료할까요?' : '기억 살펴보기를 종료할까요?');
     body.appendChild(el('p', '', MUSEUM.on ? '관람 도장은 그대로 남아 있어요.' : '지금까지 푼 단계는 저장돼요. 처음 화면에서 이어하기를 누르면 돼요.'));
     const row = el('div', 'mxO'); const y = el('button', 'pbtn', '종료'), n = el('button', 'pbtn alt', '계속하기');
-    y.onclick = () => { try { if (!MUSEUM.on && typeof saveGame === 'function' && state.mode === 'play') saveGame(); sessionStorage.setItem('rb_home', '1'); } catch (err) {} location.reload(); };
-    n.onclick = closeModal; row.append(y, n); body.appendChild(row); }); }
+    y.onclick = goHomeNow; n.onclick = closeModal; row.append(y, n); body.appendChild(row); }); }
+function goHomeNow() { try { if (!MUSEUM.on && typeof saveGame === 'function' && state.mode === 'play') saveGame(); sessionStorage.setItem('rb_home', '1'); } catch (err) {} location.reload(); }
+// PC 멈춤 메뉴: 오른쪽 위 기능을 한곳에
+function openPause() {
+  const run = id => () => { closeModal(); setTimeout(() => { const b = $(id); if (b) b.click(); }, 60); };
+  openModal(body => { head(body, MUSEUM.on ? '2026 역사관 관람' : '1919년 봄 · 목포부청', '잠깐 멈춤');
+    const g = el('div', 'pauseMenu');
+    const B = (t, k, fn, cls) => { const b = el('button', 'pbtn ' + (cls || 'alt'), `<span>${t}</span>${k ? `<kbd>${k}</kbd>` : ''}`); b.type = 'button'; b.onclick = fn; g.appendChild(b); return b; };
+    B('계속하기', 'Esc', closeModal, 'go');
+    if (!MUSEUM.on) B('수첩', 'N', run('btnNote')); B('힌트', 'H', run('btnHint'));
+    B($('mapBox') && getComputedStyle($('mapBox')).display !== 'none' ? '지도 끄기' : '지도 켜기', 'M', () => { $('btnMap').click(); closeModal(); });
+    B(typeof sndOn !== 'undefined' && !sndOn ? '소리 켜기' : '소리 끄기', '', () => { $('btnSnd').click(); closeModal(); });
+    B('전체 화면', 'F', () => { $('btnFS').click(); closeModal(); });
+    B('설정', '', run('btnGear'));
+    B('처음 화면으로', '', goHomeNow, '');
+    body.appendChild(g); });
+}
 $('btnHome').onclick = e => { e.stopPropagation(); if (document.pointerLockElement) document.exitPointerLock(); askHome(false); };
 // PC: Esc를 누르면(마우스 잠금이 풀리면) 종료할지 물어봐요. 게임이 스스로 잠금을 풀 때는 묻지 않아요
 {
   let selfExit = 0; const _ex = document.exitPointerLock.bind(document);
   document.exitPointerLock = function () { selfExit = performance.now(); return _ex(); };
-  const ask = () => { if (typeof plCan === 'function' && plCan() && !$('hud').hidden && (!$('bh') || $('bh').hidden) && (!$('wallScreen') || $('wallScreen').hidden)) askHome(true); };
+  const ask = () => { if (typeof plCan === 'function' && plCan() && !$('hud').hidden && (!$('bh') || $('bh').hidden) && (!$('wallScreen') || $('wallScreen').hidden)) { if (coarse) askHome(true); else openPause(); } };
   document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement) return; if (performance.now() - selfExit < 400) return; setTimeout(ask, 30); });
   let busy = false; document.addEventListener('keydown', e => { if (e.code === 'Escape') busy = !!state.modal || !!FX.scope || !!(typeof vn !== 'undefined' && vn.on) || state.mode !== 'play'; }, true);
   window.addEventListener('keydown', e => { if (e.code !== 'Escape' || busy || document.pointerLockElement || state.modal || FX.scope) return; if (typeof vn !== 'undefined' && vn.on) return; ask(); });
@@ -8602,6 +8632,24 @@ setEra(curEra);
 // 새 입구 앞을 막던 바위는 지금 시대에는 치워요
 { const rk = []; scene.traverse(o => { if (!o.isMesh || o.parent !== scene) return; const p = o.position; if (p.x > -11.3 && p.x < -7.9 && p.z > TZ + 0.2 && p.z < TZ + 4 && p.y < 1.2 && /Icosa|Dodeca|Tetra|Octa/.test(o.geometry.type)) rk.push(o); });
   if (rk.length) { regEra(rk, ['y1919', 'y1944']); setEra(curEra); } }
+
+// 인트로 영상에서는 배 번호판을 숨겨요(망원경 수수께끼 답이 미리 보이지 않게)
+TICK.push(() => { const v = state.mode !== 'cine'; (window.SHIP_NUM_G || []).forEach(g => { if (g.visible !== v) g.visible = v; }); });
+
+// PC: 오른쪽 위는 수첩 · 힌트 · 메뉴만 두고 나머지는 멈춤 메뉴로. 단축키 N · H · M · F
+if (!coarse) {
+  document.body.classList.add('deskUI');
+  const m = el('button', 'hbtn', '메뉴<kbd>Esc</kbd>'); m.id = 'btnMenu'; m.type = 'button'; m.onclick = e => { e.stopPropagation(); if (document.pointerLockElement) document.exitPointerLock(); openPause(); };
+  $('btnHint').after(m);
+  [['btnHint', 'H']].forEach(([id, k]) => { const b = $(id); if (b && !b.querySelector('kbd')) b.insertAdjacentHTML('beforeend', `<kbd>${k}</kbd>`); });
+  window.addEventListener('keydown', e => {
+    if (state.mode !== 'play' || state.modal || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (typeof vn !== 'undefined' && vn.on) return; if (FX.scope) return;
+    const ae = document.activeElement; if (ae && /INPUT|TEXTAREA/.test(ae.tagName)) return;
+    const id = { KeyH: 'btnHint', KeyM: 'btnMap', KeyF: 'btnFS' }[e.code]; if (!id) return;
+    e.preventDefault(); if (id !== 'btnMap' && document.pointerLockElement) document.exitPointerLock(); $(id).click();
+  });
+}
 
 </script>
 </body>
