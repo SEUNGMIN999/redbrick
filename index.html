@@ -2075,16 +2075,10 @@ function flowerBed(x1, x2, z) {
   addCol(x1, z - 0.35, x2, z + 0.35, 1);
 }
 function taegukgiFrame(x, y, z, ry) {
-  const t = canvasTex(240, 160, (g, w, h) => {
-    g.fillStyle = '#f4efe2'; g.fillRect(0, 0, w, h); g.save(); g.translate(120, 80); g.rotate(0.588);
-    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, 36, 0, 7); g.fill(); g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, 36, Math.PI, 0); g.arc(18, 0, 18, 0, Math.PI, true); g.arc(-18, 0, 18, 0, Math.PI); g.fill(); g.restore();
-    const tri = (cx, cy, rot, bars) => { g.save(); g.translate(cx, cy); g.rotate(rot); g.fillStyle = '#111'; bars.forEach((b, i) => { const yy = -12 + i * 9; if (b) g.fillRect(-16, yy, 32, 5); else { g.fillRect(-16, yy, 14, 5); g.fillRect(2, yy, 14, 5); } }); g.restore(); };
-    tri(50, 34, -0.98, [1, 1, 1]); tri(190, 126, -0.98, [0, 0, 0]); tri(190, 34, 0.98, [0, 1, 0]); tri(50, 126, 0.98, [1, 0, 1]);
-    g.strokeStyle = 'rgba(90,60,30,.35)'; g.lineWidth = 3; g.beginPath(); g.moveTo(10, 150); g.lineTo(70, 120); g.lineTo(60, 158); g.stroke();
-  });
+  const t = canvasTex(384,256,(g,W,H)=>drawTaegukgi(g,W,H));
   const g = grp(x, y, z, ry); dk(1.42, 1.0, 0.05, M.darkwood, 0, 0, 0, g);
   const p = new THREE.Mesh(new THREE.PlaneGeometry(1.26, 0.84), new THREE.MeshLambertMaterial({ map: t })); p.position.z = 0.03; g.add(p);
-  const cap = textPlane([{ t: '1919년 목포에서 흔든 태극기(복제)', size: 0.08 }], 1.4, 0.22, { bg: '#2a1e17', border: false }); cap.position.set(0, -0.66, 0.02); g.add(cap);
+  const cap = textPlane([{ t: '독립을 바라는 마음, 태극기', size: 0.08 }], 1.4, 0.22, { bg: '#2a1e17', border: false }); cap.position.set(0, -0.66, 0.02); g.add(cap);
 }
 function portModel(x, z, y0) {
   const g = grp(x, y0, z); dk(2.2, 0.8, 1.4, M.darkwood, 0, 0.4, 0, g);
@@ -3132,15 +3126,17 @@ const TRI = [
 function triBars(bars, cx, cy, rot, s = 1) {
   let out = `<g transform="translate(${cx} ${cy}) rotate(${rot}) scale(${s})">`;
   bars.forEach((b, i) => {
-    const y = -18 + i * 14;
-    out += b ? `<rect x="-24" y="${y}" width="48" height="8" fill="#111"/>` : `<rect x="-24" y="${y}" width="21" height="8" fill="#111"/><rect x="3" y="${y}" width="21" height="8" fill="#111"/>`;
+    const y = -20 + i * 15;
+    out += b ? `<rect x="-30" y="${y}" width="60" height="10" fill="#111"/>` : `<rect x="-30" y="${y}" width="25" height="10" fill="#111"/><rect x="5" y="${y}" width="25" height="10" fill="#111"/>`;
   });
   return out + '</g>';
 }
 const TAE = { id: 'tae', name: '태극', slot: 'C' };
-function taeSVG(cx, cy, R) { return `<g transform="translate(${cx} ${cy}) rotate(33.7)"><circle r="${R}" fill="#0047a0"/><path d="M${-R} 0 A${R} ${R} 0 0 1 ${R} 0 A${R / 2} ${R / 2} 0 0 0 0 0 A${R / 2} ${R / 2} 0 0 1 ${-R} 0z" fill="#cd2e3a"/></g>`; }
+function taeSVG(cx,cy,R) { return `<g transform="translate(${cx} ${cy}) rotate(${Math.atan2(2,3)*180/Math.PI})"><circle r="${R}" fill="#0047a0"/><path d="M${-R} 0 A${R} ${R} 0 0 1 ${R} 0 Z" fill="#cd2e3a"/><circle cx="${-R/2}" r="${R/2}" fill="#cd2e3a"/><circle cx="${R/2}" r="${R/2}" fill="#0047a0"/></g>`; }
+
 function puzzle5() {
-  const SL = { TL: [76, 51, -56.3], TR: [284, 51, 56.3], BL: [76, 189, 56.3], BR: [284, 189, -56.3], C: [180, 120, 0] };
+  const theta=Math.atan2(2,3),dx=110*Math.cos(theta),dy=110*Math.sin(theta),angle=90-theta*180/Math.PI;
+  const SL = { TL: [180-dx,120-dy,-angle], TR: [180+dx,120-dy,angle], BL: [180-dx,120+dy,angle], BR: [180+dx,120+dy,-angle], C:[180,120,0] };
   const place = { TL: null, TR: null, BL: null, BR: null, C: null };
   const ALL = [...TRI, TAE];
   let sel = null;
@@ -3155,7 +3151,7 @@ function puzzle5() {
       let s = `<svg viewBox="0 0 360 240"><rect width="360" height="240" fill="#6b4529"/><rect x="6" y="6" width="348" height="228" fill="#fbf8ef" stroke="#d8cfb8" stroke-width="1.5"/><rect x="12" y="12" width="336" height="216" fill="none" stroke="#e6dcc4" stroke-width="1" stroke-dasharray="3 3"/><path d="M180 8V232M8 120H352" stroke="#ece4d0" stroke-width="1.5"/>`;
       for (const k in SL) {
         const [x, y, rot] = SL[k], r = k === 'C' ? 60 : 36;
-        if (place[k]) s += place[k] === 'tae' ? taeSVG(x, y, 54) : triBars(TRI.find(t => t.id === place[k]).bars, x, y, rot);
+        if (place[k]) s += place[k] === 'tae' ? taeSVG(x, y, 60) : triBars(TRI.find(t => t.id === place[k]).bars, x, y, rot);
         else s += `<circle cx="${x}" cy="${y}" r="${r - 6}" fill="rgba(200,180,140,.12)" stroke="#b8a37a" stroke-width="1.6" stroke-dasharray="6 5"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="13" fill="#8a7658">${k === 'C' ? '태극 자리' : '조각 자리'}</text>`;
         s += `<circle data-slot="${k}" cx="${x}" cy="${y}" r="${r}" fill="transparent" style="cursor:pointer"/>`;
       }
@@ -3165,7 +3161,7 @@ function puzzle5() {
       tray.innerHTML = '';
       ALL.forEach(t => {
         const used = Object.values(place).includes(t.id);
-        const art = t.id === 'tae' ? taeSVG(0, 0, 24) : triBars(t.bars, 0, 0, 0, 0.9);
+        const art = t.id === 'tae' ? taeSVG(0, 0, 24) : triBars(t.bars, 0, 0, 0, 0.75);
         const b = el('button', 'piece' + (used ? ' used' : '') + (sel === t.id ? ' sel' : ''), `<svg viewBox="-30 -30 60 60">${art}</svg>${t.name}`);
         b.onclick = () => { sel = sel === t.id ? null : t.id; sfx.click(); render(); };
         tray.appendChild(b);
@@ -3490,7 +3486,7 @@ const boy = new THREE.Group(); scene.add(boy); boy.visible = false;
   const arm = new THREE.Group(); arm.position.set(0.25, 1.28, 0); arm.rotation.z = 2.6; boy.add(arm);
   const a = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.45, 0.1), white); a.position.y = -0.22; arm.add(a);
   const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.9, 6), dark); stick.position.set(0, -0.6, 0); arm.add(stick);
-  const ft = canvasTex(60, 40, (g) => { g.fillStyle = '#f4efe2'; g.fillRect(0, 0, 60, 40); g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(30, 20, 9, Math.PI, 0); g.fill(); g.fillStyle = '#0047a0'; g.beginPath(); g.arc(30, 20, 9, 0, Math.PI); g.fill(); g.fillStyle = '#111'; [[10, 8], [50, 8], [10, 32], [50, 32]].forEach(([x, y]) => g.fillRect(x - 5, y - 3, 10, 6)); });
+  const ft = canvasTex(384,256,(g,W,H)=>drawTaegukgi(g,W,H));
   const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.3), new THREE.MeshLambertMaterial({ map: ft, side: THREE.DoubleSide })); flag.position.set(0.23, -0.95, 0); flag.rotation.z = -2.6; arm.add(flag);
   boy.rotation.y = Math.PI / 2;
 }
@@ -4281,7 +4277,7 @@ function scopePick(n) {
 const PIECE_POS = [[6.75, 5.25], [-1.7, 6.9], [-9.3, -1.0], [2.2, -4.7], [-5.6, -3.4]]; // 0번은 동쪽 방 책상 밑, 4번(태극)은 서쪽 방 책상 밑에 숨어 있어요
 const PIECE_N = PIECE_POS.length;
 const pieceMeshes = PIECE_POS.map(([x, z], i) => {
-  const t = canvasTex(96, 72, g => { g.fillStyle = '#f7f3e8'; g.fillRect(6, 6, 84, 60); g.strokeStyle = 'rgba(150,130,90,.4)'; g.lineWidth = 2; g.strokeRect(8, 8, 80, 56); if (i === 4) { g.save(); g.translate(48, 36); g.rotate(0.588); g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, 22, 0, 7); g.fill(); g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, 22, Math.PI, 0); g.arc(11, 0, 11, 0, Math.PI, true); g.arc(-11, 0, 11, 0, Math.PI, false); g.fill(); g.restore(); return; }
+  const t = canvasTex(96, 72, g => { g.fillStyle = '#f7f3e8'; g.fillRect(6, 6, 84, 60); g.strokeStyle = 'rgba(150,130,90,.4)'; g.lineWidth = 2; g.strokeRect(8, 8, 80, 56); if (i === 4) { drawTaegeuk(g,48,36,22); return; }
     g.fillStyle = '#111'; const bars = TRI[i].bars; bars.forEach((b, k) => { const y = 18 + k * 14; if (b) g.fillRect(24, y, 48, 8); else { g.fillRect(24, y, 21, 8); g.fillRect(51, y, 21, 8); } }); });
   t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
   const m = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.38), new THREE.MeshLambertMaterial({ map: t, emissive: 0x3a2a10, transparent: true }));
@@ -6271,12 +6267,7 @@ async function stairUnlockScene() {
       g.strokeStyle = 'rgba(160,140,100,.25)'; g.lineWidth = 2; g.beginPath(); g.moveTo(W / 2, 0); g.lineTo(W / 2, H); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke(); // 접었던 자국
       g.strokeStyle = 'rgba(160,140,100,.35)'; g.strokeRect(4, 4, W - 8, H - 8);  // 단을 접어 꿰맨 가장자리
       if (!whole) return;
-      g.save(); g.translate(120, 80); g.rotate(0.588);
-      g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, 36, 0, 7); g.fill();
-      g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, 36, Math.PI, 0); g.arc(18, 0, 18, 0, Math.PI, true); g.arc(-18, 0, 18, 0, Math.PI, false); g.fill(); g.restore();
-      const T = [[51, 34, -1, [1, 1, 1]], [189, 126, -1, [0, 0, 0]], [189, 34, 1, [0, 1, 0]], [51, 126, 1, [1, 0, 1]]];
-      g.fillStyle = '#111';
-      T.forEach(([x, y, sgn, bars]) => { g.save(); g.translate(x, y); g.rotate(sgn * 0.983); bars.forEach((b, k) => { const yy = -13 + k * 10; if (b) g.fillRect(-16, yy, 32, 6); else { g.fillRect(-16, yy, 14, 6); g.fillRect(2, yy, 14, 6); } }); g.restore(); });
+      drawTaegukgi(g,W,H);
     };
     const plain = canvasTex(W, H, g => draw(g, false)), whole = canvasTex(W, H, g => draw(g, true));
     cloth.material = new THREE.MeshLambertMaterial({ map: plain });
@@ -7812,15 +7803,17 @@ function wallSealAnim(b) {
 
 
 /* 태극기(대한민국 국기법 비율): 가로:세로 3:2, 태극 지름 = 세로의 1/2, 건곤감리는 대각선 위 */
+function drawTaegeuk(g,cx,cy,R) {
+  g.save();g.translate(cx,cy);g.rotate(Math.atan2(2,3));
+  g.fillStyle='#0047a0';g.beginPath();g.arc(0,0,R,0,Math.PI*2);g.fill();
+  g.fillStyle='#cd2e3a';g.beginPath();g.arc(0,0,R,Math.PI,0);g.fill();
+  g.beginPath();g.arc(-R/2,0,R/2,0,Math.PI*2);g.fill();
+  g.fillStyle='#0047a0';g.beginPath();g.arc(R/2,0,R/2,0,Math.PI*2);g.fill();g.restore();
+}
 function drawTaegukgi(g, W, H, x0 = 0, y0 = 0) {
   g.save(); g.translate(x0, y0); g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
   const cx = W / 2, cy = H / 2, R = H / 4, th = Math.atan2(H, W);
-  g.save(); g.translate(cx, cy); g.rotate(th);
-  g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, R, Math.PI, 0); g.fill();
-  g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, R, 0, Math.PI); g.fill();
-  g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(-R / 2, 0, R / 2, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#0047a0'; g.beginPath(); g.arc(R / 2, 0, R / 2, 0, Math.PI * 2); g.fill();
-  g.restore();
+  drawTaegeuk(g,cx,cy,R);
   const L = H / 4 * 0.5 * 2, bw = H / 24, gap = H / 48, d = H / 4 + H / 8 + (bw * 3 + gap * 2) / 2;
   // [각도, 막대 3개의 끊김 여부(안쪽부터)] 건 ☰ 왼위 · 곤 ☷ 오른아래 · 감 ☵ 오른위 · 리 ☲ 왼아래
   [[Math.PI + th, [0, 0, 0]], [th, [1, 1, 1]], [-th, [1, 0, 1]], [Math.PI - th, [0, 1, 0]]].forEach(([a, br]) => {
@@ -7914,7 +7907,7 @@ function drawTaegukgi(g, W, H, x0 = 0, y0 = 0) {
   colliders.length; // 아래 길은 걸어 내려가지 않는 풍경이라 충돌판이 필요 없어요
 
   /* ── 3) 태극기 가로등 ── */
-  const flagTex = canvasTex(192, 128, (g, w, h) => drawTaegukgi(g, w, h));
+  const flagTex = canvasTex(384, 256, (g, w, h) => drawTaegukgi(g, w, h));
   const flagM = new THREE.MeshLambertMaterial({ map: flagTex, transparent: true, side: THREE.DoubleSide, alphaTest: 0.1 });
   function bannerPole(x, y0, z) {
     const p = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 6.2, 8), steel); add(p, x, y0 + 3.1, z);
@@ -8521,7 +8514,7 @@ setEra(curEra);
   gt.wrapS = gt.wrapT = THREE.ClampToEdgeWrapping;
   const gm = new THREE.MeshLambertMaterial({ map: gt, alphaTest: 0.4, side: THREE.DoubleSide });
   [-1, 1].forEach(sd => { const leaf = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.9), gm); leaf.rotation.y = Math.PI / 2; leaf.position.set(sd * 1.5, 0.95, 21.2); scene.add(leaf); });
-  const flagT = canvasTex(192, 128, (g, w, h) => drawTaegukgi(g, w, h));
+  const flagT = canvasTex(384, 256, (g, w, h) => drawTaegukgi(g, w, h));
   const fM = new THREE.MeshLambertMaterial({ map: flagT, side: THREE.DoubleSide });
   [[-3.4, 15.5], [3.4, 15.5]].forEach(([x, z]) => { cyl(0.05, 0.06, 4.2, new THREE.MeshLambertMaterial({ color: 0x5a3a2a }), x, 2.1, z); const f = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.6), fM); f.position.set(x + Math.sign(x) * -0.5, 3.6, z); scene.add(f); });
   // 큰 길: 담장 아래 찻길에서 구도심까지 곧게 내려가요
