@@ -4133,6 +4133,7 @@ function puzzle3Order() {
 /* ---------- ④ 망원경으로 배 번호 읽기 ---------- */
 {
   const tg = new THREE.Group(); tg.position.set(-7.8, 4, 4.95); scene.add(tg);
+
   const wood = new THREE.MeshPhongMaterial({ color: 0x6b4426, shininess: 25 }), brass = new THREE.MeshPhongMaterial({ color: 0xc9a14a, specular: 0xfff0c0, shininess: 70 }),
     dark = new THREE.MeshPhongMaterial({ color: 0x1b1714, shininess: 40 }), glass = new THREE.MeshPhongMaterial({ color: 0x8fb6c8, specular: 0xffffff, shininess: 120, transparent: true, opacity: 0.85 });
   const cyl = (r0, r1, l, m, seg = 20) => new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, l, seg), m);
@@ -4162,7 +4163,7 @@ function puzzle3Order() {
   [-0.18, 0.3].forEach(z => along(new THREE.Mesh(new THREE.TorusGeometry(0.066, 0.006, 6, 24), brass), z).rotation.x = 0);
   const knob = cyl(0.018, 0.018, 0.04, dark, 10); knob.rotation.z = Math.PI / 2; knob.position.set(0.075, 0, 0.05); tube.add(knob);
   tg.traverse(o => { if (o.isMesh) o.castShadow = true; });
-  regEra(tg, ['y1919', 'y1944', 'present']);
+  regEra(tg, ['y1919', 'y1944']); // 게임용 망원경은 현재 전시와 겹치지 않게 숨겨요.
 }
 const SHIP_NUMS = [['18', -30, 88, 38, 0.08], ['97', 16, 96, 32, -0.06], ['19', 58, 118, 44, 0.25], ['07', -70, 132, 30, -0.2]];
 SHIP_NUMS.forEach(([n, x, z, L, ry]) => {
@@ -4745,6 +4746,27 @@ telegraphModal = function () {
 const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
 const SAVE_KEY = 'bm-save-v1', SET_KEY = 'bm-settings-v1';
 
+// 저장소가 일부 손상되거나 이전 버전의 값이 남아도 안전한 데이터만 복구해요.
+function normalizeSave(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  const num = (v, d, lo, hi) => Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d;
+  const indices = (v, max) => Array.isArray(v) ? [...new Set(v.filter(i => Number.isInteger(i) && i >= 0 && i < max))] : [];
+  const flags = (v, fn) => Object.fromEntries(Object.entries(obj(v)).filter(([k,x]) => /^[1-7]$/.test(k) && fn(x)));
+  const f = obj(value.fx), solved = flags(value.solved, x => x === true);
+  const first = [1,2,3,4,5,6,7].find(n => !solved[n]) || 7;
+  const tiers = Object.fromEntries(Object.entries(obj(f.hintTier)).filter(([k,x]) => /^[1-7]$/.test(k) && Number.isInteger(x) && x >= 0 && x <= 3));
+  return {...value, team: typeof value.team === 'string' && value.team.trim() ? value.team.trim().slice(0,40) : '시간 여행자',
+    t: num(value.t, Date.now(), 0, Date.now()), stage: Number.isInteger(value.stage) && value.stage >= 1 && value.stage <= 7 ? value.stage : first,
+    solved, letters: indices(value.letters,4), hints: Math.floor(num(value.hints,0,0,10000)),
+    elapsed: num(value.elapsed,0,0,Number.MAX_SAFE_INTEGER), written: indices(value.written,8), p: obj(value.p),
+    fx: {...f, bricks: indices(f.bricks,4), marks: indices(f.marks,3), arts: indices(f.arts,7), pieces: indices(f.pieces,5),
+      evt: f.evt && Number.isFinite(f.evt.t) ? {t:num(f.evt.t,120,1,120),beat:0} : null,
+      battery: num(f.battery,1,0.22,1), hintTier: tiers, hintStage: flags(f.hintStage,x=>x===true), why: flags(f.why,x=>typeof x === 'boolean')}
+  };
+}
+
+
 /* ---------- 1. 단계별 힌트 ---------- */
 const HINT3 = [null,
   ['건물 바깥벽을 한 바퀴 돌아보세요. 왼쪽 벽, 오른쪽 벽, 뒤쪽 벽 두 곳에 분필로 그린 동그라미가 있어요.', '분필 번호 순서대로, 그림마다 흰 벽돌만 세어 숫자를 하나씩 만들어요.', '1번 그림의 흰 벽돌은 1개예요. 네 숫자를 이으면 이 집이 지어진 해가 돼요.'],
@@ -4855,6 +4877,10 @@ updateHUD = function () { _updateHUD7(); const n = pendingList().length; $('btnN
 
 /* ---------- 2. 그래픽 품질 ---------- */
 const SET = Object.assign({ q: 'auto', move: 'mid', look: 3, guide: true }, LS.get(SET_KEY) || {});
+if (!['auto','low','med','high'].includes(SET.q)) SET.q = 'auto';
+if (!['slow','mid','fast'].includes(SET.move)) SET.move = 'mid';
+if (!Number.isInteger(SET.look) || SET.look < 1 || SET.look > 5) SET.look = 3;
+if (typeof SET.guide !== 'boolean') SET.guide = true;
 const DPR = window.devicePixelRatio || 1;
 let Qcur = 'med';
 scene.updateMatrixWorld(true);
@@ -4993,7 +5019,7 @@ function saveGame() {
   LS.set(SAVE_KEY, {
     t: Date.now(), team: state.team, stage: state.stage, solved: state.solved, letters: [...state.letters], hints: state.hints, torch: state.torch, gateOpen: !!state.gateOpen,
     elapsed: (performance.now() - state.start) / 1000, mapv: MAP_VER, p: { x: player.x, z: player.z, lv: player.lv, yaw: player.yaw },
-    fx: { bricks: [...FX.bricks], marks: [...FX.marks], tele: FX.tele, arts: [...FX.arts], battery: FX.battery, collapsed: FX.collapsed, hintTier: FX.hintTier, hintStage: FX.hintStage, cameoDone: !!FX.cameoDone, why: FX.why },
+    fx: { bricks: [...FX.bricks], marks: [...FX.marks], tele: FX.tele, arts: [...FX.arts], battery: FX.battery, collapsed: FX.collapsed, hintTier: FX.hintTier, hintStage: FX.hintStage, pieces: [...FX.pieces], evt: FX.evt ? { t: FX.evt.t } : null, cameoDone: !!FX.cameoDone, why: FX.why },
     written: [...written], tunnelMsg: state.tunnelMsg
   });
 }
@@ -5024,11 +5050,12 @@ function safeRestorePos(sv) {
   if (!ok) setTimeout(() => toast('저장 위치를 찾지 못해 안전한 곳에서 이어가요.', 2400), 2800);
 }
 function restore(sv) {
+  sv = normalizeSave(sv); if (!sv) return false;
   state.team = sv.team; state.hints = sv.hints || 0; state.torch = !!sv.torch; state.tunnelMsg = !!sv.tunnelMsg;
-  Object.assign(state.solved, sv.solved || {}); state.stage = sv.stage || 1; state.letters = new Set(sv.letters || []);
+  state.solved = sv.solved || {}; state.stage = sv.stage || 1; state.letters = new Set(sv.letters || []);
   const f = sv.fx || {};
-  (f.bricks || []).forEach(i => FX.bricks.add(i)); (f.marks || []).forEach(i => FX.marks.add(i));
-  FX.tele = !!f.tele; FX.battery = f.battery || 1; FX.hintTier = f.hintTier || {}; FX.hintStage = f.hintStage || {}; FX.why = f.why || {};
+  FX.bricks = new Set(f.bricks); FX.marks = new Set(f.marks); FX.pieces = new Set(f.pieces);
+  FX.tele = !!f.tele; FX.battery = f.battery; FX.hintTier = f.hintTier || {}; FX.hintStage = f.hintStage || {}; FX.why = f.why || {};
   (sv.written || []).forEach(i => written.add(i));
   const S = state.solved;
   if (S[2]) { doors.front.target = doors.front.cur = 1.5; colById('frontDoor').forEach(c => { c.on = false; c.lockedOff = true; }); }
@@ -5041,12 +5068,16 @@ function restore(sv) {
   state.letters.forEach(i => letterMeshes[i].material.emissive = new THREE.Color(0x6a4a10));
   (f.arts || []).forEach(i => { FX.arts.add(i); artMeshes[i].traverse(c => c.layers.set(1)); ERA_REG.forEach(r => { if (r.objs.includes(artMeshes[i])) r.eras = []; }); });
   goEra(S[5] ? 'y1944' : 'y1919');
+  FX.evt = state.stage === 5 && !S[5] && FX.pieces.size < PIECE_N ? f.evt : null;
+  pieceMeshes.forEach((m,i) => show(m, !!FX.evt && !FX.pieces.has(i)));
+  E5.prev = FX.evt; E5.pieces = FX.pieces.size;
+
   if (f.collapsed) { FX.collapsed = true; show(rubble, true); rubbleCol.on = true; }
   safeRestorePos(sv); player.pitch = 0;
   state.start = performance.now() - (sv.elapsed || 0) * 1000;
 }
 function resumeGame() {
-  const sv = LS.get(SAVE_KEY); if (!sv) return;
+  const sv = normalizeSave(LS.get(SAVE_KEY)); if (!sv) { toast('저장 기록을 읽지 못했어요. 새로 시작해 주세요.'); return; }
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; }
   if (coarse) { try { const de = document.documentElement; const p = de.requestFullscreen ? de.requestFullscreen() : null; if (p && p.then) p.then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {})).catch(() => {}); } catch (e) {} }
   restore(sv);
@@ -5055,7 +5086,7 @@ function resumeGame() {
   toast(`${state.team}, 이어서 시작해요. (${'①②③④⑤⑥⑦'[state.stage - 1]} 단계)`, 2600);
 }
 {
-  const sv = LS.get(SAVE_KEY);
+  const sv = normalizeSave(LS.get(SAVE_KEY));
   if (sv && sv.team && Date.now() - sv.t < 1000 * 60 * 60 * 24 * 3) {
     const left = Math.max(0, CONFIG.timeLimitMin * 60 - sv.elapsed);
     $('btnResume').hidden = false; $('btnResume').textContent = `▶ 이어하기 (${sv.team})`;
@@ -5072,7 +5103,7 @@ function resumeGame() {
   const pick = o => o && regEra(o, PAST);
   pick(interactables.plaque && interactables.plaque.obj);
   pick(interactables.tele && interactables.tele.obj);
-  pick(scene.children.find(o => o.isGroup && Math.abs(o.position.x + 6.6) < 0.01 && Math.abs(o.position.y - 4) < 0.01 && Math.abs(o.position.z - 4.95) < 0.01)); // 망원경
+  // 망원경은 생성할 때 시대를 등록해요. 좌표로 찾으면 위치 변경 때 숨김이 누락돼요.
   STEAMERS.forEach(pick);
   scene.children.forEach(o => { if (!o.isGroup) return; let junk = false; o.traverse(c => { if (c.isMesh && c.material && c.material.map === sailTex) junk = true; }); if (junk) pick(o); });
   const bsign = interactables.bongan && interactables.bongan.obj.children.find(c => c.isGroup); if (bsign) regEra(bsign, ['y1944']);
@@ -7274,7 +7305,7 @@ function mxModelCase(x, y, z, ry, kind) {
   const vt3 = [-8.4, -6.9, -5.4].map((x, i) => mxVitrine(x, 4, -4.55, 0, 0.9, 0.75, null, 90 + i))[1];
   const ppl = mxBoard(1.6, 1.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "시민들의 저항", W*.07,H*.15,H*.055,'#2a211a',true); ["만세운동과 청년운동","억압에 맞선 사람들을 기억해요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(ppl, -9.83, 6.0, -2.6, PI / 2, R);
-  mxDef({ id: 'mx3', name: "저항의 역사 안내", place: '2층 왼쪽 방 (계단 올라 오른쪽)', lv: 2, obj: gin, at: [-7.6, 1.2], title: "저항의 제일선이 되다",
+  mxDef({ id: 'mx3', name: "저항의 역사 안내", place: '2층 서쪽 방', lv: 2, obj: gin, at: [-7.6, 1.2], title: "저항의 제일선이 되다",
     facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.","만세운동과 청년운동이 주요 내용이에요."],
     q: "이 전시가 다루는 시민들의 활동은?", o: ["만세운동과 청년운동","우주 탐사","고속도로 건설","인터넷 개발"], a: 0, sourceIds: ["mokpo"] });
 
@@ -7361,7 +7392,9 @@ scene.traverse(o => { if (o.isMesh && Math.abs(o.position.x + 3.16) < 0.02 && Ma
 setEra(curEra);
 // 시작할 때는 1919년이 아니라 지금 장면이므로 박물관 충돌판이 켜져 있어도 1919년으로 넘어갈 때 꺼져요
 
-const MX_STAMP = MX.filter(m => !m.arts && !m.extra).sort((a, b) => a.id.localeCompare(b.id));   // 도장 8곳
+// 1층 동쪽 → 1층 서쪽 → 2층 → 뒤뜰 순으로 관람해 되돌아가는 길을 줄여요.
+const MX_VISIT_ORDER = ['mx1', 'mx2', 'mx7', 'mx6', 'mx3', 'mx4', 'mx5', 'mx8'];
+const MX_STAMP = MX_VISIT_ORDER.map(id => MX.find(m => m.id === id)); // 도장 8곳
 const MXN = MX_STAMP.length;
 
 /* ---------- 관람 모드 ---------- */
@@ -7370,10 +7403,11 @@ function startMuseum() {
   ['startScreen', 'endScreen', 'introScreen'].forEach(id => { if ($(id)) $(id).hidden = true; });
   if ($('fin')) $('fin').hidden = true; if ($('achPop')) $('achPop').hidden = true; if ($('bh')) $('bh').hidden = true;
   MUSEUM.on = true; document.body.classList.add('museum');
-  try { MUSEUM.stamps = new Set(JSON.parse(localStorage.getItem('rb_mx') || '[]')); } catch (e) {}
+  try { const saved = JSON.parse(localStorage.getItem('rb_mx') || '[]'); MUSEUM.stamps = new Set(Array.isArray(saved) ? saved.filter(id => MX_VISIT_ORDER.includes(id)) : []); } catch (e) { MUSEUM.stamps = new Set(); }
   if (!state.team) { if (!REG_NAME) REG_NAME = rollName(); state.team = REG_NAME; }
   setDark(false); goEra('present');
   doors.front.target = doors.front.cur = 1.5; colById('frontDoor').forEach(c => { c.on = false; c.lockedOff = true; });
+  doors.back.target = doors.back.cur = 1.5; colById('backDoor').forEach(c => { c.on = false; c.lockedOff = true; }); // 관람 모드에서는 뒷문으로 뒤뜰에 바로 나가요.
   player.lv = 1; player.x = 0; player.z = 14.5; player.yaw = 0; player.pitch = -0.02;
   window.TELE_SHOWN = true; warned = true;
   state.mode = 'play'; state.start = performance.now();
@@ -7544,6 +7578,7 @@ function wallMotifSVG(m, light) {
   return '';
 }
 function wallBad(s) { const t = String(s).replace(/\s|[.,!?~·_\-]/g, '').toLowerCase(); return WALL_BAD.some(w => t.includes(w)); }
+function wallPublicBrick(b) { return { room: b.room, name: b.name, msg: b.msg, color: b.color, motif: b.motif }; }
 function wallApi(path, opt) {
   if (!COUNTER_URL || !window.fetch) return Promise.resolve(null);
   const ctl = window.AbortController ? new AbortController() : null; const tm = setTimeout(() => ctl && ctl.abort(), 6000);
@@ -7551,7 +7586,7 @@ function wallApi(path, opt) {
     .then(r => r.json().catch(() => null).then(j => { if (j && Number.isFinite(j.now)) WALL.skew = j.now - Date.now(); return { ok: r.ok, j }; })).catch(() => null).finally(() => clearTimeout(tm));
 }
 const wallLocalKey = () => 'rb_wall_' + (WALL.room || '_all');
-function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey()) || '[]'); } catch (e) { return []; } }
+function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocalKey()) || '[]'); return Array.isArray(q) ? q.filter(b => b && typeof b === 'object') : []; } catch (e) { return []; } }
 
 /* ---------- 화면 ---------- */
 (function wallBuild() {
@@ -7715,19 +7750,19 @@ function wallPut() {
   };
   const anim = wallSealAnim(b);
   const _done = done; const done2 = id => anim.then(() => _done(id));
-  wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => {
+  wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(wallPublicBrick(b)) }).then(r => {
     if (r && r.ok && r.j && r.j.id) return done2(r.j.id);
     if (r && r.j && r.j.error === 'word') { anim.cancel(); WALL.busy = false; $('wlPut').disabled = false; sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
     const lid = 'l' + Date.now(); const L = wallLocal(); L.push({ id: lid, lid, room: b.room, name: b.name, msg: b.msg, color: b.color, motif: b.motif, pending: 1 });
-    try { localStorage.setItem(wallLocalKey(), JSON.stringify(L.slice(-400))); const Q = wallQueue(); Q.push(Object.assign({ lid }, b)); localStorage.setItem('rb_wall_queue', JSON.stringify(Q.slice(-50))); } catch (e) {}
+    try { localStorage.setItem(wallLocalKey(), JSON.stringify(L.slice(-400))); const Q = wallQueue(); Q.push(Object.assign({ lid }, wallPublicBrick(b))); localStorage.setItem('rb_wall_queue', JSON.stringify(Q.slice(-50))); } catch (e) {}
     WALL.offlineSave = true; done2(lid);
   });
 }
 // 서버에 못 보낸 벽돌 다시 보내기(한 번에 하나씩, 겹쳐 보내지 않게)
-function wallQueue() { try { return JSON.parse(localStorage.getItem('rb_wall_queue') || '[]'); } catch (e) { return []; } }
+function wallQueue() { try { const q = JSON.parse(localStorage.getItem('rb_wall_queue') || '[]'); return Array.isArray(q) ? q.filter(b => b && typeof b === 'object' && b.lid) : []; } catch (e) { return []; } }
 function wallFlush() {
   if (WALL.flushing) return; const Q = wallQueue(); if (!Q.length) return;
-  WALL.flushing = true; const it = Q[0], { lid } = it, body = Object.assign({}, it); delete body.lid;
+  WALL.flushing = true; const it = Q[0], { lid } = it, body = wallPublicBrick(it);
   wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => {
     WALL.flushing = false; if (!(r && r.ok && r.j && (r.j.id || r.j.error === 'word'))) return;
     try {
