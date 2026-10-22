@@ -1098,6 +1098,7 @@ body.plFree #view{cursor:none}
         <div class="hand">"1945년 8월 15일.<br>굴 밖에서 만세 소리가 들렸다.<br>언젠가 우리가 이 건물을 <b>되찾은 집</b>이라 부르는 날이 오겠지.<br>그날 누군가 이 수첩을 읽어 주기를.<br>— 정민승"</div>
         <div class="hand adult" style="text-align:right">"고마워, 미래에서 온 친구."</div>
         <p style="line-height:1.7;margin-bottom:0">민승이의 바람대로 이 건물은 1947년 목포시청이 되었고, 도서관과 문화원을 거쳐 2014년 목포근대역사관 1관이 되었어요. 그리고 오늘, 수첩을 끝까지 읽은 첫 번째 사람은 바로 당신이에요.</p>
+        <p class="srcNote">민승이와 수첩은 공부를 돕기 위해 만든 <b>창작 이야기</b>예요. 건물과 4·8 만세운동, 독립운동가는 <b>실제 역사</b>예요.</p>
       </div>
       <div class="startrow endStep1"><button class="big" id="endNext1">다음 ▶</button></div>
       <div id="achPop" hidden>
@@ -3537,7 +3538,7 @@ $('btnPlay').onclick = () => {
 };
 
 // 브리핑: 누를 때마다 정보가 하나씩 나타나요.
-const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ICO = {
   dia: '<svg viewBox="0 0 24 24"><path d="M12 2l7 10-7 10-7-10z" fill="#f2c76b"/></svg>',
   book: '<svg viewBox="0 0 24 24"><path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v14c-3-1-6-1-9 1-3-2-6-2-9-1z" fill="none" stroke="#efe4cc" stroke-width="1.8"/><path d="M12 6v14" stroke="#efe4cc" stroke-width="1.8"/></svg>',
@@ -3553,7 +3554,7 @@ const ctlHTML = coarse
   : `<div class="ctl2"><div class="wasd"><i></i>${kc('W')}<i></i>${kc('A')}${kc('S')}${kc('D')}</div><b>걷기</b><span>방향키도 돼요</span></div><div class="ctl2">${ICO.mouse}<b>둘러보기</b><span>화면을 한 번 클릭한 뒤 마우스 움직이기 · Shift 달리기 · Esc 멈춤</span></div><div class="ctl2"><div class="keys1">${kc('E')}<em>또는</em>${ICO.tap.replace('viewBox="0 0 48 40"', 'viewBox="0 0 48 40" class="sm"')}</div><b>조사하기</b><span>가운데 동그라미를 맞추고 클릭이나 E</span></div>`;
 const BRIEF = [
   { eb: '1919년 봄 · 목포부청', title: '수첩이 가리키는 곳으로', items: [
-    '<p>낯선 시대에 남은 건 손에 든 수첩 한 권뿐이에요. 수첩이 가리키는 곳으로 가 보세요.</p><p class="srcNote">민승이와 수첩은 공부를 돕기 위해 만든 <b>창작 이야기</b>예요. 건물과 4·8 만세운동, 독립운동가는 <b>실제 역사</b>예요.</p>',
+    '<p>낯선 시대에 남은 건 손에 든 수첩 한 권뿐이에요. 수첩이 가리키는 곳으로 가 보세요.</p>',
     `<div class="glab">이렇게 도움을 받아요</div><div class="guide"><div class="gtile"><span class="gico">${ICO.dia}</span><span><b>금색 표시</b>막히면 다음 장소 위에 떠요</span></div><div class="gtile"><span class="gico">${ICO.book}</span><span><b>수첩</b>이야기와 단서가 적혀 있어요</span></div><div class="gtile"><span class="gico">${ICO.bulb}</span><span><b>힌트</b>세 단계로 하나씩 열려요</span></div></div>`,
     `<div class="glab">${coarse ? '태블릿 조작' : '컴퓨터 조작'}</div><div class="ctrls">${ctlHTML}</div>`] },
   { eb: '1919년 목포 사람', title: '나의 통행증', reg: true, items: [
@@ -4979,7 +4980,7 @@ function saveGame() {
   if (state.mode !== 'play' || state.solved[7]) return;
   LS.set(SAVE_KEY, {
     t: Date.now(), team: state.team, stage: state.stage, solved: state.solved, letters: [...state.letters], hints: state.hints, torch: state.torch, gateOpen: !!state.gateOpen,
-    elapsed: (performance.now() - state.start) / 1000, p: { x: player.x, z: player.z, lv: player.lv, yaw: player.yaw },
+    elapsed: (performance.now() - state.start) / 1000, mapv: MAP_VER, p: { x: player.x, z: player.z, lv: player.lv, yaw: player.yaw },
     fx: { bricks: [...FX.bricks], marks: [...FX.marks], tele: FX.tele, arts: [...FX.arts], battery: FX.battery, collapsed: FX.collapsed, hintTier: FX.hintTier, hintStage: FX.hintStage, cameoDone: !!FX.cameoDone, why: FX.why },
     written: [...written], tunnelMsg: state.tunnelMsg
   });
@@ -4995,6 +4996,21 @@ showEnding = function () {
   const doneN = Object.keys(FX.why).length;
   $('stats').insertAdjacentHTML('beforeend', `<span>생각하기 · ${doneN}/7 완료 (첫 번에 ${right})</span>`);
 };
+// 저장 좌표 검사: 숫자·층·맵 범위·벽 겹침·맵 버전을 확인하고, 이상하면 현재 단계의 안전한 지점으로
+const MAP_VER = 3;
+function safeRestorePos(sv) {
+  const q = sv.p || {}, S = state.solved;
+  const spot = () => S[2] ? { x: 2.0, z: 0.3, lv: 1, yaw: Math.PI } : { x: 0, z: 19.5, lv: 1, yaw: 0 };
+  let ok = sv.mapv === MAP_VER && [q.x, q.z, q.yaw].every(Number.isFinite) && colliders.some(c => c.lv === q.lv);
+  if (ok) {
+    const L = colliders.filter(c => c.lv === q.lv); let x1 = 1e9, x2 = -1e9, z1 = 1e9, z2 = -1e9;
+    L.forEach(c => { x1 = Math.min(x1, c.x1); x2 = Math.max(x2, c.x2); z1 = Math.min(z1, c.z1); z2 = Math.max(z2, c.z2); });
+    ok = q.x > x1 && q.x < x2 && q.z > z1 && q.z < z2;
+    if (ok) { const t = { x: q.x, z: q.z }; collide(t, q.lv); ok = Math.hypot(t.x - q.x, t.z - q.z) < 0.05; }
+  }
+  Object.assign(player, ok ? { x: q.x, z: q.z, lv: q.lv, yaw: q.yaw } : spot());
+  if (!ok) setTimeout(() => toast('저장 위치를 찾지 못해 안전한 곳에서 이어가요.', 2400), 2800);
+}
 function restore(sv) {
   state.team = sv.team; state.hints = sv.hints || 0; state.torch = !!sv.torch; state.tunnelMsg = !!sv.tunnelMsg;
   Object.assign(state.solved, sv.solved || {}); state.stage = sv.stage || 1; state.letters = new Set(sv.letters || []);
@@ -5014,7 +5030,7 @@ function restore(sv) {
   (f.arts || []).forEach(i => { FX.arts.add(i); artMeshes[i].traverse(c => c.layers.set(1)); ERA_REG.forEach(r => { if (r.objs.includes(artMeshes[i])) r.eras = []; }); });
   goEra(S[5] ? 'y1944' : 'y1919');
   if (f.collapsed) { FX.collapsed = true; show(rubble, true); rubbleCol.on = true; }
-  Object.assign(player, sv.p || {}); player.pitch = 0;
+  safeRestorePos(sv); player.pitch = 0;
   state.start = performance.now() - (sv.elapsed || 0) * 1000;
 }
 function resumeGame() {
@@ -7519,7 +7535,7 @@ function wallApi(path, opt) {
   if (!COUNTER_URL || !window.fetch) return Promise.resolve(null);
   const ctl = window.AbortController ? new AbortController() : null; const tm = setTimeout(() => ctl && ctl.abort(), 6000);
   return fetch(COUNTER_URL.replace(/\/$/, '') + path, Object.assign({ cache: 'no-store', signal: ctl ? ctl.signal : undefined }, opt || {}))
-    .then(r => r.json().catch(() => null).then(j => ({ ok: r.ok, j }))).catch(() => null).finally(() => clearTimeout(tm));
+    .then(r => r.json().catch(() => null).then(j => { if (j && Number.isFinite(j.now)) WALL.skew = j.now - Date.now(); return { ok: r.ok, j }; })).catch(() => null).finally(() => clearTimeout(tm));
 }
 const wallLocalKey = () => 'rb_wall_' + (WALL.room || '_all');
 function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey()) || '[]'); } catch (e) { return []; } }
@@ -7547,7 +7563,7 @@ function wallLocal() { try { return JSON.parse(localStorage.getItem(wallLocalKey
         <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
         <textarea id="wlLetter" maxlength="60" rows="3" placeholder="서른 살의 나에게 한마디"></textarea>
         <p class="wlEx" id="wlEx"></p>
-        <p class="wlNote">2045년 8월 15일까지 봉인돼요. 이 기기에서만 다시 열어 볼 수 있어요.</p>
+        <p class="wlNote">2045년 8월 15일까지 봉인돼요. 쓴 사람도 그 전에는 열 수 없어요. 편지는 이 기기에만 보관되어 기기를 바꾸거나 방문 기록을 지우면 사라질 수 있어요.</p>
         <label class="wlLab" for="wlName">새길 이름</label>
         <input id="wlName" maxlength="10" autocomplete="off">
         <button class="big" id="wlPut" type="button">벽돌 쌓기</button>
@@ -7593,6 +7609,7 @@ function wallPrev() {
   $('wlPrev').innerHTML = wallBrickHTML({ color: WALL.color, motif: WALL.motif, name, msg }, true);
 }
 function wallBrickHTML(b, big) {
+  b = Object.assign({}, b, { color: (b.color | 0) % WALL_COLORS.length, motif: b.motif | 0, id: b.id != null ? esc(b.id) : '' }); // 서버에서 온 값도 숫자·글자로만
   const light = WALL_COLORS[b.color] === '#d8cbb4';
   return `<div class="wb${light ? ' lt' : ''}${big ? ' big' : ''}" style="background-color:${WALL_COLORS[b.color] || WALL_COLORS[0]}" ${b.id ? `data-id="${b.id}"` : ''} ${b.msg ? `data-msg="${esc(b.msg)}" data-name="${esc(b.name || '')}"` : ''}>${b.motif ? `<span class="wm">${wallMotifSVG(b.motif, light)}</span>` : ''}${b.name ? `<span class="wn">${esc(b.name)}</span>` : ''}${big ? `<span class="wt">${esc(b.msg || '')}</span>` : ''}<span class="wseal">2045</span></div>`;
 }
@@ -7615,12 +7632,15 @@ function openWall() {
 function wallLoad(scroll) {
   const all = WALL.view === 'all';
   if (!all && !WALL.room) { WALL.bricks = []; wallRender(scroll); $('wlMode').textContent = '반 코드를 넣으면 우리 반 담벼락이 열려요'; return; }
+  const rid = WALL.rid = (WALL.rid || 0) + 1;
   wallApi('/bricks' + (all ? '' : '?room=' + encodeURIComponent(WALL.room))).then(r => {
+    if (rid !== WALL.rid || $('wallScreen').hidden) return; // 늦게 온 옛 응답은 버려요
+    if (r && r.ok) wallFlush();
     if (r && r.ok && r.j && Array.isArray(r.j.bricks)) {
       WALL.online = true; WALL.bricks = r.j.bricks; WALL.total = r.j.total;
       $('wlMode').textContent = all ? `전국에서 함께 쌓는 담벼락 · 다짐 글은 반 담벼락에서만 보여요` : `모두가 함께 쌓는 담벼락`;
     } else {
-      WALL.online = false; WALL.bricks = wallLocal();
+      WALL.online = false; WALL.bricks = wallLocal().map(b => ({ id: b.id, lid: b.lid, name: b.name, msg: b.msg, color: b.color, motif: b.motif }));
       $('wlMode').textContent = '이 기기에만 쌓여요 (서버 연결 없음)';
     }
     wallRender(scroll);
@@ -7644,16 +7664,20 @@ function wallRender(scroll) {
   if (scroll) { const wr = $('wlWrap'); wr.scrollTop = wr.scrollHeight; }
 }
 const OPEN2045 = new Date(2045, 7, 15).getTime();
-function wallLeft() { const d = Math.ceil((OPEN2045 - Date.now()) / 864e5); return d > 0 ? `${Math.floor(d / 365.25)}년 ${Math.round(d % 365.25)}일 남음` : '개봉'; }
+const wallNow = () => Date.now() + (WALL.skew || 0); // 서버 시각이 있으면 서버 기준
+function wallLeft() { const d = Math.ceil((OPEN2045 - wallNow()) / 864e5); return d > 0 ? `${Math.floor(d / 365.25)}년 ${Math.round(d % 365.25)}일 남음` : '개봉'; }
 function wallShow(b) {
   let mine = null; try { mine = JSON.parse(localStorage.getItem('rb_letters') || '{}')[b.dataset.id]; } catch (e) {}
   openModal(body => {
-    head(body, b.dataset.name || '', '그날의 사람들에게');
-    body.appendChild(el('p', 'hand wlMsgBig', `“${b.dataset.msg}”`));
-    const sealed = Date.now() < OPEN2045;
+    const eb = el('div', 'eyebrow'); eb.textContent = b.dataset.name || ''; body.appendChild(eb); body.appendChild(el('h2', '', '그날의 사람들에게'));
+    const mp = el('p', 'hand wlMsgBig'); mp.textContent = `“${b.dataset.msg || ''}”`; body.appendChild(mp);
+    const sealed = wallNow() < OPEN2045;
     body.appendChild(el('div', 'glab', '2045년의 나에게'));
-    if (mine && mine.letter) { body.appendChild(el('p', 'hand wlLetterOpen', `“${esc(mine.letter)}”`)); body.appendChild(el('p', 'wlNote', '내가 쌓은 벽돌이라 이 기기에서만 보여요. 다른 사람에게는 2045년까지 봉인돼요.')); }
-    else body.appendChild(el('div', 'wlSealed', sealed ? `<b>봉인</b><span>2045년 8월 15일 광복 100주년에 열려요 · ${wallLeft()}</span>` : '<b>개봉</b>'));
+    if (sealed) {
+      body.appendChild(el('div', 'wlSealed', `<b>봉인</b><span>2045년 8월 15일 광복 100주년에 열려요 · ${wallLeft()}</span>`));
+      if (mine) body.appendChild(el('p', 'wlNote', '내가 쌓은 벽돌이에요. 편지는 쓴 사람도 2045년까지 열어 볼 수 없어요. 이 기기에만 보관되어 기기를 바꾸거나 방문 기록을 지우면 사라질 수 있어요.'));
+    } else if (mine && mine.letter) { const lp = el('p', 'hand wlLetterOpen'); lp.textContent = `“${mine.letter}”`; body.appendChild(lp); }
+    else body.appendChild(el('div', 'wlSealed', '<b>개봉</b><span>이 기기에 보관된 편지가 없어요</span>'));
     const bt = el('button', 'pbtn', '닫기'); bt.style.marginTop = '12px'; bt.onclick = closeModal; body.appendChild(bt);
   });
 }
@@ -7674,15 +7698,32 @@ function wallPut() {
     tone([196, 147], 0.3, 'sine', 0.05); setTimeout(() => tone([523, 659, 784], 0.6, 'triangle', 0.1), 250);
     if (WALL.view === 'all') wallTab('room'); else wallLoad(true);
     setTimeout(() => { const m = document.querySelector('.wb.mine:last-of-type') || [...document.querySelectorAll('.wb.mine')].pop(); if (m) m.classList.add('drop'); }, 900);
-    toast('2045년까지 봉인된 벽돌을 쌓았어요.', 2200);
+    toast(WALL.offlineSave ? '서버에 닿지 않아 이 기기에 임시 저장했어요. 연결되면 다시 보내요.' : '서버에 저장했어요. 2045년까지 봉인돼요.', 2600); WALL.offlineSave = false;
   };
   const anim = wallSealAnim(b);
   const _done = done; const done2 = id => anim.then(() => _done(id));
   wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => {
     if (r && r.ok && r.j && r.j.id) return done2(r.j.id);
     if (r && r.j && r.j.error === 'word') { anim.cancel(); WALL.busy = false; $('wlPut').disabled = false; sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
-    const L = wallLocal(); const lid = 'l' + Date.now(); L.push(Object.assign({ id: lid, lid }, b, { letter: '' })); try { localStorage.setItem(wallLocalKey(), JSON.stringify(L.slice(-400))); } catch (e) {}
-    done2(lid);
+    const lid = 'l' + Date.now(); const L = wallLocal(); L.push({ id: lid, lid, room: b.room, name: b.name, msg: b.msg, color: b.color, motif: b.motif, pending: 1 });
+    try { localStorage.setItem(wallLocalKey(), JSON.stringify(L.slice(-400))); const Q = wallQueue(); Q.push(Object.assign({ lid }, b)); localStorage.setItem('rb_wall_queue', JSON.stringify(Q.slice(-50))); } catch (e) {}
+    WALL.offlineSave = true; done2(lid);
+  });
+}
+// 서버에 못 보낸 벽돌 다시 보내기(한 번에 하나씩, 겹쳐 보내지 않게)
+function wallQueue() { try { return JSON.parse(localStorage.getItem('rb_wall_queue') || '[]'); } catch (e) { return []; } }
+function wallFlush() {
+  if (WALL.flushing) return; const Q = wallQueue(); if (!Q.length) return;
+  WALL.flushing = true; const it = Q[0], { lid } = it, body = Object.assign({}, it); delete body.lid;
+  wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => {
+    WALL.flushing = false; if (!(r && r.ok && r.j && (r.j.id || r.j.error === 'word'))) return;
+    try {
+      localStorage.setItem('rb_wall_queue', JSON.stringify(wallQueue().filter(q => q.lid !== lid)));
+      const key = 'rb_wall_' + (it.room || '_all'); const L = JSON.parse(localStorage.getItem(key) || '[]').filter(x => x.lid !== lid); localStorage.setItem(key, JSON.stringify(L));
+      if (r.j.id) { const M = JSON.parse(localStorage.getItem('rb_letters') || '{}'); if (M[lid]) { M[r.j.id] = M[lid]; delete M[lid]; localStorage.setItem('rb_letters', JSON.stringify(M)); } WALL.mine.delete(lid); WALL.mine.add(r.j.id); localStorage.setItem('rb_mybricks', JSON.stringify([...WALL.mine])); }
+    } catch (e) {}
+    if (r.j.id) toast('임시 저장한 벽돌을 서버로 보냈어요.', 2000);
+    wallFlush(); if (!$('wallScreen').hidden) wallLoad(false);
   });
 }
 function wallHide(id) {
@@ -8807,7 +8848,7 @@ if (window.MIRROR && MIRROR.mg) {
   for (let i = 0; i < uv.count; i++) uv.setXY(i, (ps.getX(i) - bb.min.x) / (bb.max.x - bb.min.x), (ps.getY(i) - bb.min.y) / (bb.max.y - bb.min.y));
   const glass = new THREE.Mesh(glG, new THREE.MeshPhongMaterial({ color: 0xa9b6ba, specular: 0xffffff, shininess: 120 })); glass.position.z = 0.012; mg.add(glass);
   refl.geometry = glG; refl.position.set(0, 0, 0.02);
-  const sheen = new THREE.Mesh(glG, new THREE.MeshBasicMaterial({ map: canvasTex(64, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.42, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,.22)'); gr.addColorStop(0.58, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }), transparent: true, depthWrite: false })); sheen.position.z = 0.03; mg.add(sheen);
+  const sheen = new THREE.Mesh(glG, new THREE.MeshBasicMaterial({ map: canvasTex(64, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.42, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,.22)'); gr.addColorStop(0.58, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }), transparent: true, depthWrite: false })); sheen.position.z = 0.03;
   // 머리 장식: 금빛 조개 + 양옆 소용돌이
   const shell = new THREE.Mesh(new THREE.CircleGeometry(0.13, 16, 0, Math.PI), gold); shell.position.set(0, YS + R + 0.02, 0.035); mg.add(shell);
   for (let i = 0; i < 7; i++) { const a = i / 6 * Math.PI; const rib = dk(0.012, 0.12, 0.012, mah, Math.cos(a) * 0.06, YS + R + 0.02 + Math.sin(a) * 0.06, 0.042, mg); rib.rotation.z = a - Math.PI / 2; }
@@ -8819,20 +8860,42 @@ if (window.MIRROR && MIRROR.mg) {
   dk(1.12, 0.44, 0.54, mah, 0, 0.34, 0, mg);
   [[-0.5, -0.22], [0.5, -0.22], [-0.5, 0.22], [0.5, 0.22]].forEach(([x, z]) => { const l = cyl(0.025, 0.04, 0.14, mah, x, 0.07, z, mg, 8); l.rotation.z = x > 0 ? -0.15 : 0.15; });
   dk(1.1, 0.02, 0.02, gold, 0, 0.13, 0.275, mg);
-  // 거울 속 1919년 부청: 장면이 시작될 때 한 번만 찍어요
-  const rt = new THREE.WebGLRenderTarget(320, 480); let shot = false;
-  const capture = () => {
-    if (shot) return; shot = true;
-    const cam = new THREE.PerspectiveCamera(62, 320 / 480, 0.1, 80); mg.updateMatrixWorld(true);
-    const p0 = new THREE.Vector3(0, 1.55, 0.1).applyMatrix4(mg.matrixWorld), p1 = new THREE.Vector3(0, 1.35, 6).applyMatrix4(mg.matrixWorld);
-    cam.position.copy(p0); cam.lookAt(p1);
-    const prev = curEra, vis = [mg.visible, cineBook.visible]; mg.visible = false; cineBook.visible = false;
-    setEra('y1919'); renderer.setRenderTarget(rt); renderer.render(scene, cam); renderer.setRenderTarget(null); setEra(prev);
-    mg.visible = vis[0]; cineBook.visible = vis[1];
-    rt.texture.wrapS = THREE.RepeatWrapping; rt.texture.repeat.x = -1; rt.texture.offset.x = 1; // 거울이니 좌우 반전
-    refl.material.map = rt.texture; refl.material.color.setHex(0xd8b07a); refl.material.needsUpdate = true;
+  // 진짜 거울: 보는 사람 뒤쪽 모습을 그대로 비춰요(평면 반사). 인트로 장면에서는 1919년 부청이 세피아 빛으로 비쳐요
+  const mirRT = new THREE.WebGLRenderTarget(512, 512), vCam = new THREE.PerspectiveCamera(), texM = new THREE.Matrix4();
+  const mirMat = new THREE.ShaderMaterial({
+    uniforms: { tMir: { value: mirRT.texture }, texM: { value: texM }, sep: { value: 0 } },
+    vertexShader: '#include <common>\n#include <logdepthbuf_pars_vertex>\nuniform mat4 texM; varying vec4 vP; void main(){ vP = texM * modelMatrix * vec4(position,1.0); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);\n#include <logdepthbuf_vertex>\n}',
+    fragmentShader: '#include <logdepthbuf_pars_fragment>\nuniform sampler2D tMir; uniform float sep; varying vec4 vP; void main(){\n#include <logdepthbuf_fragment>\n vec3 c = texture2DProj(tMir, vP).rgb; float l = dot(c, vec3(.299,.587,.114)); vec3 s = vec3(l*1.0+.05, l*.86+.04, l*.66+.02); c = mix(c*vec3(.9,.93,.95), s, sep); gl_FragColor = linearToOutputTexel(vec4(c, 1.0)); }',
+    depthWrite: true
+  });
+  const oldMat = refl.material; refl.material = mirMat; refl.visible = true;
+  const mp = new THREE.Vector3(), nrm = new THREE.Vector3(), cp = new THREE.Vector3(), la = new THREE.Vector3(), tg = new THREE.Vector3(), rotM = new THREE.Matrix4(), clipP = new THREE.Plane(), sz = new THREE.Vector2(), q4 = new THREE.Vector4(), qq = new THREE.Vector4();
+  const bias = new THREE.Matrix4().set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
+  refl.onBeforeRender = (rend, scn, cam) => {
+    if (refl._busy || cam === vCam) return;
+    refl.getWorldPosition(mp); rotM.extractRotation(refl.matrixWorld); nrm.set(0, 0, 1).applyMatrix4(rotM);
+    cam.getWorldPosition(cp); la.subVectors(mp, cp); if (la.dot(nrm) > 0 || la.length() > 14) return;
+    la.reflect(nrm).negate().add(mp); vCam.position.copy(la);
+    rotM.extractRotation(cam.matrixWorld); tg.set(0, 0, -1).applyMatrix4(rotM).add(cp); tg.subVectors(mp, tg).reflect(nrm).negate().add(mp);
+    vCam.up.set(0, 1, 0).applyMatrix4(rotM).reflect(nrm); vCam.lookAt(tg); vCam.far = cam.far; vCam.updateMatrixWorld(); vCam.projectionMatrix.copy(cam.projectionMatrix);
+    texM.copy(bias).multiply(vCam.projectionMatrix).multiply(vCam.matrixWorldInverse);
+    // 거울 뒤쪽은 잘라 내기(비스듬한 근평면)
+    clipP.setFromNormalAndCoplanarPoint(nrm, mp).applyMatrix4(vCam.matrixWorldInverse);
+    const P = vCam.projectionMatrix.elements; q4.set(clipP.normal.x, clipP.normal.y, clipP.normal.z, clipP.constant);
+    qq.set((Math.sign(q4.x) + P[8]) / P[0], (Math.sign(q4.y) + P[9]) / P[5], -1, (1 + P[10]) / P[14]);
+    q4.multiplyScalar(2 / q4.dot(qq)); P[2] = q4.x; P[6] = q4.y; P[10] = q4.z + 1; P[14] = q4.w;
+    rend.getDrawingBufferSize(sz); const w = Math.max(256, sz.x >> 1), h = Math.max(256, sz.y >> 1); if (mirRT.width !== w || mirRT.height !== h) mirRT.setSize(w, h);
+    const sepV = Math.min(1, (mirMat.opacity < 1 ? mirMat.opacity : 0) / 0.9); mirMat.uniforms.sep.value = sepV;
+    const past = sepV > 0.02 && curEra === 'present', prev = curEra;
+    refl._busy = true; const vis = mg.visible; mg.visible = false;
+    const bk = typeof cineBook !== 'undefined' ? cineBook.visible : null; if (bk !== null) cineBook.visible = false;
+    if (past) setEra('y1919');
+    const ot = rend.getRenderTarget(), osu = rend.shadowMap.autoUpdate; rend.shadowMap.autoUpdate = false;
+    rend.setRenderTarget(mirRT); rend.clear(); rend.render(scn, vCam); rend.setRenderTarget(ot); rend.shadowMap.autoUpdate = osu;
+    if (past) setEra(prev);
+    if (bk !== null) cineBook.visible = bk; mg.visible = vis; refl._busy = false;
   };
-  TICK.push(() => { if (state.mode === 'cine' && typeof cine !== 'undefined' && CINE[cine.i] && CINE[cine.i].era === 'present' && CINE[cine.i].text && CINE[cine.i].text.includes('거울')) capture(); });
+  glass.visible = false;
 }
 
 </script>
