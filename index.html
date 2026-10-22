@@ -160,9 +160,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .fTitle h1{font:700 clamp(40px,8vw,76px)/1.15 var(--f-display);margin:14px 0 6px;letter-spacing:.06em;color:#f3ead6;text-shadow:0 0 40px rgba(201,161,87,.35)}
 .fEnd{font:700 clamp(26px,4vw,38px)/1 var(--f-display);color:var(--brass);letter-spacing:.5em;margin:6px 0 22px;opacity:0;transition:opacity 1.2s ease 1.4s}
 #fin.title .fEnd{opacity:1}
-.fCred{font-size:14px;line-height:1.9;color:rgba(236,226,204,.7);opacity:0;transition:opacity 1.2s ease 2.6s}
+.fCred{font-size:14px;line-height:1.9;color:rgba(236,226,204,.7);opacity:0;transition:opacity .6s ease .25s}
 #fin.title .fCred{opacity:1}
-.fBtns{display:flex;gap:10px;justify-content:center;margin-top:22px;opacity:0;transition:opacity 1s ease 3.6s}
+.fBtns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px;opacity:0;transition:opacity .5s ease .45s}
 #fin.title .fBtns{opacity:1}
 /* 현재로 돌아오는 장면 */
 #ret{position:absolute;inset:0;z-index:44;cursor:pointer;color:#fff3d6;overflow:hidden}
@@ -192,7 +192,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 #ret.white .rText,#ret.white .rTap{color:#2a211a;text-shadow:none}
 /* 엔딩 화면이 차례로 나타나요 */
 .ending.rv>*{opacity:0;transform:translateY(14px);animation:rvIn .9s ease forwards}
-.ending.rv>*:nth-child(1){animation-delay:0.36s}.ending.rv>*:nth-child(2){animation-delay:1.42s}.ending.rv>*:nth-child(3){animation-delay:3.56s}.ending.rv>*:nth-child(4){animation-delay:6.40s}.ending.rv>*:nth-child(n+5){animation-delay:7.82s}
+.ending.rv>*:nth-child(1){animation-delay:.08s}.ending.rv>*:nth-child(2){animation-delay:.22s}.ending.rv>*:nth-child(3){animation-delay:.4s}.ending.rv>*:nth-child(n+4){animation-delay:.15s}
 @keyframes rvIn{to{opacity:1;transform:none}}
 .ending.rv[data-step="3"]>#letterWrite,.ending.rv[data-step="3"]>#letterOut{animation-delay:0.18s}
 .ending.rv .final .hand.adult{opacity:0;animation:inkIn 1.6s ease forwards 1.6s}
@@ -997,6 +997,15 @@ body.plFree #view{cursor:none}
 
 
 .mxEvidence{margin:10px 0 16px;padding:12px 14px;background:#e5dac0;border-left:4px solid #8a5437;font:14px/1.6 var(--f-display);color:#3a312a}.mxEvidence p{margin:0 0 8px}.mxSourceLinks{display:flex;flex-wrap:wrap;gap:4px 14px}.mxSourceLinks a{display:inline-block;color:#1f5362;text-decoration:underline;padding:8px 0}.mxEvidence small{display:block;margin-top:6px;color:#66543e}
+/* 짧은 가로 화면에서도 마지막 선택 버튼이 화면 밖으로 잘리지 않게 */
+@media(max-height:520px){
+  .fTitle{padding:12px;max-height:100%;overflow-y:auto;box-sizing:border-box}
+  .fTitle h1{font-size:clamp(30px,6vw,52px);margin:8px 0 4px}
+  .fEnd{font-size:26px;margin:4px 0 12px}
+  .fCred{font-size:12px;line-height:1.7}
+  .fBtns{margin-top:12px;gap:8px}
+  .fBtns button{padding:10px 14px;font-size:14px}
+}
 </style>
 
 <div id="findPop" aria-live="polite"><div class="fpImg"><img id="fpImg" alt=""></div><div><span class="fpK">새 유물 발견</span><span class="fpT" id="fpT"></span><span class="fpN" id="fpN"></span></div></div>
@@ -1078,7 +1087,8 @@ body.plFree #view{cursor:none}
     <div class="intro">
       <div class="kick">목포근대역사관 1관 · 교실 방탈출</div>
       <h1>붉은 벽돌의<br><span>기억</span></h1>
-      <p class="lead">체험학습으로 찾은 목포근대역사관 1관.<br>계단 밑 옛 거울 서랍에서 찾은 낡은 수첩을 펼치자, 시계가 거꾸로 돌기 시작했어요.</p>
+      <p class="lead">체험학습으로 찾은 목포근대역사관 1관.<br>계단 밑 옛 거울 서랍에서 나타난 수첩 한 권.<br>검열을 피해 숨긴 일곱 기록을 찾아, 지워질 뻔한 이야기를 오늘에 전하세요.</p>
+      <p class="srcNote">민승이·비밀 서랍·암호 장치·시간 여행은 창작이며, 실제 관람 시설과 구분해 주세요.</p>
       <div class="startrow"><button class="big" id="btnResume" hidden>▶ 이어하기</button><button class="big" id="btnPlay">▶ 시작하기</button><button class="pbtn alt dk" id="btnSndStart" aria-pressed="true">🔊 소리 켜짐</button><button class="pbtn alt dk" id="btnSet">⚙ 설정</button><div id="playCnt" hidden><div class="pcIn"><span class="pcDot"></span><span>지금까지 <b id="pcPlay">0</b> 명이 붉은 벽돌의 기억을 찾아 떠났어요</span><b id="pcFin" hidden></b></div></div><span class="small" id="resumeInfo">배경음악과 효과음이 있어요. 스피커 버튼으로 켜고 끌 수 있어요.</span></div>
     </div>
   </section>
@@ -1107,12 +1117,11 @@ body.plFree #view{cursor:none}
     <div class="ending">
       <div class="kick" style="color:var(--brass);letter-spacing:.2em;font-size:13px">2026년 · 다시 목포근대역사관 1관</div>
       <div class="final">
-        <div class="hand">"1945년 8월 15일.<br>굴 밖에서 만세 소리가 들렸다.<br>언젠가 우리가 이 건물을 <b>되찾은 집</b>이라 부르는 날이 오겠지.<br>그날 누군가 이 수첩을 읽어 주기를.<br>— 정민승"</div>
-        <div class="hand adult" style="text-align:right">"고마워, 미래에서 온 친구."</div>
-        <p style="line-height:1.7;margin-bottom:0">민승이의 바람대로 이 건물은 1947년 목포시청이 되었고, 도서관과 문화원을 거쳐 2014년 목포근대역사관 1관이 되었어요. 그리고 오늘, 수첩을 끝까지 읽은 첫 번째 사람은 바로 당신이에요.</p>
-        <p class="srcNote">민승이와 수첩은 공부를 돕기 위해 만든 <b>창작 이야기</b>예요. 건물과 4·8 만세운동, 독립운동가는 <b>실제 역사</b>예요.</p>
+        <div class="hand">일곱 기록을 끝까지 읽었다.<br>아이의 흰 천 조각은 어른의 수첩에 남았고,<br>그 수첩의 이야기는 오늘 내게 닿았다.</div>
+        <p>돌아오기 위한 문을 열었듯, 이제 기록을 이어 갈 한 줄을 남겨 주세요.</p>
+        <p class="srcNote">민승이·수첩·비밀 서랍·암호와 시간 여행은 창작입니다. 건물과 만세운동의 실제 역사는 마지막 화면의 보훈 자료실에서 따로 살펴볼 수 있어요.</p>
       </div>
-      <div class="startrow endStep1"><button class="big" id="endNext1">다음 ▶</button></div>
+      <div class="startrow endStep1"><button class="big" id="endNext1">수첩에 답장 쓰기 ▶</button></div>
       <div id="achPop" hidden>
         <div class="achCard">
           <div class="achKick">업적 달성</div>
@@ -1123,12 +1132,12 @@ body.plFree #view{cursor:none}
         </div>
       </div>
       <div id="letterWrite">
-        <label for="memo" style="color:var(--lime)">수첩의 빈 쪽: 1919년의 민승이에게 답장을 써 보세요.</label>
+        <label for="memo" style="color:var(--lime)">수첩의 빈 쪽: 수첩을 남긴 민승이에게 답장을 써 보세요.</label>
         <textarea id="memo" placeholder="민승아, 네 수첩 잘 읽었어…"></textarea>
         <div class="startrow" style="margin-top:10px"><button class="big" id="btnLetter">수첩에 남기기 ✒</button></div>
       </div>
       <div id="letterOut" hidden>
-        <div class="kick" style="color:var(--brass);letter-spacing:.2em;font-size:13px">1919년 · 민승이의 수첩 마지막 빈 쪽</div>
+        <div class="kick" style="color:var(--brass);letter-spacing:.2em;font-size:13px">2026년 · 수첩 마지막 빈 쪽에 남긴 답장</div>
         <div class="letterPaper"><p class="hand kid page" id="letterText"></p><p class="hand kid" id="letterSign" style="text-align:right;margin:0"></p></div>
         <p id="letterAfter" class="lead" style="opacity:0;transition:opacity 1.2s"></p>
       </div>
@@ -2622,14 +2631,54 @@ scene.traverse(o => { if (o.isInstancedMesh) o.frustumCulled = false; });
 
 /* ================= 이야기 데이터 ================= */
 const NB = [
-  { tab: '첫 장', date: '수첩 첫 장', text: '이 건물이 본 것을 기억해 줄 사람에게. 일곱 개의 문을 열면 내 마지막 이야기가 보일 것이다. — 정민승', clue: '금색 마름모가 다음에 갈 곳을 알려 줘요. 장소에 가까이 가서 반짝이는 물건을 조사하세요.' },
-  { tab: '①', date: '1919년 봄', text: '나는 열두 살, 목포부청에서 서류를 나르는 사환이다. 이 집은 내가 태어나기 훨씬 전부터 언덕 위에 서 있었다. 붉은 벽돌과 흰 벽돌이 번갈아 쌓인 벽. 이 집이 태어난 해는 벽돌이 알고 있다.', clue: '앞마당의 쪽지판: 줄마다 흰 벽돌을 세어 차례로 이어 보아라.' },
-  { tab: '②', date: '1919년 봄', text: '현관 위 지붕은 세모, 집의 왼쪽과 오른쪽은 거울처럼 똑같다. 부청 어른들은 이 모양이 힘을 보여 준다고 했다. 현관 자물쇠는 오른쪽 창문을 왼쪽과 똑같이 맞춰야 열린다.', clue: '가운데 기둥을 거울이라고 생각하고 오른쪽 창문을 채워라.' },
-  { tab: '③', date: '1919년 겨울', text: '겨울이면 서쪽 방 벽난로에 불을 땐다. 이 집의 이름은 자꾸 바뀌었다. 나는 그 이름들을 쪽지에 적어 벽난로 속에 숨겼다. 그을린 쪽지는 불빛을 비춰야 읽을 수 있다.', clue: '1층 서쪽 방 벽난로: 쪽지를 불빛으로 비추고, 이름이 바뀐 순서대로 놓아라.' },
-  { tab: '④', date: '1919년 봄', text: '전보를 받고 2층까지 올라왔구나. 2층 서쪽 방 창문에서는 항구가 다 보인다. 날마다 쌀가마를 가득 실은 배가 일본으로 떠난다. 우리 동네 사람들은 쌀이 모자라 보리죽을 먹는데. 이 항구가 문을 연 것은 내가 태어나기 10년 전이었다.', clue: '2층 서쪽 방 망원경: 나는 1919년에 열두 살 → 1919 − 12 = 내가 태어난 해. 거기서 10년을 빼면 항구가 열린 해! 네 자리 연도를 앞 두 자리 배, 뒤 두 자리 배 순서로 골라라.' },
-  { tab: '⑤', date: '1919년 4월 8일', text: '창밖 거리가 "대한독립 만세" 소리로 가득 찼다. 학생들과 어른들이 몰래 그린 태극기를 흔들었다. 나는 길에 떨어진 태극기 조각들을 주워 2층 동쪽 방 서랍장에 숨겼다.', clue: '하늘(☰)은 왼쪽 위, 땅(☷)은 그 맞은편 아래. 물(☵)은 오른쪽 위, 불(☲)은 그 맞은편 아래.' },
-  { tab: '⑥', date: '1940년대', text: '어른이 된 나는 아직 이 건물에서 일한다. 뒤뜰의 봉안전 앞을 지날 때마다 고개를 숙이라고 했다. 나는 고개는 숙였지만 마음까지 숙이지는 않았다. 저들이 붙인 공고문에는 거짓이 섞여 있다. 거짓을 밝히는 사람에게 서고 문을 열어 주겠다.', clue: '뒤뜰 봉안전 공고문: 거짓 문장 두 개를 찾아라.' },
-  { tab: '⑦', date: '1944년', text: '건물 뒤 언덕에 굴을 파는 일에 끌려왔다. 비행기 폭격을 피할 굴이라고 했다. 굴은 칠흑같이 어둡다. 나는 서고 탁자 위에 내 손전등과 철문 열쇠를 숨겨 두었다. 어둡고 축축한 굴 벽에는 몰래 글자 네 개를 새겼다. 내 소원이다.', clue: '뒤뜰 서고에서 손전등과 열쇠를 찾고, 방공호 벽에 새긴 글자 네 개를 모아 출구에서 순서대로 맞춰라.' }
+  {
+    "tab": "첫 장",
+    "date": "수첩 첫 장 · 창작 이야기",
+    "text": "이 건물이 본 것을 기억해 줄 사람에게. 검열을 피해 일곱 기록을 나누어 숨겼다. 건물의 모습과 지난 이름이 단서다. 내 이야기를 읽고, 지워질 뻔한 이름들을 오늘에 전해 주기를. — 정민승",
+    "clue": "금색 마름모가 다음에 갈 곳을 알려 줘요. 장소에 가까이 가서 반짝이는 물건을 조사하세요."
+  },
+  {
+    "tab": "①",
+    "date": "1919년 4월 7일",
+    "text": "나는 열두 살, 부청에서 서류를 나르는 사환이다. 종이 위의 이름 하나도 누군가의 삶이다. 기록을 빼앗기지 않으려 암호로 감췄다. 바깥벽의 분필 번호를 따라 이 집이 태어난 해부터 찾아 줘.",
+    "clue": "앞마당의 쪽지판: 줄마다 흰 벽돌을 세어 차례로 이어 보아라."
+  },
+  {
+    "tab": "②",
+    "date": "1919년 4월 7일",
+    "text": "오늘 친구와 흰 천에 태극기를 그렸다. 친구들의 이름도 수첩에 적었다. 기록이 있는 방의 잠금장치는 이 집의 대칭 모양을 본떴다. 건물을 찬찬히 보는 사람이 기록도 읽어 주기를.",
+    "clue": "가운데 기둥을 거울이라고 생각하고 오른쪽 창문을 채워라."
+  },
+  {
+    "tab": "③",
+    "date": "1919년 4월 7일",
+    "text": "서류를 정리하다 이 집의 지난 이름 세 개를 보았다. 이름이 바뀌어도 사람들의 이야기는 남아 있었다. 그 이름들을 벽 곳곳에 옅게 적었다. 들키지 않게 감춘 글씨를 촛불로 찾아 줘.",
+    "clue": "1층 서쪽 방 벽난로: 쪽지를 불빛으로 비추고, 이름이 바뀐 순서대로 놓아라."
+  },
+  {
+    "tab": "④",
+    "date": "1919년 4월 7일",
+    "text": "계단 번호는 들키지 않게 전보 소리로 바꿨다. 2층에서는 쌀을 실은 배와 부두의 이웃들이 보인다. 그들의 이야기도 남기고 싶었다. 내가 태어나기 10년 전 열린 항구, 그 연도를 배 두 척의 번호로 나눴다.",
+    "clue": "2층 서쪽 방 망원경: 나는 1919년에 열두 살 → 1919 − 12 = 내가 태어난 해. 거기서 10년을 빼면 항구가 열린 해! 네 자리 연도를 앞 두 자리 배, 뒤 두 자리 배 순서로 골라라."
+  },
+  {
+    "tab": "⑤",
+    "date": "1919년 4월 8일",
+    "text": "거리에서 만세 소리가 들렸다. 어제 함께 태극기를 그린 친구도 그곳에 있었다. 떨어진 조각들을 주워 숨겼다. 흩어진 조각을 모아 서랍장의 흰 천에 맞춰 줘. 우리가 함께 외친 마음이 지워지지 않도록.",
+    "clue": "하늘(☰)은 왼쪽 위, 땅(☷)은 그 맞은편 아래. 물(☵)은 오른쪽 위, 불(☲)은 그 맞은편 아래."
+  },
+  {
+    "tab": "⑥",
+    "date": "1944년 · 스물다섯 해 뒤",
+    "text": "스물다섯 해 뒤, 나는 서른일곱 살이다. 흰 천 한 조각과 친구들의 이름이 적힌 수첩을 아직 간직한다. 그들의 소식을 모두 알지는 못해도 이름만은 잊지 않기로 했다. 공고문의 거짓을 가려내고 서고의 기록을 찾아 다오.",
+    "clue": "뒤뜰 봉안전 공고문: 거짓 문장 두 개를 찾아라."
+  },
+  {
+    "tab": "⑦",
+    "date": "1944년 · 스물다섯 해 뒤",
+    "text": "종이를 나르던 손으로 이제 굴의 돌을 나른다. 힘들 때면 흰 천을 쥐고 친구들의 이름을 되뇌었다. 언젠가 이곳이 모두의 집이 되기를 바라며, 벽에 소원을 네 글자로 나누어 새겼다. 서고의 손전등과 열쇠를 챙겨 마지막 기록까지 읽어 다오.",
+    "clue": "뒤뜰 서고에서 손전등과 열쇠를 찾고, 방공호 벽에 새긴 글자 네 개를 모아 출구에서 순서대로 맞춰라."
+  }
 ];
 const GOALS = [
   '',
@@ -2766,8 +2815,11 @@ function openNotebook(page) {
         // 글자 자리를 먼저 모두 잡아 두고 한 글자씩 보이게 해서, 줄이 흔들리지 않아요.
         written.add(i);
         const spans = [...txt].map(ch => { if (ch === '\n') { hp.appendChild(document.createTextNode('\n')); return null; } const sp = document.createElement('span'); sp.textContent = ch; sp.style.opacity = '0'; hp.appendChild(sp); return sp; }).filter(Boolean);
-        let k = 0;
-        const tick = () => { if (!hp.isConnected) return; for (let n = 0; n < 2 && k < spans.length; n++, k++) spans[k].style.opacity = '1'; if (k < spans.length) setTimeout(tick, 45); };
+        let k = 0, revealed = false;
+        const reveal = () => { revealed = true; hp.textContent = txt; hp.removeAttribute('role'); hp.removeAttribute('tabindex'); hp.onclick = hp.onkeydown = null; };
+        hp.tabIndex = 0; hp.setAttribute('role','button'); hp.setAttribute('aria-label','수첩 글씨 바로 보기'); hp.title = '누르면 글씨를 한 번에 볼 수 있어요';
+        hp.onclick = reveal; hp.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); } };
+        const tick = () => { if (revealed || !hp.isConnected) return; for (let n = 0; n < 3 && k < spans.length; n++, k++) spans[k].style.opacity = '1'; if (k < spans.length) setTimeout(tick, 40); else reveal(); };
         setTimeout(tick, 350);
       } else hp.textContent = txt;
       pg.appendChild(el('div', 'clue', '<b>단서</b> · ' + p.clue));
@@ -3482,9 +3534,9 @@ regEra(work, ['present']); setEra(curEra);
 
 const CINE = [
   { fi: true, era: 'present', d: 6, p0: [0, 2.4, 31], p1: [0, 3.0, 20.5], l0: [0, 5.5, 0], l1: [0, 4.2, 6], year: '2026년 가을', text: '체험학습으로 목포근대역사관 1관에 왔다.' },
-  { era: 'present', d: 6, p0: [-3.6, 1.8, 2.6], p1: [-7.4, 1.25, 0.6], l0: [-9.8, 1.4, 0], l1: [-9.1, 0.1, 0.15], year: '', text: '공사 중인 벽난로 앞에 낡은 수첩 한 권이 떨어져 있었다.' },
-  { fw: true, era: 'present', d: 5.5, clock: true, p0: [-8.35, 1.8, 4.85], p1: [-8.8, 1.76, 5.3], l0: [-9.385, 1.7, 5.4], l1: [-9.385, 1.75, 5.4], year: '2026년', text: '수첩을 펼치는 순간, 시계가 거꾸로 돌기 시작했다.' },
-  { fiw: true, era: 'y1919', d: 6.5, p0: [-12, 10, 27], p1: [-3, 8, 25], l0: [-12, -10, 90], l1: [6, -6, 96], year: '1919년 봄', text: '눈을 떠 보니 창밖 항구에 연기를 뿜는 증기선이 가득했다.' },
+  { era: 'present', d: 6, p0: [-3.6, 1.8, 2.6], p1: [-7.4, 1.25, 0.6], l0: [-9.8, 1.4, 0], l1: [-9.1, 0.1, 0.15], year: '', text: '계단 밑 옛 거울의 서랍이 스르르 열리며 낡은 수첩 한 권이 나타났다.' },
+  { fw: true, era: 'present', d: 5.5, clock: true, p0: [-8.35, 1.8, 4.85], p1: [-8.8, 1.76, 5.3], l0: [-9.385, 1.7, 5.4], l1: [-9.385, 1.75, 5.4], year: '2026년', text: '수첩을 펼치자 시계가 거꾸로 돌았다. 첫 기록의 날짜는 1919년 4월 7일이었다.' },
+  { fiw: true, era: 'y1919', d: 6.5, p0: [-12, 10, 27], p1: [-3, 8, 25], l0: [-12, -10, 90], l1: [6, -6, 96], year: '1919년 4월 7일', text: '눈을 떠 보니 창밖 항구에 연기를 뿜는 증기선이 가득했다.' },
   { fo: true, era: 'y1919', d: 6, p0: [-7.7, 1.15, 0.5], p1: [-8.55, 0.62, 0.2], l0: [-9.2, 0.3, 0.1], l1: [-9.1, 0.05, 0.15], year: '', hand: true, text: '이 건물이 본 것을 기억해 줄 사람에게.' },
   { d: 3.4, title: true }
 ];
@@ -3569,12 +3621,12 @@ const ctlHTML = coarse
   ? `<div class="ctl2">${ICO.stick}<b>걷기</b><span>화면 왼쪽 아무 곳이나 엄지로 끌기 · 끝까지 밀면 달리기</span></div><div class="ctl2">${ICO.swipe}<b>둘러보기</b><span>화면 오른쪽을 끌기</span></div><div class="ctl2">${ICO.tap}<b>조사하기</b><span>물건을 톡 누르기</span></div>`
   : `<div class="ctl2"><div class="wasd"><i></i>${kc('W')}<i></i>${kc('A')}${kc('S')}${kc('D')}</div><b>걷기</b><span>방향키도 돼요</span></div><div class="ctl2">${ICO.mouse}<b>둘러보기</b><span>화면을 한 번 클릭한 뒤 마우스 움직이기 · Shift 달리기 · Esc 멈춤</span></div><div class="ctl2"><div class="keys1">${kc('E')}<em>또는</em>${ICO.tap.replace('viewBox="0 0 48 40"', 'viewBox="0 0 48 40" class="sm"')}</div><b>조사하기</b><span>가운데 동그라미를 맞추고 클릭이나 E</span></div>`;
 const BRIEF = [
-  { eb: '1919년 봄 · 목포부청', title: '수첩이 가리키는 곳으로', items: [
-    '<p>낯선 시대에 남은 건 손에 든 수첩 한 권뿐이에요. 수첩이 가리키는 곳으로 가 보세요.</p>',
+  { eb: '1919년 4월 7일 · 이야기 속 목포부청', title: '수첩이 가리키는 곳으로', items: [
+    '<p>민승이는 검열을 피해 기록을 나누어 숨겼어요. 건물의 모습과 역사를 단서 삼아 일곱 기록을 찾아 주세요. 민승이와 암호 장치, 비밀 서랍은 창작 설정이에요.</p>',
     `<div class="glab">이렇게 도움을 받아요</div><div class="guide"><div class="gtile"><span class="gico">${ICO.dia}</span><span><b>금색 표시</b>막히면 다음 장소 위에 떠요</span></div><div class="gtile"><span class="gico">${ICO.book}</span><span><b>수첩</b>이야기와 단서가 적혀 있어요</span></div><div class="gtile"><span class="gico">${ICO.bulb}</span><span><b>힌트</b>세 단계로 하나씩 열려요</span></div></div>`,
     `<div class="glab">${coarse ? '태블릿 조작' : '컴퓨터 조작'}</div><div class="ctrls">${ctlHTML}</div>`] },
   { eb: '1919년 목포 사람', title: '나의 통행증', reg: true, items: [
-    '<div class="idcard idc3"><svg class="ic-defs" aria-hidden="true"><filter id="inkRough"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter></svg><div class="ic-paper"><div class="ic-main"><div class="ic-no">제 &nbsp;408&nbsp; 호</div><table class="ic-tb"><tr><td class="ic-pcell" rowspan="4"><div class="ic-photo"><img id="idPhoto" alt=""><svg class="ic-sil" viewBox="0 0 60 80"><rect width="60" height="80" fill="#d9cba8"/><circle cx="30" cy="31" r="12" fill="#9c8a66"/><path d="M8 80 Q8 50 30 48 Q52 50 52 80Z" fill="#9c8a66"/></svg></div><i class="ic-kei">인</i></td><th>성 명</th><td class="ic-nm"><div class="nmrow"><input id="teamName" maxlength="12" readonly tabindex="-1" autocomplete="off" spellcheck="false"><button type="button" id="nmDice" title="다른 이름 뽑기">🎲 다시 뽑기</button></div></td></tr><tr><th>주 소</th><td>목포 양동</td></tr><tr><th>행선지</th><td>목포부청</td></tr><tr><th>기 한</th><td>1919년 4월 30일까지</td></tr></table><p class="ic-txt">위 사람의 통행을 허가함.</p><div class="ic-sign"><span>1919년 4월 1일</span><b>목포부청</b></div><div class="idstamp"><span>목포<br>부청</span></div></div><div class="ic-side">통 행 증</div></div></div><p class="nmnote ic-note">1919년 목포에서 다니려면 통행증이 있어야 해요. 지금 이름을 쓰면 정체가 들킬 수 있으니, 그 시대 이름과 얼굴로 바꿔 드려요!</p>'] }
+    '<div class="idcard idc3"><svg class="ic-defs" aria-hidden="true"><filter id="inkRough"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter></svg><div class="ic-paper"><div class="ic-main"><div class="ic-no">제 &nbsp;408&nbsp; 호</div><table class="ic-tb"><tr><td class="ic-pcell" rowspan="4"><div class="ic-photo"><img id="idPhoto" alt=""><svg class="ic-sil" viewBox="0 0 60 80"><rect width="60" height="80" fill="#d9cba8"/><circle cx="30" cy="31" r="12" fill="#9c8a66"/><path d="M8 80 Q8 50 30 48 Q52 50 52 80Z" fill="#9c8a66"/></svg></div><i class="ic-kei">인</i></td><th>성 명</th><td class="ic-nm"><div class="nmrow"><input id="teamName" maxlength="12" readonly tabindex="-1" autocomplete="off" spellcheck="false"><button type="button" id="nmDice" title="다른 이름 뽑기">🎲 다시 뽑기</button></div></td></tr><tr><th>주 소</th><td>목포 양동</td></tr><tr><th>행선지</th><td>목포부청</td></tr><tr><th>기 한</th><td>1919년 4월 30일까지</td></tr></table><p class="ic-txt">위 사람의 통행을 허가함.</p><div class="ic-sign"><span>1919년 4월 1일</span><b>목포부청</b></div><div class="idstamp"><span>목포<br>부청</span></div></div><div class="ic-side">통 행 증</div></div></div><p class="nmnote ic-note">이야기 속 부청을 오가기 위한 가상 통행증이에요. 시간 여행에 쓸 이름과 얼굴을 골라 보세요.</p>'] }
 ];
 const bs = { step: 0, shown: 0 };
 function openBrief() { $('introScreen').hidden = false; bs.step = 0; bs.shown = 0; renderBrief(); revealNext(); }
@@ -3644,7 +3696,8 @@ function startGame() {
   setTimeout(() => openNotebook(1), 500);
 }
 function showEnding() {
-  state.mode = 'orbit'; setDark(false); goEra('present');
+  state.mode = 'ending'; setDark(false); goEra('present');
+  camera.position.set(-1.55, 1.5, -2.8); camera.lookAt(-1.95, .8, -5.5);
   $('hud').hidden = true; $('endScreen').hidden = false;
   const used = (performance.now() - state.start) / 1000;
   $('stats').innerHTML = `<span>시간 여행자 · ${esc(state.team)}</span><span>걸린 시간 · ${fmt(used)}</span><span>힌트 · ${state.hints}번</span>`;
@@ -3656,11 +3709,11 @@ const clock = new THREE.Clock();
 let orbitT = 0;
 function loop() {
   requestAnimationFrame(loop);
-  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  const frameDt = clock.getDelta(), dt = Math.min(frameDt, 0.05), t = clock.elapsedTime;
   TICK.forEach(f => f(dt, t));
   if (state.mode === 'cine') {
-    updateCine(dt);
-  } else if (state.mode === 'cameo' || state.mode === 'ret') {
+    updateCine(Math.min(frameDt, 0.25)); // 영상은 저프레임에서도 실제 경과 시간에 가깝게 진행해요.
+  } else if (state.mode === 'cameo' || state.mode === 'ret' || state.mode === 'ending') {
     // 창밖 장면: 카메라는 TICK에서 움직여요
   } else if (state.mode === 'orbit') {
     orbitT += dt; const a = Math.sin(orbitT * 0.12) * 0.85;
@@ -3888,7 +3941,6 @@ function regPick(mesh, id) { mesh.traverse(c => { if (c.isMesh) { c.userData.iid
 
 /* ---------- 이야기·단서 문구 ---------- */
 NB[1].clue = '건물 바깥벽 네 곳에 분필로 번호를 적어 두었다. 번호 순서대로 흰 벽돌을 세어 앞마당 쪽지판 자물쇠를 열어라.';
-NB[3].text = '겨울이면 서쪽 방 벽난로에 불을 땐다. 이 집의 이름은 자꾸 바뀌었다. 나는 그 이름들을 이 방 벽 곳곳에 몰래 적어 두었다. 불빛을 비춰야만 보인다.';
 NB[3].clue = '벽난로에서 촛불을 켜고, 어두운 방 벽에 적힌 이름 세 개를 찾아 바뀐 순서대로 놓아라.';
 NB[4].clue = '2층 서쪽 방 창가의 망원경으로 항구를 보아라. 배 두 척의 숫자를 이어 붙이면 항구가 열린 해다. 나는 1919년에 열두 살이었고, 항구는 내가 태어나기 10년 전에 열렸다.';
 NB[5].clue = '하늘(☰)은 왼쪽 위, 물(☵)은 오른쪽 위. 짝끼리 서로 마주 보게 놓아라. 하늘과 땅, 물과 불.';
@@ -4647,7 +4699,7 @@ $('btnLetter').onclick = () => {
     if (k < spans.length) { while (k < want) { spans[k++].style.opacity = '1'; if (k % 3 === 0) tone([1400 + Math.random() * 300], 0.03, 'triangle', 0); } if (k < spans.length) { setTimeout(tick, 30); return; } }
     if (k < spans.length) { spans[k++].style.opacity = '1'; if (k % 3 === 0) tone([1400 + Math.random() * 300], 0.03, 'triangle', 0); setTimeout(tick, 32); return; }
     $('letterSign').textContent = `— 2026년에서, ${state.team || '시간 여행자'}`;
-    setTimeout(() => { $('letterAfter').textContent = HERO ? '글씨가 마르자, 수첩이 스르르 닫혔다. 1919년 4월 8일의 거리 어딘가로, 이 마음이 닿을 것만 같았다.' : '글씨가 마르자, 수첩이 스르르 닫혔다. 어딘가에서 열두 살 민승이가 이 편지를 읽고 있을 것만 같았다.'; $('letterAfter').style.opacity = 1; tone([523, 659, 784], 1.2, 'sine', 0.25); if (typeof finale === 'function') setTimeout(finale, 3200); }, 500);
+    setTimeout(() => { $('letterAfter').textContent = HERO ? '그날의 이름을 오늘에 전하겠다는 답장을 남겼다. 수첩이 따뜻해졌다.' : '답장 아래에 작은 글씨가 떠올랐다. “고마워, 미래에서 온 친구.”'; $('letterAfter').style.opacity = 1; tone([523, 659, 784], 1.2, 'sine', 0.25); if (typeof finale === 'function') setTimeout(finale, 1800); }, 500);
   };
   setTimeout(tick, 150);
 };
@@ -5512,68 +5564,28 @@ TICK.push(dt => {
 });
 returnHome = async function () {
   if (RET.on) return; RET.on = true; RET.skip = false;
-  $('toast').classList.remove('show'); const R = $('ret'); R.hidden = false; R.classList.remove('white'); $('hud').hidden = true; $('interact').hidden = true; $('near').hidden = true;
-  ['rLetters', 'rYear', 'rCap', 'rText'].forEach(id => $(id).innerHTML = ''); $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
-  ensureAC(); RET.bgm = 4; state.mode = 'ret';
-  // 1. 굴 출구: 네 글자가 빛나요
-  const cx = player.x, cz = player.z, cy = 1.6, yaw0 = player.yaw; let t = 0;
-  retCam = d => { t += d; camera.position.set(cx, cy, cz); camera.rotation.set(0.05, yaw0, Math.sin(t * 2) * 0.004); };
-  // 카메라가 출구 문을 바라보게
+  const R = $('ret'); R.hidden = false; R.classList.remove('white'); state.mode = 'ret';
+  $('hud').hidden = true; $('interact').hidden = true; $('near').hidden = true; $('toast').classList.remove('show');
+  ['rLetters','rYear','rCap','rText'].forEach(id => $(id).innerHTML = ''); $('rLetters').style.opacity = '1';
+  $('rBook').className = 'rBook'; $('rLight').className = 'rLight'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
+  ensureAC(); RET.bgm = 4;
   const ed = exitDoor.getWorldPosition(new THREE.Vector3());
-  const yawD = Math.atan2(-(ed.x + 0.9 - cx), -(ed.z - cz)), dd = Math.hypot(ed.x + 0.9 - cx, ed.z - cz);
-  const sx = dd > 3.2 ? ed.x + 0.9 + Math.sin(yawD) * 3.2 : cx, sz = dd > 3.2 ? ed.z + Math.cos(yawD) * 3.2 : cz;
-  retCam = d => { t += d; camera.position.set(sx, cy, sz); camera.rotation.set(0.02, yawD, Math.sin(t * 2) * 0.004); };
-  for (const ch of ['되', '찾', '은', '집']) { const sp = el('span', '', ch); $('rLetters').appendChild(sp); await sleep(80); sp.classList.add('on'); tone([659, 988], 0.5, 'sine', 0.1); await sleep(520); }
+  retCam = () => { camera.position.set(ed.x + .9, 1.6, ed.z + 3.2); camera.lookAt(ed.x + .9, 1.3, ed.z); };
   await openExitDoor();
-  await say2('네 글자가 맞춰지자, 녹슨 출구 문이 <b>삐걱</b> 하고 열렸다.<br>문틈으로 하얀 빛과 함께 바깥바람이 쏟아져 들어왔다.');
-  // 2. 수첩이 저절로 펼쳐지고 마지막 쪽이 써져요
-  $('rLight').classList.add('on'); $('rLetters').style.transition = 'opacity 1s'; $('rLetters').style.opacity = '0';
-  await sleep(700); $('rBook').classList.add('on'); $('rText').innerHTML = '';
-  await sleep(900); playManse(2, 0.9);
-  $('rPage').classList.add('q'); await typeInto($('rPage'), '1945년 8월 15일.<br>굴 밖에서 만세 소리가 들렸다.<br>언젠가 우리가 이 건물을 <span class="gold">되찾은 집</span>이라 부르는 날이 오겠지.<br>그날 누군가 이 수첩을 읽어 주기를.<br>— 정민승', 70);
-  await say2('빈칸이던 수첩 마지막 쪽에, 민승이의 글씨가 저절로 번져 나왔다.<br>멀리서 <b>"대한 독립 만세!"</b> 함성이 들려왔다.');
-  // 3. 왜 돌아오는가
-  $('rBook').classList.add('glow'); tone([392, 523, 659], 1.6, 'sine', 0.25);
-  await say2('수첩이 손안에서 따뜻하게 빛나기 시작했다. 민승이의 소원은 단 하나,<br><b>"누군가 이 수첩을 끝까지 읽어 주기를."</b>');
-  await say2('마지막 쪽까지 읽은 지금, 그 소원이 이루어졌다. 과거와 이어져 있던 문이 천천히 닫히고 있었다.<br>어디선가 괘종시계 소리가 들렸다. 이번에는 바늘이 <b>앞으로</b> 돌기 시작했다.');
-  stopManse(2, 2.5);
-  // 4. 시간이 앞으로 흘러요 (밖에서 건물을 바라보며)
-  $('rBook').classList.remove('on'); $('rText').innerHTML = ''; $('rLight').className = 'rLight';
-  RET.bgm = 5; goEra('y1944'); setDark(false);
-  let a = 0; retCam = d => { a += d * 0.16; camera.position.set(Math.sin(a - 0.6) * 30, 9 + Math.sin(a) * 1.5, Math.cos(a - 0.6) * 30); camera.lookAt(0, 4.5, 0); };
-  $('rYear').classList.add('on');
-  const stops = [[1945, '광복 · 만세 소리가 거리를 채우다', 'y1944'], [1947, '목포시청이 되다', 'y1919'], [1960, '시청 사람들이 오가던 붉은 벽돌집', 'y1919'], [1975, '책을 읽는 사람들 · 도서관', 'y1919'], [1995, '이야기가 모이는 곳 · 문화원', 'y1919'], [2014, '목포근대역사관 1관', 'present'], [2026, '그리고, 오늘', 'present']];
-  let yr = 1944;
-  for (const [y, cap, era] of stops) {
-    $('rCap').classList.remove('on'); const n = y - yr, dur = Math.min(1600, 300 + n * 45) * RET.speed;
-    const t0 = performance.now();
-    await new Promise(res => { const step = () => { const k = Math.min(1, (performance.now() - t0) / dur); const v = Math.round(yr + n * k); if ($('rYear').textContent !== v + '년') { $('rYear').textContent = v + '년'; tick(k > 0.9); } if (k < 1 && !RET.skip) requestAnimationFrame(step); else res(); }; step(); });
-    yr = y; $('rYear').textContent = y + '년'; if (curEra !== era) goEra(era);
-    $('rCap').textContent = cap; $('rCap').classList.add('on'); tone(y === 2026 ? [523, 659, 784, 1047] : [784], y === 2026 ? 1.2 : 0.4, 'sine', 0.12);
-    await sleep(y === 2026 ? 1600 : 1150);
+  $('rBook').classList.add('on');
+  await typeInto($('rPage'), '1945년 8월 15일.<br>오늘 광복 소식을 들었다.<br>어릴 적 흰 천과 친구들의 이름을 떠올렸다.<br>이 집이 모두의 <span class="gold">되찾은 집</span>이 되는 날,<br>누군가 우리의 이야기를 이어 읽어 주기를.<br>— 정민승', 42);
+  await say2('문틈의 빛 속에서 수첩 마지막 기록이 나타났다.<br>민승이가 남긴 것은 탈출 암호만이 아니었다. 지워지지 않기를 바란 사람들의 이야기였다.');
+  $('rBook').classList.remove('on'); $('rText').innerHTML = ''; RET.bgm = 5;
+  let a = 0; retCam = dt => { a += dt * .12; camera.position.set(Math.sin(a-.6)*30,9,Math.cos(a-.6)*30); camera.lookAt(0,4.5,0); };
+  for (const [year,caption,era] of [[1947,'목포시청이 된 건물','y1919'],[2014,'역사를 함께 읽는 역사관으로','present'],[2026,'그리고, 기록을 읽은 오늘','present']]) {
+    goEra(era); setDark(false); $('rYear').textContent = year+'년'; $('rCap').textContent = caption;
+    $('rYear').classList.add('on'); $('rCap').classList.add('on'); await sleep(900);
   }
-  // 5. 눈부신 빛 → 2026년 벽난로 앞
-  $('rLight').classList.add('full'); tone([1047, 1319, 1568], 1.4, 'sine', 0.15); await sleep(1200);
   $('rYear').classList.remove('on'); $('rCap').classList.remove('on');
   goEra('present'); cineBook.visible = true;
-  let b2 = 0; retCam = d => { b2 += d; camera.position.set(-1.95 + Math.min(1, b2 / 6) * 0.4, 1.5, -3.3 + Math.min(1, b2 / 6) * 0.5); camera.lookAt(-1.95, 0.8, -5.5); };
-  R.classList.add('white'); await sleep(300); $('rLight').className = 'rLight'; R.classList.remove('white');
-  await say2('눈을 떠 보니, 다시 <b>2026년</b>. 1관 계단 밑 옛 거울 앞이었다.<br>손에는 그 낡은 수첩이 그대로 들려 있었다.');
-  $('rText').innerHTML = ''; $('rTap').classList.remove('on');
-  // 큐레이터
-  R.hidden = true;
-  await new Promise(res => vnSay('curator', "어머, 그 수첩… 계단 밑 거울 서랍에서 나온 거예요? 그 서랍은 100년 넘게 안 열리던 건데… 겉장에 '정민승'이라고 쓰여 있네요. 1919년이면… 이 건물이 목포부청이던 때예요. 이렇게 소중한 걸 찾아 줘서 고마워요. 이 수첩, 우리 역사관에 전시해도 될까요?", { place: '2026년, 목포근대역사관 1관', noPortrait: true, onDone: res }));
-  state.modal = false; R.hidden = false;
-  // 6. 마지막 한 줄
-  $('rBook').className = 'rBook on glow'; $('rPage').innerHTML = ''; $('rPage').classList.remove('q');
-  await sleep(700);
-  await say2('수첩을 덮으려던 순간, 마지막 쪽 맨 아래에 처음 보는 한 줄이 천천히 떠올랐다.', false);
-  await sleep(500);
-  tone([523, 659, 784], 1.4, 'sine', 0.3);
-  await typeInto($('rPage'), '<div style="text-align:center;font-size:1.25em">"고마워, 미래에서 온 친구."</div>', 110);
-  await waitTap();
-  // 끝: 엔딩 화면
-  R.hidden = true; curatorFig.visible = false; retCam = null; RET.on = false;
+  retCam = () => { camera.position.set(-1.55,1.5,-2.8); camera.lookAt(-1.95,.8,-5.5); };
+  await say2('다시 2026년, 계단 밑 옛 거울 앞이었다.<br>첫 장을 펼쳤던 손에 마지막 기록이 남았다. 이제 수첩의 빈 쪽에 내 답장을 남길 차례다.');
+  R.hidden = true; curatorFig.visible = false; retCam = null; RET.on = false; state.modal = false;
   showEnding();
 };
 const _bgmWant8 = bgmWant;
@@ -5592,20 +5604,20 @@ showEnding = function () {
 
 /* ---------- 새 미션은 민승이가 직접 알려 줘요 ---------- */
 const MS_LINES = [
-  ['분필 표시', '안녕, 나는 열두 살 민승이야! 이 집 바깥벽 네 곳에 분필로 번호를 적어 두었어. 건물을 한 바퀴 돌면서 네 곳을 모두 찾아 줘.'],
+  ['분필 표시', '나는 열두 살 민승이야. 들키면 빼앗길 기록을 나누어 숨겼어. 이 집을 찬찬히 살펴보는 사람이 찾아 주기를 바라면서. 바깥벽 네 곳의 분필 번호부터 찾아 줘.'],
   ['쪽지판에서 흰 벽돌', '분필 표시를 다 찾았구나! 이제 앞마당 쪽지판으로 가서, 줄마다 흰 벽돌을 세어 자물쇠를 열어 봐.'],
-  ['대칭 자물쇠', '현관문에는 대칭 자물쇠가 걸려 있어. 이 집 정면은 왼쪽과 오른쪽이 거울처럼 똑같아. 그걸 떠올리면 열 수 있을 거야.'],
+  ['대칭 자물쇠', '기록이 있는 방으로 가는 잠금장치는 이 집 모양을 본떠 만들었어. 왼쪽과 오른쪽이 거울처럼 같은 모습을 떠올려 봐.'],
   ['촛불을 켜', '현관문이 열렸어! 안으로 들어가서 왼쪽, 서쪽 방 벽난로를 살펴봐. 촛불을 켜야만 보이는 게 있어.'],
   ['숨은 글씨', '촛불을 켰다! 서쪽 방 벽 곳곳에 이 집의 옛 이름을 몰래 적어 두었어. 세 개를 모두 찾아 줘.'],
   ['바뀐 순서대로', '다 찾았네! 벽난로로 돌아가서 이름들을 바뀐 순서대로 놓아 줘.'],
-  ['전신기', '2층 계단이 줄로 막혀 있어. 1층 동쪽 방 전신기에서 전보를 들어 봐. 짧은 소리와 긴 소리가 숫자를 알려 줄 거야.'],
+  ['전신기', '기록의 위치를 그대로 적어 두면 들킬까 봐, 계단 번호는 짧고 긴 전보 소리로 바꿔 두었어. 1층 동쪽 방 전신기에서 들어 봐.'],
   ['2층에 올라가', '자물쇠가 열렸어! 계단으로 2층에 올라와 줘. 보여 줄 게 있어.'],
   ['망원경', '계단이 열렸어! 2층 서쪽 방 창가의 망원경으로 항구를 봐. 배 두 척의 번호를 이으면 항구가 열린 해가 돼.'],
   ['태극기를 맞추', '조각을 다 모았어! 서랍장에서 태극기를 맞춰 줘. 하늘과 땅, 물과 불은 서로 마주 봐.'],
   ['서랍장', '2층 동쪽 방 서랍장에 내가 아끼는 걸 숨겨 두었어. 가서 살펴봐 줘!'],
-  ['공고문', '어느새 1944년이 되었구나. 나도 이제 서른일곱이란다. 뒤뜰 봉안전 앞에 공고문이 붙어 있을 게다. 순사가 순찰을 돌고 있으니, 노란 불빛에 들키지 않도록 조심하렴.'],
+  ['공고문', '1944년, 나도 서른일곱이 되었구나. 그날의 흰 천과 친구들의 이름을 아직 간직하고 있단다. 이제 뒤뜰 봉안전 공고문에서 거짓을 가려내렴. 순사의 노란 불빛은 조심하고.'],
   ['서고', '방공호 안은 한 치 앞도 보이지 않을 만큼 어둡단다. 뒤뜰 왼쪽 돌 건물, 서고 탁자 위에 내 손전등을 두었으니 먼저 챙겨 가거라.'],
-  ['출구에서', '글자를 모두 찾았구나. 출구에서 네 글자를 바른 순서로 맞추면 밖으로 나갈 수 있을 게다.'],
+  ['출구에서', '글자를 모두 찾았구나. 어린 날부터 지켜 온 내 소원, 모두의 되찾은 집. 출구에서 네 글자를 맞추고 마지막 기록을 읽어 다오.'],
   ['철문', '손전등 손잡이에 철문 열쇠를 묶어 두었단다. 언덕 방공호 철문의 열쇠 구멍에 그 열쇠를 꽂아 돌려 주렴.'],
   ['방공호', '손전등은 잘 챙겼느냐? 방공호 굴 벽에 내가 몰래 새긴 글자 네 개가 있단다. 무너진 길이 나오면 서두르지 말고 돌아가거라.']
 ];
@@ -5727,18 +5739,25 @@ function finale() {
   const F = $('fin'), txt = ($('letterText').textContent || '') + '\n\n' + ($('letterSign').textContent || '');
   $('fPage').textContent = txt.trim();
   const used = (performance.now() - state.start) / 1000;
-  $('fCred').innerHTML = `시간 여행자 <b style="color:#f3ead6">${esc(state.team || '')}</b> · ${fmt(used)}<br>정민승(1907~)의 수첩을 끝까지 읽어 준 당신에게<br>기억의 전시실 유물 ${FX.arts.size} / 7`;
+  $('fCred').innerHTML = `시간 여행자 <b style="color:#f3ead6">${esc(state.team || '')}</b> · ${fmt(used)}<br>창작 인물 민승이의 기록을 오늘에 이어 준 당신에게<br>기억의 전시실 유물 ${FX.arts.size} / 7`;
   F.className = ''; F.hidden = false;
   requestAnimationFrame(() => {
     F.classList.add('dark');
-    setTimeout(() => { F.classList.add('closed'); tone([330, 262], 0.5, 'sine', 0.25); setTimeout(() => tone([110], 0.25, 'sine', 0), 1900); }, 1300);
-    setTimeout(() => F.classList.add('flip'), 3800);   // 뒤표지로 덮은 수첩을 뒤집어 앞표지 '민승'을 보여 줘요
-    setTimeout(() => F.classList.add('away'), 6000);
-    setTimeout(() => showGallery(F), 6600);
+    setTimeout(() => { F.classList.add('closed'); tone([330, 262], 0.5, 'sine', 0.25); setTimeout(() => tone([110], 0.25, 'sine', 0), 1900); }, 700);
+    setTimeout(() => F.classList.add('flip'), 1700);   // 뒤표지로 덮은 수첩을 뒤집어 앞표지 '민승'을 보여 줘요
+    setTimeout(() => F.classList.add('away'), 2900);
+    setTimeout(() => { F.classList.add('title'); tone([523,659,784],1.1,'sine',.2); }, 3400);
   });
 }
+const galleryChoice = el('button','pbtn alt dk','수집한 기억 보기'); galleryChoice.id = 'fGallery';
+$('fBack').after(galleryChoice);
+galleryChoice.onclick = () => { const F = $('fin'); F.classList.remove('title'); showGallery(F); };
+const statsChoice = el('button','pbtn alt dk','여행 기록 보기'); statsChoice.id = 'fStats';
+galleryChoice.after(statsChoice); statsChoice.onclick = () => { $('achPop').hidden = false; };
 $('fAgain').onclick = () => location.reload();
-$('fBack').onclick = () => { $('fin').hidden = true; $('gCap').classList.remove('on'); };
+const letterReturn = el('button', 'pbtn', '마지막 화면으로 돌아가기'); letterReturn.id = 'letterBackToFinale'; letterReturn.hidden = true; $('letterOut').appendChild(letterReturn);
+letterReturn.onclick = () => { $('fin').hidden = false; $('fin').classList.add('title'); letterReturn.hidden = true; };
+$('fBack').onclick = () => { $('fin').hidden = true; $('gCap').classList.remove('on'); letterReturn.hidden = false; };
 
 /* ---------- 전체 화면: 처음 화면을 누르는 순간 PC·태블릿·휴대폰 모두 전체 화면으로 ---------- */
 const FS = {
@@ -5943,7 +5962,7 @@ function creak() { if (!AC || !sndOn) return; const t = AC.currentTime, o = AC.c
 const EXDUST = (() => { const n = 160, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) pos.set([(Math.random() - 0.5) * 2.4, Math.random() * 2.6, Math.random() * 3], i * 3);
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const p = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffefc0, size: 0.035, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); p.visible = false; scene.add(p); return p; })();
-function rumble(dur, vol) { if (!AC || !sndOn) return; const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(42, t); o.frequency.linearRampToValueAtTime(30, t + dur);
+function exitRumble(dur, vol) { if (!AC || !sndOn) return; const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(42, t); o.frequency.linearRampToValueAtTime(30, t + dur);
   const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 120; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.2); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(lp).connect(g).connect(AC.destination); o.start(t); o.stop(t + dur + 0.05); }
 function openExitDoor() {
   return new Promise(res => {
@@ -5952,20 +5971,20 @@ function openExitDoor() {
     const dir = new THREE.Vector3(c0.x - mid.x, 0, c0.z - mid.z).normalize();
     const far = mid.clone().addScaledVector(dir, 5.2).setY(1.45), near = mid.clone().addScaledVector(dir, 2.2).setY(1.5);
     EXDUST.position.set(mid.x, 0, mid.z); EXDUST.rotation.y = Math.atan2(dir.x, dir.z); EXDUST.visible = true;
-    const T0 = performance.now(), S = RET.skip ? 0.15 : 1;
+    const T0 = performance.now(), S = RET.skip ? 0.15 : 0.65;
     let shake = 0, phase = -1;
     const at = s => s * 1000 * S;
     retCam = () => {
-      const t = (performance.now() - T0) / 1000 / S;
+      const t = RET.skip ? 7.5 : (performance.now() - T0) / 1000 / S;
       const k = t < 1.2 ? 0 : Math.min(1, (t - 4.6) / 2.6), e = Math.max(0, k) * Math.max(0, k) * (3 - 2 * Math.max(0, k));
       const p = t < 1.2 ? c0.clone().lerp(far, Math.min(1, t / 1.2)) : far.clone().lerp(near, e);
       p.x += (Math.random() - 0.5) * shake; p.y += (Math.random() - 0.5) * shake; camera.position.copy(p); camera.lookAt(mid.x, 1.3, mid.z);
       shake *= 0.94;
     };
     const step = () => {
-      const t = (performance.now() - T0) / 1000 / S;
+      const t = RET.skip ? 7.5 : (performance.now() - T0) / 1000 / S;
       // ① 땅이 울려요(0~1.6초)
-      if (phase < 0 && t > 0.2) { phase = 0; rumble(1.8, 0.35); }
+      if (phase < 0 && t > 0.2) { phase = 0; exitRumble(1.8, 0.35); }
       if (t > 0.2 && t < 1.8) { shake = 0.05; exitDoor.rotation.y = Math.sin(t * 40) * 0.012; }
       // ② 덜컹! 문틈이 벌어지며 빛 한 줄기(1.8초)
       if (phase < 1 && t > 1.8) { phase = 1; shake = 0.12; footstep && footstep(1); tone([180, 120], 0.25, 'square', 0.04); exitGlow.visible = exitRays.visible = true; }
@@ -5995,7 +6014,7 @@ timeJump = async function (after) {
   retCam = () => { camera.position.set(px, py, pz); camera.rotation.set(0, pyaw, 0); };
   await say2('함성이 멀어지자, 손에 든 수첩이 다시 뜨겁게 달아올랐다.');
   $('rLight').classList.add('on'); $('rBook').classList.add('on');
-  $('rPage').classList.add('q'); await typeInto($('rPage'), '"4월 8일.<br>우리는 목이 터져라 만세를 불렀다.<br>그날 이후 순사들의 눈초리가<br>더 날카로워졌다…"', 55);
+  $('rPage').classList.add('q'); await typeInto($('rPage'), '"1919년 4월 8일.<br>친구와 그린 흰 천이 거리에서 펄럭였다.<br>흩어진 조각을 모으듯,<br>그날 함께한 이름들을 수첩에 남겼다."', 55);
   $('rBook').className = 'rBook'; $('rText').innerHTML = ''; $('rLight').className = 'rLight'; $('rPage').innerHTML = '';
   await tjCinema();
   // 시간이 흘러요: 건물 밖에서 바라보며 연도가 올라가요
@@ -6017,7 +6036,7 @@ timeJump = async function (after) {
   // 다시 그 방으로
   $('rYear').classList.remove('on'); $('rCap').classList.remove('on'); $('rText').innerHTML = '';
   retCam = () => { camera.position.set(px, py, pz); camera.rotation.set(0, pyaw, 0); };
-  await say2('눈을 떠 보니, 25년이 흘러 있었다. 1944년, 같은 부청 건물. 열두 살 민승이는 이제 서른일곱 살 어른이 되었을 것이다.');
+  await say2('수첩의 글씨가 달라져 있었다. 1944년, 서른일곱 살 민승이의 글이었다.<br>"친구들의 소식을 모두 알지는 못한다. 그래도 흰 천과 그 이름만은 지켰다. 종이를 나르던 아이는, 이제 기록을 지키는 어른이 되었다."');
   R.hidden = true; retCam = null; NIGHT_FORCE = false; TJ.on = false;
   state.mode = prevMode === 'ret' ? 'play' : prevMode; resize(); $('hud').hidden = false;
   if (after) setTimeout(after, 300);
@@ -6321,12 +6340,9 @@ function gateKeyAnim() {
   const step = n => { end.dataset.step = n; $('endScreen').scrollTop = 0; };
   const _se = showEnding;
   showEnding = function () { _se.apply(this, arguments); if (!end.dataset.step || end.dataset.step === '1') step(1); };
-  $('endNext1').onclick = () => {
-    step(2); $('achPop').hidden = false;
-    $('achPop').querySelectorAll('.st').forEach((s, i) => { s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; s.style.animationDelay = (0.7 + i * 0.35) + 's'; });
-    tone([523, 659, 784, 1047], 0.9, 'triangle', 0.12);
-  };
-  $('endNext2').onclick = () => { $('achPop').hidden = true; step(3); sfx.click(); if (!coarse) setTimeout(() => $('memo').focus({ preventScroll: true }), 300); };
+  $('endNext1').onclick = () => { step(3); sfx.click(); if (!coarse) setTimeout(() => $('memo').focus({preventScroll:true}), 150); };
+  $('endNext2').textContent = '닫기';
+  $('endNext2').onclick = () => { $('achPop').hidden = true; sfx.click(); };
 }
 
 /* ---------- 휴대폰·태블릿: 글을 쓸 때 키보드에 가리지 않는 글쓰기 창 ---------- */
@@ -6334,7 +6350,7 @@ if (coarse) {
   const TS = { src: null };
   const sheet = $('typeSheet'), inp = $('tsInput');
   const CFG = {
-    memo: { get label() { return window.LETTER_TO && LETTER_TO.to === 'hero' ? '그날 만세를 부른 분들께 고마운 마음을 전해 보세요.' : '1919년의 민승이에게 답장을 써 보세요.'; }, ok: '수첩에 남기기 ✒', multi: true, run: () => $('btnLetter').click() }
+    memo: { get label() { return window.LETTER_TO && LETTER_TO.to === 'hero' ? '그날 만세를 부른 분들께 고마운 마음을 전해 보세요.' : '수첩을 남긴 민승이에게 답장을 써 보세요.'; }, ok: '수첩에 남기기 ✒', multi: true, run: () => $('btnLetter').click() }
   };
   const place = () => {
     const vv = window.visualViewport; if (!vv || sheet.hidden) return;
@@ -6588,13 +6604,13 @@ let up2Busy = false;
 TICK.push(() => {
   if (up2Busy || FX.up2 || state.stage !== 4 || state.solved[4] || !FX.tele || player.lv !== 2) return;
   if (state.mode !== 'play' || state.modal || state.fading || FX.scope || (typeof vn !== 'undefined' && vn.on)) return;
-  up2Busy = true; FX.up2 = true; updateHUD(); MS.last = goalKey(); MS.pending = null;
+  up2Busy = true; state.fading = true; FX.up2 = true; updateHUD(); MS.last = goalKey(); MS.pending = null;
   MS.seen = MS.seen || new Set(); MS.seen.add(msLine('2층 서쪽 방 망원경'));
   // 서쪽 방 창가(망원경) 쪽으로 고개가 돌아가고, 멀리서 뱃고동이 울려요
   const y0 = player.yaw, tx = -6.6 - player.x, tz = 4.95 - player.z, ty = Math.atan2(-tx, -tz), t0 = performance.now();
   if (typeof hornLong === 'function') hornLong();
   const turn = () => { const k = Math.min(1, (performance.now() - t0) / 1400), e = k * k * (3 - 2 * k); player.yaw = y0 + Math.atan2(Math.sin(ty - y0), Math.cos(ty - y0)) * e; player.pitch *= 0.9; if (k < 1) requestAnimationFrame(turn); else go(); };
-  const go = () => vnSay('minseung', '여기가 2층이야. 뿌우— 뱃고동 소리 들리지? 저기 서쪽 방 창가에 망원경이 있어. 내 수첩 다음 장을 펼쳐 봐!', { place: '', onDone: () => { up2Busy = false; openNotebook(4); } });
+  const go = () => { state.fading = false; return vnSay('minseung', '여기가 2층이야. 뿌우— 뱃고동 소리 들리지? 저기 서쪽 방 창가에 망원경이 있어. 내 수첩 다음 장을 펼쳐 봐!', { place: '', onDone: () => { up2Busy = false; openNotebook(4); } }); };
   turn();
 });
 
@@ -6652,7 +6668,7 @@ const BH_Q = [
   { q: '4·8 만세운동에 함께한 목포의 학교는 어디일까요?', o: ['정명여학교와 영흥학교', '서울의 배재학당', '평양의 숭실학교', '부산의 동래고보'], a: 0, e: '정명여학교·영흥학교 학생과 교사들이 함께 만세를 불렀어요.' },
   { q: '정명여학교 한문 교사로, 4·8 만세운동을 계획하고 앞장선 사람은 누구일까요?', o: ['안중근', '강석봉', '윤봉길', '유관순'], a: 1, e: '강석봉은 목포 4·8 만세운동을 준비하고 참여한 인물이에요.' },
   { q: '태극기에서 하늘을 뜻하는 괘(☰)는 어디에 있을까요?', o: ['왼쪽 위', '오른쪽 위', '왼쪽 아래', '오른쪽 아래'], a: 0, e: '하늘(☰)은 왼쪽 위, 그 맞은편 오른쪽 아래에 땅(☷)이 있어요.' },
-  { q: '우리나라가 일본에게서 나라를 되찾은 날(광복)은 언제일까요?', o: ['1919년 4월 8일', '1945년 8월 15일', '1948년 7월 17일', '1953년 7월 27일'], a: 1, e: '1945년 8월 15일, 민승이도 굴 밖에서 만세 소리를 들었어요.' },
+  { q: '우리나라가 일본에게서 나라를 되찾은 날(광복)은 언제일까요?', o: ['1919년 4월 8일', '1945년 8월 15일', '1948년 7월 17일', '1953년 7월 27일'], a: 1, e: '1945년 8월 15일은 광복을 맞은 날이에요. 민승이의 마지막 기록은 이 실제 역사를 배경으로 한 창작이에요.' },
   { q: '"보훈"의 뜻으로 가장 알맞은 것은 무엇일까요?', o: ['옛날 물건을 모아 전시하는 것', '나라를 위해 희생하고 애쓴 분들을 기억하고, 그 뜻을 이어 가는 것', '외국으로 여행을 떠나는 것', '어려운 문제를 빨리 푸는 것'], a: 1, e: '보훈은 기억하고, 감사하고, 그 뜻을 이어 가는 일이에요.' }
 ];
 const BH_ATT = ['나라를 위해 애쓴 분들께 고마운 마음이 들어요.', '오늘 알게 된 이야기를 다른 사람에게 전하고 싶어요.'];
@@ -6799,24 +6815,18 @@ function bhQuiz(B, F) {
   F.appendChild(go);
 }
 
-/* ---------- 엔딩 흐름: 업적 → 그날의 진짜 사람들 → 편지(받는 사람 고르기) ---------- */
+/* ---------- 엔딩 흐름: 귀환 → 편지(받는 사람 고르기) → 마지막 인사. 자료실은 선택 ---------- */
 {
   const LT = { to: 'min' };
   window.LETTER_TO = LT;
-  $('endNext2').textContent = '그날의 진짜 사람들 ▶';
-  const old = $('endNext2').onclick;
-  $('endNext2').onclick = () => {
-    $('achPop').hidden = true; sfx.click();
-    openBH('names', { story: true, solo: true, next: () => old && old() });
-  };
-  const pick = el('div', 'ltTo', '<span>누구에게 쓸까요?</span><button type="button" data-to="min" class="on">1919년의 민승이에게</button><button type="button" data-to="hero">4·8 만세운동에 나선 분들께</button>');
+  const pick = el('div', 'ltTo', '<span>누구에게 쓸까요?</span><button type="button" data-to="min" class="on">수첩을 남긴 민승이에게</button><button type="button" data-to="hero">4·8 만세운동에 나선 분들께</button>');
   $('letterWrite').insertBefore(pick, $('letterWrite').firstChild);
   const lab = $('letterWrite').querySelector('label');
   const apply = () => {
     const im = $('letterWrite').querySelector('.minport'); if (im) im.style.visibility = LT.to === 'hero' ? 'hidden' : '';
     pick.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.to === LT.to));
     if (LT.to === 'hero') { lab.textContent = '수첩의 빈 쪽: 그날 만세를 부른 분들께 고마운 마음을 전해 보세요.'; $('memo').placeholder = '강석봉 선생님, 그리고 정명여학교 언니들께…'; }
-    else { lab.textContent = '수첩의 빈 쪽: 1919년의 민승이에게 답장을 써 보세요.'; $('memo').placeholder = '민승아, 네 수첩 잘 읽었어…'; }
+    else { lab.textContent = '수첩의 빈 쪽: 수첩을 남긴 민승이에게 답장을 써 보세요.'; $('memo').placeholder = '민승아, 네 수첩 잘 읽었어…'; }
   };
   pick.onclick = e => { const b = e.target.closest('button'); if (!b) return; LT.to = b.dataset.to; apply(); sfx.click(); };
 }
@@ -6833,7 +6843,7 @@ function bhQuiz(B, F) {
 }
 
 /* ---------- HUD: 지금 시대·장소, 찾은 유물 개수, 새 유물 발견 알림 ---------- */
-const ERA_LABEL = { present: ['2026년 가을', '목포근대역사관 1관'], y1919: ['1919년 봄', '목포부청'], y1944: ['1944년', '목포부청'] };
+const ERA_LABEL = { present: ['2026년 가을', '목포근대역사관 1관'], y1919: ['1919년 4월 7~8일', '이야기 속 목포부청'], y1944: ['1944년', '목포부청'] };
 let hudEraKey = '', hudArtN = -1;
 function hudExtra() {
   const E = ERA_LABEL[curEra] || ['', ''];
@@ -7567,7 +7577,7 @@ function mxOpen(m) {
 function mxArts() {
   openModal(body => {
     head(body, '2층 홀', '기억의 진열장');
-    body.appendChild(el('p', '', '정민승의 수첩과 함께, 1919년과 1944년에서 찾은 유물들이 오늘 이 진열장에 놓여 있어요.'));
+    body.appendChild(el('p', '', '민승이의 수첩과 이야기 속에서 찾은 소품을 모은 게임 속 가상 전시예요. 실제 역사관의 소장품 전시를 뜻하지 않아요.'));
     const g = el('div', 'mxArts');
     ARTS.forEach((a, i) => {
       const got = FX.arts.has(i); const src = (typeof ART_CUT !== 'undefined' && ART_CUT[i + 1]) || (typeof ART_IMG !== 'undefined' && ART_IMG[i + 1]) || '';
@@ -8754,7 +8764,7 @@ setEra(curEra);
       a.needsUpdate = true; f.geometry.computeVertexNormals(); });
   });
 }
-// ── 인트로(실제 1관 계단 밑 옛 거울): 거울 속에 1919년 부청 사람들이 비치고, 받침 서랍이 스르르 열리며 수첩이 보여요
+// ── 인트로(실제 건물에서 착안한 창작 비밀 서랍): 거울 속에 1919년 부청 사람들이 비치고, 받침 서랍이 스르르 열리며 수첩이 보여요
 {
   TICK.push(() => { if (typeof work !== 'undefined') work.visible = false; });
   const mg = scene.children.find(o => o.isGroup && Math.abs(o.position.x + 1.95) < 0.01 && Math.abs(o.position.z + 5.65) < 0.01);
@@ -8774,7 +8784,7 @@ setEra(curEra);
   const refl = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 1.75), new THREE.MeshBasicMaterial({ map: refT, transparent: true, opacity: 0, depthWrite: false })); refl.position.set(0, 1.4, 0.03); if (mg) mg.add(refl); window.MIRROR = { mg, refl };
   // 인트로 장면 카메라: 홀에서 계단 밑 거울로 → 서랍 안 수첩으로
   const C1 = CINE.find(c => c.era === 'present' && c.text && c.text.includes('수첩'));
-  if (C1) Object.assign(C1, { d: 7, p0: [0.4, 1.7, 1.8], p1: [-1.95, 1.05, -4.0], l0: [-1.95, 1.45, -5.6], l1: [-1.95, 0.35, -5.2], text: '계단 밑 옛 거울 속에 100년 전 부청이 비치더니, 서랍이 스르르 열렸다.' });
+  if (C1) Object.assign(C1, { d: 7, p0: [0.4, 1.7, 1.8], p1: [-1.95, 1.05, -4.0], l0: [-1.95, 1.45, -5.6], l1: [-1.95, 0.35, -5.2], text: '계단 밑 옛 거울의 서랍이 스르르 열리며 낡은 수첩 한 권이 나타났다.' });
   const C4 = CINE.find(c => c.era === 'y1919' && c.hand);
   if (C4) Object.assign(C4, { p0: [-1.95, 1.3, -3.5], p1: [-1.95, 0.95, -4.35], l0: [-1.95, 0.6, -5.3], l1: [-1.95, 0.32, -5.22] });
   cineBook.scale.setScalar(1.3);
