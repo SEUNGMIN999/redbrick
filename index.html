@@ -9,10 +9,29 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="붉은 벽돌의 기억">
 <meta name="theme-color" content="#16120f">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' data: blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<script>
+// No persistent identity, input or learning history. These maps live only in the current page.
+const PRIVACY_MEMORY = (() => { const data = new Map(); return Object.freeze({
+  getItem: key => data.has(String(key)) ? data.get(String(key)) : null,
+  setItem: (key, value) => { if (String(key) !== 'bm-save-v1') data.set(String(key), String(value)); },
+  removeItem: key => data.delete(String(key)), clear: () => data.clear()
+}); })();
+const PRIVACY_SESSION = (() => { const data = new Map(); return Object.freeze({getItem:key=>data.get(String(key))??null,setItem:(key,value)=>data.set(String(key),String(value)),removeItem:key=>data.delete(String(key)),clear:()=>data.clear()}); })();
+// Delete this game's legacy browser data only; do not read or migrate it into the new activity.
+for (const kind of ['localStorage','sessionStorage']) { try { const store=window[kind]; const keys=[]; for(let i=0;i<store.length;i++) { const key=store.key(i); if (/^(?:bm-(?:save|settings)-v1|rb-controls-practiced-v1|rb_(?:snd|mx|mybricks|letters|room|pledge|quiz|home|wall(?:_.*)?))$/.test(key)) keys.push(key); } keys.forEach(key=>store.removeItem(key)); } catch (_) {} }
+addEventListener('pagehide',()=>{PRIVACY_MEMORY.clear();PRIVACY_SESSION.clear();document.querySelectorAll('input,textarea').forEach(node=>{node.value='';});});
+addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
+</script>
 <style>
+@font-face{font-family:'Gowun Batang';font-style:normal;font-weight:400;src:url('assets/GowunBatang-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Gowun Batang';font-style:normal;font-weight:700;src:url('assets/GowunBatang-Bold.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Gaegu';font-style:normal;font-weight:400;src:url('assets/Gaegu-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Gaegu';font-style:normal;font-weight:700;src:url('assets/Gaegu-Bold.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Nanum Pen Script';font-style:normal;font-weight:400;src:url('assets/NanumPenScript-Regular.ttf') format('truetype');font-display:swap}
+.privacyNote{font-size:12px;line-height:1.7;color:#f3ead6;max-width:650px;margin-top:12px}
+
 /* 첫 로딩: 붉은 벽돌 쌓기 */
 #boot{position:fixed;inset:0;z-index:999;background:#0f0c0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .7s ease}
 #boot.out{opacity:0;pointer-events:none}
@@ -1134,7 +1153,7 @@ body.plFree #view{cursor:none}
       </div>
       <div id="letterWrite">
         <label for="memo" style="color:var(--lime)">수첩의 빈 쪽: 수첩을 남긴 민승이에게 답장을 써 보세요.</label>
-        <textarea id="memo" placeholder="민승아, 네 수첩 잘 읽었어…"></textarea>
+        <textarea id="memo" maxlength="500" autocomplete="off" placeholder="민승아, 네 수첩 잘 읽었어…" aria-describedby="memoPrivacy"></textarea><p id="memoPrivacy" class="small">이름·학교·전화번호·주소는 쓰지 마세요. 답장은 게임을 닫거나 새로고침하면 사라져요.</p>
         <div class="startrow" style="margin-top:10px"><button class="big" id="btnLetter">수첩에 남기기 ✒</button></div>
       </div>
       <div id="letterOut" hidden>
@@ -1160,10 +1179,10 @@ body.plFree #view{cursor:none}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/three-r128.min.js"></script>
 <script>
 const ART_CUT = {"1": "assets/339bc08ca4.webp", "2": "assets/942aa1c84f.webp", "3": "assets/c8388b08cd.webp", "4": "assets/1e0e6882d6.webp", "5": "assets/7ad061b247.webp", "6": "assets/4b2d67c32d.webp", "7": "assets/171f20bcda.webp"};
-const SFX_DATA = {"manse1": "assets/0952a54f70.mp3", "manse2": "assets/76d8ab9223.mp3"};
+const SFX_DATA = {}; // 아동 녹음 음원 대신 합성 함성 효과를 사용합니다.
 const ART_IMG = {"1": "assets/999edfb00b.webp", "2": "assets/fab390b398.webp", "3": "assets/44180c5114.webp", "4": "assets/80d743e44f.webp", "5": "assets/056c5cb95f.webp", "6": "assets/5ad7141f47.webp", "7": "assets/446054469a.webp", "8": "assets/c5652a3c64.webp"};
 const BGM_DATA = {"1": "assets/1fe284461a.mp3", "2": "assets/eb1c690d83.mp3", "3": "assets/d8df6e966e.mp3", "4": "assets/e1290e161e.mp3", "5": "assets/daca97f905.mp3", "6": "assets/dbbfb684e3.mp3"};
 const CHAR_IMG = {"clerk": "assets/6a89efe78d.webp", "girl": "assets/682a08829d.webp", "guard": "assets/5988bf9e1f.webp", "jim": "assets/2ff958b2f1.webp", "minseung": "assets/1a439e552d.webp", "minseung2": "assets/591b9c1e8b.webp"};
@@ -2700,7 +2719,7 @@ const FACTS = [
   { t: '1897년, 목포항이 열리다', b: '목포항은 1897년 10월 1일에 개항했어요. 그 뒤 호남 지방의 쌀과 면화가 이 항구를 거쳐 일본으로 많이 실려 나갔어요. 그래서 목포는 쌀·면화·소금이 흰색이라 "삼백(三白)의 고장"이라 불리기도 했어요.' },
   { t: '1919년 4월 8일 목포 만세운동', b: '3·1 운동의 물결은 목포에도 이어졌어요. 1919년 4월 8일, 정명여학교·영흥학교 학생들과 목포 사람들이 거리로 나와 "대한독립 만세"를 외쳤어요. 1관 전시실에서 이 이야기를 만날 수 있어요.' },
   { t: '봉안전 터와 서고', b: '봉안전은 일본 왕의 사진 등을 보관하던 곳이에요. 사람들은 그 앞을 지날 때 절을 해야 했어요. 지금은 1관 뒤뜰에 터만 남아 있어요. 옆의 돌 건물은 1932년에 화강암으로 지은 목포부청 서고(문서 창고)예요. 방금 서고 문이 열렸어요!' },
-  { t: '전쟁준비의 흔적, 방공호', b: '1관 뒤에는 일제강점기에 공습에 대비해 만든 방공호가 있어요. 목포시 공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요. 게임 속 굴의 길이와 구조는 학습을 위해 재구성했어요.' }
+  { t: '전쟁준비의 흔적, 방공호', b: '1관 뒤에는 일제강점기에 공습에 대비해 만든 방공호가 있어요. 목포시 공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요.' }
 ];
 const HINTS = [
   '',
@@ -3678,13 +3697,13 @@ function diceName() {
   spin();
 }
 function wireReg() {
-  const t = $('teamName'); REG_NAME = rollName(); t.value = REG_NAME; showPhoto(); // 통행증을 받을 때마다 새 이름 · 새 사진
+  const t = $('teamName'); t.readOnly = true; t.setAttribute('aria-label', '자동 생성된 가상 이름'); t.autocomplete = 'off'; REG_NAME = rollName(); t.value = REG_NAME; showPhoto(); // 통행증을 받을 때마다 새 이름 · 새 사진
   $('nmDice').onclick = e => { e.stopPropagation(); diceName(); };
   t.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); startGame(); } };
 }
 function startGame() {
   if (state.mode === 'play') return;
-  const nm = $('teamName').value.trim();
+  const nm = REG_NAME || (REG_NAME = rollName()); $('teamName').value = nm;
   if (!nm) { diceName(); return; }
   state.team = nm;
   const card = document.querySelector('.idcard');
@@ -3847,12 +3866,12 @@ POST.push(dt => {
 function setSnd(on) {
   sndOn = on; $('btnSnd').textContent = sndOn ? '🔊' : '🔇'; $('btnSnd').setAttribute('aria-pressed', sndOn);
   const b = $('btnSndStart'); if (b) { b.textContent = sndOn ? '🔊 소리 켜짐' : '🔇 소리 꺼짐'; b.setAttribute('aria-pressed', sndOn); }
-  try { localStorage.setItem('rb_snd', sndOn ? '1' : '0'); } catch (e) {}
+  try { PRIVACY_MEMORY.setItem('rb_snd', sndOn ? '1' : '0'); } catch (e) {}
   if (AC) { if (sndOn) AC.resume(); else AC.suspend(); }
 }
 $('btnSnd').onclick = () => setSnd(!sndOn);
 if ($('btnSndStart')) $('btnSndStart').onclick = e => { e.stopPropagation(); setSnd(!sndOn); if (sndOn && typeof tone === 'function') tone([523, 784], 0.25, 'triangle', 0.08); };
-try { if (localStorage.getItem('rb_snd') === '0') setSnd(false); } catch (e) {}
+try { if (PRIVACY_MEMORY.getItem('rb_snd') === '0') setSnd(false); } catch (e) {}
 
 /* ================= 작은 지도 ================= */
 const mapC = $('map'), mg = mapC.getContext('2d');
@@ -4684,6 +4703,7 @@ POST.push(() => {
 /* ---------- ⑨ 민승이에게 편지 쓰기 ---------- */
 $('btnLetter').onclick = () => {
   const txt = $('memo').value.trim();
+  if (!privacyValidate(txt, $('memo'))) return;
   if (!txt) { $('memo').placeholder = '한 줄이라도 좋아요. 전하고 싶은 말을 써 주세요.'; shake($('memo')); $('memo').focus(); return; }
   $('letterWrite').hidden = true; $('letterOut').hidden = false; $('letterOut').style.animation = 'none'; $('letterOut').style.opacity = '1'; $('letterOut').style.transform = 'none';
   const body = txt.replace(/^민승(아|이)?[,，!]?\s*/, '').replace(/^4·8 만세운동에 나선 분들께[,，]?\s*/, '').replace(/([.!?…]["”']?)\s+/g, '$1\n');
@@ -4800,7 +4820,7 @@ telegraphModal = function () {
 /* =====================================================================
    1 단계별 힌트 · 2 그래픽 품질 · 3 자동 저장/이어하기 · 4 조작 편의 · 5 역사 판단 질문
    ===================================================================== */
-const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
+const LS = { get(k) { try { return JSON.parse(PRIVACY_MEMORY.getItem(k)); } catch (e) { return null; } }, set(k, v) { try { PRIVACY_MEMORY.setItem(k, JSON.stringify(v)); } catch (e) {} }, del(k) { try { PRIVACY_MEMORY.removeItem(k); } catch (e) {} } };
 const SAVE_KEY = 'bm-save-v1', SET_KEY = 'bm-settings-v1';
 
 // 저장소가 일부 손상되거나 이전 버전의 값이 남아도 안전한 데이터만 복구해요.
@@ -5071,18 +5091,7 @@ $('interact').onclick = () => { const id = hoverId || nearId; if (id) useInterac
 window.addEventListener('keydown', e => { if (state.mode === 'play' && !state.modal && !hoverId && nearId && (e.code === 'KeyE' || e.code === 'Enter' || e.code === 'Space')) useInteract(nearId); });
 
 /* ---------- 3. 자동 저장과 이어하기 ---------- */
-function saveGame() {
-  if (state.mode !== 'play' || state.solved[7]) return;
-  LS.set(SAVE_KEY, {
-    t: Date.now(), team: state.team, stage: state.stage, solved: state.solved, letters: [...state.letters], hints: state.hints, torch: state.torch, gateOpen: !!state.gateOpen,
-    elapsed: (performance.now() - state.start) / 1000, mapv: MAP_VER, p: { x: player.x, z: player.z, lv: player.lv, yaw: player.yaw },
-    fx: { bricks: [...FX.bricks], marks: [...FX.marks], tele: FX.tele, arts: [...FX.arts], battery: FX.battery, collapsed: FX.collapsed, hintTier: FX.hintTier, hintStage: FX.hintStage, pieces: [...FX.pieces], evt: FX.evt ? { t: FX.evt.t } : null, cameoDone: !!FX.cameoDone, why: FX.why },
-    written: [...written], tunnelMsg: state.tunnelMsg
-  });
-}
-setInterval(saveGame, 4000);
-document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
-window.addEventListener('pagehide', saveGame);
+function saveGame() {} // 페이지 밖으로 진행 이력을 저장하지 않습니다.
 const _solve7 = solve; solve = function (n) { _solve7(n); saveGame(); };
 const _showEnding7 = showEnding;
 showEnding = function () {
@@ -5511,7 +5520,7 @@ let bgmLast = performance.now();
 CHARS.curator = { name: '큐레이터', h: 1.66, fig: { top: 0x2c3a4a, bottom: 0x2a2a2a, buttons: true, bun: true } };
 const RET = { on: false, skip: false, tapRes: null, bgm: 5, speed: 1 };
 const curatorFig = makeFigure(CHARS.curator.fig); curatorFig.position.set(-7.2, 0, -1.6); curatorFig.rotation.y = -2.2; curatorFig.visible = false; scene.add(curatorFig);
-// 반 아이들이 녹음한 "대한 독립 만세!" (manse1: 창밖 행렬, manse2: 방공호에서 나올 때)
+// 아동 녹음 음원은 사용하지 않으며, 합성 효과음으로 대체합니다.
 const MANSE = { buf: {}, src: {} };
 function loadManse(n) { if (MANSE.buf[n] || !AC || typeof SFX_DATA === 'undefined' || !SFX_DATA['manse' + n]) return Promise.resolve(MANSE.buf[n]); return decodeSrc(SFX_DATA['manse' + n]).then(b => { MANSE.buf[n] = b; return b; }, () => null); }
 async function playManse(n, vol = 1) {
@@ -5643,26 +5652,7 @@ TICK.push(dt => {
 
 /* ---------- 창밖 만세 행렬: 여러 사람이 태극기를 들고 달려가요 ---------- */
 {
-  const flagTex = canvasTex(192, 128, g => { // 태극기: 3:2, 태극은 가운데(지름 = 세로의 1/2), 건곤감리는 대각선 위
-    const W = 192, H = 128, cx = 96, cy = 64, r = 32, ang = Math.atan2(H, W);
-    g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
-    g.save(); g.translate(cx, cy); g.rotate(ang);
-    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#cd2e3a'; g.beginPath(); g.arc(0, 0, r, Math.PI, 0); g.fill();               // 위쪽 반원은 빨강
-    g.beginPath(); g.arc(-r / 2, 0, r / 2, 0, Math.PI); g.fill();                               // 왼쪽 아래로 빨강이 휘어 들어가고
-    g.fillStyle = '#0047a0'; g.beginPath(); g.arc(r / 2, 0, r / 2, Math.PI, 0); g.fill();         // 오른쪽 위로 파랑이 휘어 올라가요
-    g.restore();
-    // 괘: [대각선 방향, 막대 3줄(true=이어진 막대, false=끊어진 막대) 안쪽→바깥쪽]
-    const TRIG = [[-1, -1, [1, 1, 1]], [1, 1, [0, 0, 0]], [1, -1, [0, 1, 0]], [-1, 1, [1, 0, 1]]]; // 건(하늘) 곤(땅) 감(물) 리(불)
-    g.fillStyle = '#111';
-    TRIG.forEach(([sx, sy, bars]) => {
-      const d = Math.hypot(W, H) / 2, dist = r + (d - r) * 0.42, ux = sx * W / 2 / d, uy = sy * H / 2 / d;
-      g.save(); g.translate(cx + ux * dist, cy + uy * dist); g.rotate(Math.atan2(uy, ux) + Math.PI / 2);
-      const bw = r, bh = r / 6, gap = r / 12;
-      bars.forEach((solid, i) => { const y = (i - 1) * (bh + gap) - bh / 2; if (solid) g.fillRect(-bw / 2, y, bw, bh); else { g.fillRect(-bw / 2, y, bw / 2 - gap / 2, bh); g.fillRect(gap / 2, y, bw / 2 - gap / 2, bh); } });
-      g.restore();
-    });
-  });
+  const flagTex = canvasTex(384, 256, (g, W, H) => drawTaegukgi(g, W, H));
 
   const flagM = new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide }), poleM = new THREE.MeshLambertMaterial({ color: 0x5a3a22 });
   const LOOKS = [
@@ -6675,8 +6665,8 @@ const BH_Q = [
 const BH_ATT = ['나라를 위해 애쓴 분들께 고마운 마음이 들어요.', '오늘 알게 된 이야기를 다른 사람에게 전하고 싶어요.'];
 
 const bhStore = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  get(k, d) { try { const v = PRIVACY_MEMORY.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { PRIVACY_MEMORY.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 
 const BH = { tab: 'names', opt: {} };
@@ -6726,7 +6716,7 @@ function bhShow(tab) {
         <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
         <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
         <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
-        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>선택해서 남긴 미래 편지를 게임에서 여는 날이에요.</small></div></div>`
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>미래의 나에게 전할 마음을 상상해 보는 날이에요.</small></div></div>`
       + `<p class="bhSmall">더 알아보기: 국가보훈부 <b>공훈전자사료관</b>에서 이름으로 찾아볼 수 있어요.</p>`;
     if (BH.opt.story) {
       const b = el('button', 'big', '고마운 마음 담아 편지 쓰기 ▶');
@@ -6757,7 +6747,7 @@ function bhShow(tab) {
         <div><b>1921</b><span>정명여학교 학생 만세</span><small>만세운동은 끝나지 않았어요. 2년 뒤 학생들이 다시 태극기를 만들어 만세를 불렀어요.</small></div>
         <div><b>1937</b><span>정명·영흥학교 문을 닫음</span><small>신사 참배를 거부해 일제가 학교 문을 닫게 했어요.</small></div>
         <div><b>1945. 8. 15.</b><span>광복</span><small>우리나라가 독립을 되찾았어요.</small></div>
-        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>선택해서 남긴 미래 편지를 게임에서 여는 날이에요.</small></div></div>
+        <div class="fu"><b>2045. 8. 15.</b><span>광복 100주년</span><small>미래의 나에게 전할 마음을 상상해 보는 날이에요.</small></div></div>
       <h4 class="bhH">이야기와 역사, 무엇이 다를까요?</h4><p class="bhSmall">게임 속 설명에는 <span class="srcTag real">실제 기록</span> <span class="srcTag recon">사료 바탕 재현</span> <span class="srcTag story">창작 이야기</span> 표식이 붙어 있어요.</p>
       <div class="bhTwo"><div><b>✔ 실제 역사</b><ul><li>1919년 4월 8일 목포 만세운동</li><li>정명여학교·영흥학교·양동교회</li><li>강석봉, 정명여학교 학생 일곱 명</li><li>목포근대역사관 1관 붉은 벽돌 건물과 뒤편 방공호</li><li>1945년 8월 15일 광복</li></ul></div>
       <div><b>✎ 이야기로 만든 것</b><ul><li>정민승과 그의 수첩</li><li>순사·짐꾼·이웃 등 게임 속 인물</li><li>퍼즐, 전보 번호, 시간 여행</li></ul></div></div>
@@ -6769,12 +6759,12 @@ function bhShow(tab) {
         <li>위키백과 「강석봉」</li></ul>
       <h4 class="bhH">만든 사람과 사용한 것</h4><ul class="bhRef">
         ${BH_MAKER ? `<li>기획·제작: ${esc(BH_MAKER)}</li>` : ''}
-        <li>"대한 독립 만세!" 함성: 우리 반 어린이들의 목소리</li>
+        <li>함성: 아동 녹음 없이 브라우저에서 만든 합성 효과음</li>
         <li>배경음악: ${esc(BH_BGM)}</li>
         <li>인물·유물 그림: 생성형 AI로 만든 뒤 다듬은 그림 (실제 인물 사진이 아니에요)</li>
         <li>글꼴: 고운바탕 · 개구 · 나눔손글씨 펜 (SIL 오픈 폰트 라이선스)</li>
         <li>3D 그래픽: three.js (MIT 라이선스)</li>
-        <li>플레이 수와 기억의 담벼락 벽돌(이름·한마디)만 담벼락 서버에 저장돼요. 실명 대신 통행증 이름을 써 주세요. 선택해서 쓰는 「2045년의 나에게」 편지는 서버에 보내지 않고 이 기기에만 보관돼요. 게임 안에서는 2045년 8월 15일부터 열 수 있어요. 퀴즈와 다짐 카드는 이 기기에만 저장돼요.</li></ul>`;
+        <li>게임에서 만든 별명을 사용해요. 이름·학교·전화번호·주소는 쓰지 마세요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.</li></ul>`;
   }
 }
 
@@ -6836,7 +6826,7 @@ function bhQuiz(B, F) {
 {
   const T0 = (window.performance && performance.timing && performance.timing.navigationStart) || Date.now();
   const hide = () => { const b = $('boot'); if (!b || b.classList.contains('out')) return; b.classList.add('out'); setTimeout(() => b.remove(), 800); };
-  let quick = false; try { quick = sessionStorage.getItem('rb_home') === '1'; sessionStorage.removeItem('rb_home'); } catch (e) {}
+  let quick = false; try { quick = PRIVACY_SESSION.getItem('rb_home') === '1'; PRIVACY_SESSION.removeItem('rb_home'); } catch (e) {}
   const go = () => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(hide, quick ? 0 : Math.max(0, 5200 - (Date.now() - T0)))));
   if (document.readyState === 'complete') go(); else window.addEventListener('load', go);
   setTimeout(hide, 20000);
@@ -6877,41 +6867,10 @@ function findPop(i) {
 
 /* ---------- 플레이 수: Cloudflare Worker(D1)에 '시작'과 '끝까지 읽음'을 세어요. 주소가 없거나 연결이 안 되면 조용히 숨어요 ---------- */
 // 'counter'가 들어간 주소는 휴대폰 광고 차단에 막힐 수 있어서, 새 이름(redbrick-api)을 먼저 써 보고 안 되면 옛 주소로
-const COUNTER_URLS = ['https://redbrick-api.tsjeong917.workers.dev', 'https://redbrick-counter.tsjeong917.workers.dev'];
-let COUNTER_URL = COUNTER_URLS[0];
+// No counters, tracking endpoints, public posts or background retry queues.
+const COUNTER_URLS = [], COUNTER_URL = '';
 const CNT = { sentPlay: false, sentFin: false };
-function cntShow(d) {
-  if (!d || typeof d.play !== 'number') return;
-  const f = n => Number(n).toLocaleString('ko-KR');
-  const P = $('pcPlay'), F = $('pcFin'), box = $('playCnt');
-  const from = +(P.dataset.v || 0), to = d.play, t0 = performance.now();
-  box.hidden = false; F.textContent = f(d.finish || 0); P.dataset.v = to;
-  const step = now => { const k = Math.min(1, (now - t0) / 900); P.textContent = f(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
-  requestAnimationFrame(step);
-}
-function cntCall(path, method) {
-  if (!COUNTER_URL || !window.fetch) return Promise.resolve(null);
-  const ctl = window.AbortController ? new AbortController() : null;
-  const tm = setTimeout(() => ctl && ctl.abort(), 9000);
-  return fetch(COUNTER_URL.replace(/\/$/, '') + path, { method: method || 'GET', signal: ctl ? ctl.signal : undefined, cache: 'no-store' })
-    .then(r => r.ok ? r.json() : null).catch(() => null).finally(() => clearTimeout(tm));
-}
-(async () => { // 되는 주소를 찾아 그 주소로 계속 써요(담벼락도 같은 주소)
-  for (let round = 0; round < 2; round++) for (const u of COUNTER_URLS) { COUNTER_URL = u; const d = await cntCall('/count'); if (d && typeof d.play === 'number') { cntShow(d); return; } }
-  COUNTER_URL = COUNTER_URLS[0];
-})();
-['btnPlay', 'btnResume'].forEach(id => { const b = $(id); if (b) b.addEventListener('click', () => { if (CNT.sentPlay) return; CNT.sentPlay = true; cntCall('/play', 'POST'); }, true); });
-{
-  const _se2 = showEnding;
-  showEnding = function () { if (!CNT.sentFin) { CNT.sentFin = true; cntCall('/finish', 'POST'); } return _se2.apply(this, arguments); };
-}
-
-
-/* =====================================================================
-   현재 · 2026년 목포근대역사관 1관 관람
-   - 실제 1관의 전시 주제(목포시 관광 안내·언론 보도)를 바탕으로 전시실을 새로 꾸몄어요.
-   - 전시물은 모두 새로 만든 3D 모형과 그림이고, 설명 글도 조사한 사실로 새로 썼어요.
-   ===================================================================== */
+function cntCall() { return Promise.resolve(null); }
 const MUSEUM = { on: false, stamps: new Set() };
 const mxGlass = new THREE.MeshLambertMaterial({ color: 0xd9eef2, transparent: true, opacity: 0.16, depthWrite: false });
 const mxPlinth = new THREE.MeshLambertMaterial({ color: 0x2a2420 });
@@ -6943,15 +6902,14 @@ function mxAdd(o, x, y, z, ry, parent) { o.position.set(x, y, z); if (ry) o.rota
 
 
 const MX_SOURCES = {"mokpo":{"label":"목포시 문화관광 · 근대역사관 1관","url":"https://biz.mokpo.go.kr/tour/attraction/museum?idx=7449&mode=view"},"heritage":{"label":"국가유산포털 · 구 목포 일본영사관","url":"https://www.heritage.go.kr/heri/cul/culSelectDetail.do?ccbaCpno=1333602890000&pageNo=1_1_2_0"},"archive":{"label":"대한민국역사박물관 · 영사관 연혁","url":"https://archive.much.go.kr/data/01/folderView.do?jobdirSeq=1233"}};
-MX_SOURCES.photos = { label: '현장 사진 · Creatrip 방문 기록(약 2021년)', url: 'https://creatrip.com/en/blog/10550' };
-MX_SOURCES.guidePhoto = { label: '안내도 촬영 사진 · Korea.net 2023년 기록', url: 'https://indonesian.korea.net/NewsFocus/HonoraryReporters/view?articleId=243329' };
-MX_SOURCES.cottonPhoto = { label: '비석 · 2024년 8월 현장 기록', url: 'https://www.ohmynews.com/NWS_Web/view/at_pg.aspx?CNTN_CD=A0003059425' };
+MX_SOURCES.photos = { label: '전시실 참고 자료', url: 'https://creatrip.com/en/blog/10550' };
+MX_SOURCES.guidePhoto = { label: '전시 안내도 참고 자료', url: 'https://indonesian.korea.net/NewsFocus/HonoraryReporters/view?articleId=243329' };
+MX_SOURCES.cottonPhoto = { label: '비석 참고 자료', url: 'https://www.ohmynews.com/NWS_Web/view/at_pg.aspx?CNTN_CD=A0003059425' };
 function mxEvidence(body, ids = ['mokpo']) {
   const box = el('aside', 'mxEvidence');
-  box.appendChild(el('p', '', '공식 전시 주제와 과거 현장 사진을 참고한 가상 관람이에요. 사진으로 확인한 배치 관계를 반영했지만, 벽 길이·거리·모형은 근사 재구성이며 현재 배치와 다를 수 있어요.'));
   const links = el('div', 'mxSourceLinks');
   ids.forEach(id => { const s = MX_SOURCES[id]; const a = document.createElement('a'); a.textContent = s.label; a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; links.appendChild(a); });
-  box.appendChild(links); box.appendChild(el('small', '', '내용 확인: 2026. 10. 23. · 실제 방문 안내는 공식 페이지를 확인하세요.'));
+  box.appendChild(links);
   body.appendChild(box);
 }
 
@@ -6999,12 +6957,29 @@ function mxWalnut(w, h, title, small, x, y, z, ry, parent) {
   return g;
 }
 // 흐릿한 옛 사진 느낌(가짜 사진: 바다·산·지붕·사람)
+// 전시 분위기를 위한 삽화. 재현 여부는 조사 설명창에서 안내합니다.
 function oldPhoto(g,x,y,w,h,seed,tone) {
-  g.save(); g.fillStyle='#ddd4c1'; g.fillRect(x,y,w,h);
-  g.strokeStyle='#88785e'; g.lineWidth=2; g.strokeRect(x+2,y+2,w-4,h-4);
-  g.fillStyle='#514431'; g.textAlign='center'; g.textBaseline='middle';
-  g.font='700 '+Math.max(8,Math.min(w/8,h/5))+'px sans-serif';
-  g.fillText('학습용 도안',x+w/2,y+h*.43); g.fillText('실제 사진 아님',x+w/2,y+h*.68); g.restore();
+  const kind=((seed%4)+4)%4, titles=['항구의 풍경','거리의 하루','배움의 터','공연의 불빛'];
+  g.save();g.translate(x,y);g.beginPath();g.rect(0,0,w,h);g.clip();
+  g.fillStyle='#e9dfca';g.fillRect(0,0,w,h);
+  const H=h*.79,sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#a9bbb6');sky.addColorStop(1,'#e4d8b9');g.fillStyle=sky;g.fillRect(0,0,w,H);
+  const roof=(X,Y,W,HH)=>{g.fillStyle='#b7a080';g.fillRect(X,Y,W,HH);g.fillStyle='#62574d';g.beginPath();g.moveTo(X-W*.08,Y);g.lineTo(X+W*.5,Y-HH*.28);g.lineTo(X+W*1.08,Y);g.closePath();g.fill();g.fillStyle='#655c50';for(let i=0;i<3;i++)g.fillRect(X+W*(.13+i*.28),Y+HH*.23,W*.13,HH*.28);};
+  if(kind===0){
+    g.fillStyle='#8d9980';g.beginPath();g.moveTo(0,H*.46);g.lineTo(w*.3,H*.23);g.lineTo(w*.58,H*.42);g.lineTo(w,H*.3);g.lineTo(w,H*.62);g.lineTo(0,H*.62);g.fill();
+    g.fillStyle='#7f9b9b';g.fillRect(0,H*.55,w,H*.45);g.strokeStyle='#d4d7c1';g.lineWidth=Math.max(1,w*.012);for(let i=0;i<6;i++){g.beginPath();g.moveTo(w*.07,H*(.63+i*.05));g.lineTo(w*(.7+(i%2)*.2),H*(.63+i*.05));g.stroke();}
+    for(let i=0;i<2;i++){let X=w*(.13+i*.42),Y=H*(.7+i*.09);g.fillStyle='#665444';g.beginPath();g.moveTo(X,Y);g.lineTo(X+w*.32,Y);g.lineTo(X+w*.26,Y+H*.07);g.lineTo(X+w*.05,Y+H*.07);g.fill();g.fillRect(X+w*.17,Y-H*.31,w*.012,H*.31);g.fillStyle='#eee2bf';g.beginPath();g.moveTo(X+w*.16,Y-H*.3);g.lineTo(X+w*.16,Y-H*.02);g.lineTo(X+w*.02,Y-H*.02);g.fill();}
+  }else if(kind===1){
+    g.fillStyle='#b3a080';g.beginPath();g.moveTo(0,H);g.lineTo(w*.45,H*.4);g.lineTo(w*.55,H*.4);g.lineTo(w,H);g.fill();
+    for(let side=0;side<2;side++)for(let i=0;i<3;i++){const W=w*(.16+i*.045),X=side?w*(.6+i*.08):w*(.24-i*.12),Y=H*(.37+i*.1);roof(X,Y,W,H*(.23+i*.1));}
+    g.fillStyle='#5c5247';for(let i=0;i<3;i++){const X=w*(.43+i*.09),Y=H*(.65+i*.07);g.beginPath();g.arc(X,Y,w*.018,0,Math.PI*2);g.fill();g.fillRect(X-w*.013,Y+w*.02,w*.026,H*.11);}
+  }else if(kind===2){
+    g.fillStyle='#a5a17d';g.fillRect(0,H*.75,w,H*.25);roof(w*.11,H*.37,w*.78,H*.39);g.fillStyle='#675b48';g.fillRect(w*.45,H*.58,w*.11,H*.18);
+    g.fillStyle='#657957';for(const X of [w*.07,w*.91]){g.fillRect(X,H*.43,w*.025,H*.4);g.beginPath();g.ellipse(X,H*.37,w*.12,H*.22,0,0,Math.PI*2);g.fill();}
+  }else{
+    g.fillStyle='#4f4946';g.fillRect(0,0,w,H);g.fillStyle='#8b4c3b';g.fillRect(0,0,w*.22,H*.88);g.fillRect(w*.78,0,w*.22,H*.88);g.fillRect(0,0,w,H*.13);g.fillStyle='#d3b783';g.beginPath();g.moveTo(w*.5,H*.15);g.lineTo(w*.23,H*.85);g.lineTo(w*.77,H*.85);g.closePath();g.fill();g.fillStyle='#59483d';g.fillRect(0,H*.86,w,H*.14);g.beginPath();g.arc(w*.5,H*.54,w*.044,0,Math.PI*2);g.fill();g.fillRect(w*.467,H*.59,w*.066,H*.2);
+  }
+  g.strokeStyle='rgba(100,77,48,.4)';g.lineWidth=Math.max(1,w*.014);g.strokeRect(w*.025,h*.025,w*.95,H-h*.025);
+  g.fillStyle='#564733';g.textAlign='center';g.textBaseline='middle';g.font='700 '+Math.max(7,Math.min(w*.105,h*.13))+'px "Gowun Batang",serif';g.fillText(titles[kind],w*.5,h*.9,w*.9);g.restore();
 }
 // 어두운 설명판(금색·붉은 띠 제목, 흰 글씨) — 실제 1관의 검은 패널
 function darkText(g, W, H, title, en, lines, accent, x0, y0, w) {
@@ -7076,10 +7051,7 @@ function paperTex(g,W,H,seed,opt={}) {
   mxText(g,'실제 사료 원문 아님',W/2,H*.6,H*.06,'#514431',false,'center');
 }
 // 소품의 검증 범위를 현장에서 읽을 수 있는 안내. 통행용 충돌판은 만들지 않아요.
-function mxPropNote(x, y, z, ry, title, lines) {
-  const p = mxPanel(title, '학습용 재구성', lines, 1.5, 0.62, '#5b4930');
-  p.userData.museumPropNote = title; mxAdd(p, x, y, z, ry, mxRoot); return p;
-}
+function mxPropNote() { return new THREE.Group(); } // 제작·검증용 표지는 학생 화면에 표시하지 않습니다.
 // 비석(화강암에 새긴 글씨)
 function mxStoneTex(text, sub, light) {
   return (g, W, H) => {
@@ -7296,10 +7268,10 @@ function mxModelCase(x, y, z, ry, kind) {
       g.fillStyle = '#e8c9a8'; g.beginPath(); g.arc(x, y - s * 0.12, s * 0.16, 0, 7); g.fill(); g.fillStyle = '#1a1614'; g.fillRect(x - s * 0.16, y - s * 0.3, s * 0.32, s * 0.1);
       if (Rr() < 0.6) { g.strokeStyle = '#6a5a40'; g.lineWidth = 3; g.beginPath(); g.moveTo(x + s * 0.2, y + s * 0.2); g.lineTo(x + s * 0.4, y - s * 0.9); g.stroke();
         const fx = x + s * 0.4, fy = y - s * 0.9; g.fillStyle = '#f7f5ef'; g.fillRect(fx, fy, s * 0.7, s * 0.46); g.strokeStyle = '#222'; g.lineWidth = 1; g.strokeRect(fx, fy, s * 0.7, s * 0.46);
-        const cx = fx + s * 0.35, cy = fy + s * 0.23, r = s * 0.11; g.fillStyle = '#c8102e'; g.beginPath(); g.arc(cx, cy, r, PI, 0); g.fill(); g.fillStyle = '#003478'; g.beginPath(); g.arc(cx, cy, r, 0, PI); g.fill(); }
+        drawTaegukgi(g, s * 0.69, s * 0.46, fx, fy); }
     }
     mxText(g, '만세운동 함께해요', W * 0.62, H * 0.18, H * 0.06, '#ffffff', true);
-  }, 120);
+  }, 260);
   const mw = mural(3.3, 2.7, 61); mxAdd(mw, -6.48, 1.4, -3.1, PI / 2, R);
   const mw2 = mural(2.9, 2.7, 63); mxAdd(mw2, -8.3, 1.4, -5.83, 0, R);
   const navy = mxBoard(2.6, 2.7, (g, W, H) => { g.fillStyle = '#1d2c4c'; g.fillRect(0, 0, W, H); g.fillStyle = '#c8ccd2'; g.fillRect(0, H * 0.7, W, H * 0.3);
@@ -7339,7 +7311,7 @@ function mxModelCase(x, y, z, ry, kind) {
   const ppl = mxBoard(1.6, 1.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "시민들의 저항", W*.07,H*.15,H*.055,'#2a211a',true); ["만세운동과 청년운동","억압에 맞선 사람들을 기억해요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(ppl, -9.83, 6.0, -2.6, PI / 2, R);
   mxDef({ id: 'mx3', name: "저항의 역사 안내", place: '2층 서쪽 방', lv: 2, obj: gin, at: [-7.6, 1.2], title: "저항의 제일선이 되다",
-    facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.","만세운동과 청년운동이 주요 내용이에요.","조면기 모형은 세부 형태와 위치가 근사 표현이에요. 육지면 발상지 비석은 2024년 기록의 2층 전시를 반영했지만 방 안 좌표는 추정이에요."],
+    facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.","만세운동과 청년운동이 주요 내용이에요."],
     q: "이 전시가 다루는 시민들의 활동은?", o: ["만세운동과 청년운동","우주 탐사","고속도로 건설","인터넷 개발"], a: 0, sourceIds: ["mokpo","photos","cottonPhoto"] });
 
   mxPropNote(-9.78, 5.45, 3.65, PI / 2, '조면기 모형', ['전시 이력은 확인되지만', '실물의 형태·크기·배치는 재현하지 않았어요.']);
@@ -7369,7 +7341,7 @@ function mxModelCase(x, y, z, ry, kind) {
   consulateModel(-.65,false);consulateModel(.65,true);
   mxStand(-1.55,4,4.7,0,'XR');
   mxPropNote(0,5.8,4.45,PI,'역사관 건물 · 구조 모형',['현장 사진의 모형 두 점 구성을 참고했어요.','형태와 진열장 치수는 단순화했어요.']);
-  mxDef({id:'mxBuilding',extra:true,name:'역사관 건물 모형',place:'2층 중앙 홀',lv:2,obj:ph,at:[0,3.9],title:'건물의 겉모습과 안쪽 구조',facts:['과거 현장 사진에는 외관 모형과 내부 구조 모형이 나란히 놓여 있어요.','게임도 두 모형을 나란히 배치했어요. 크기와 상세 구조는 근사 표현이에요.'],sourceIds:['photos','guidePhoto']});
+  mxDef({id:'mxBuilding',extra:true,name:'역사관 건물 모형',place:'2층 중앙 홀',lv:2,obj:ph,at:[0,3.9],title:'건물의 겉모습과 안쪽 구조',facts:['건물의 겉모습과 안쪽 구조를 함께 살펴보세요.','창문과 지붕은 어떤 모양인가요? 모형에서 찾아보세요.'],sourceIds:['photos','guidePhoto']});
 
   /* ════════ 2층 오른쪽 방 ════════ */
   // 4 zone · 외래 문화가 전파되다
@@ -7429,10 +7401,10 @@ function mxModelCase(x, y, z, ry, kind) {
   mxPropNote(9.48, 5.3, -3.6, -PI / 2, '상점 · 인력거 모형', ['현장 사진의 거리 그림·상점·인력거를 참고했어요.', '방향과 인접 관계를 반영한 근사 재구성이에요.']);
   mxPropNote(5.6, 1.3, -3.0, 0, '측량기 · 문서 · 포대 소품', ['측량기의 실물 형태·배치는 미확인', '문서·포대는 학습용 재구성이에요.']);
   mxDef({ id: 'mx4', name: "종교와 교육 이야기", place: '2층 오른쪽 방 앞쪽', lv: 2, obj: vt4, at: [6.6, 3.3], title: "외래 문화가 전파되다",
-    facts: ["개항 이후 여러 종교와 학교가 목포에 들어왔어요.","종교·교육·문화의 변화를 살펴보는 주제예요.","자동차 모형 진열은 과거 현장 사진에서 확인했어요. 게임의 차종은 사진의 소방차와 승용차를 단순화했어요. 전화기 형태·진열 위치는 미확인이며 문서는 학습용 도안이에요."],
+    facts: ["개항 이후 여러 종교와 학교가 목포에 들어왔어요.","종교·교육·문화의 변화를 살펴보는 주제예요."],
     q: "이 전시에서 살펴볼 변화는?", o: ["종교와 교육의 변화","빙하기의 기후","공룡의 진화","화산의 생성"], a: 0, sourceIds: ["mokpo","photos"] });
   mxDef({ id: 'mx5', name: "극장과 공연 이야기", place: '2층 오른쪽 방 안쪽', lv: 2, obj: rk, at: [4.9, -4.5], title: "대중 문화의 시대",
-    facts: ["목포극장은 1920년, 평화관은 1927년에 세워졌어요.","영화·연극·대중가요 등 문화활동이 펼쳐졌어요.","현장 사진에는 인력거 뒤의 거리 그림과 옆의 목포상회 세트가 보여요. 게임은 그 관계와 관람 방향을 반영했고 세부 모습·거리는 단순화했어요."],
+    facts: ["목포극장은 1920년, 평화관은 1927년에 세워졌어요.","영화·연극·대중가요 등 문화활동이 펼쳐졌어요."],
     q: "근대 목포의 대중문화 활동은?", o: ["영화와 연극 관람","온라인 게임 방송","우주여행","스마트폰 영상통화"], a: 0, sourceIds: ["mokpo","photos"] });
 }
 
@@ -7446,7 +7418,7 @@ function mxModelCase(x, y, z, ry, kind) {
   bp.position.set(0, 1.55, 0.05); sg.add(bp); dk(1.95, 1.2, 0.06, M.darkwood, 0, 1.55, 0, sg);
   addCol(gp.x + 1.4, gp.z + 1.3, gp.x + 3.4, gp.z + 1.9, 1);
   mxDef({ id: 'mx8', name: "방공호 이야기", place: '뒤뜰 방공호 앞', lv: 1, obj: sg, at: [gp.x + 2.2, gp.z + 3.0], title: "전쟁준비의 흔적, 방공호",
-    facts: ["역사관 뒤편에는 공습에 대비해 만든 방공호가 있어요.","공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요.","게임의 굴은 실제 길이와 구조를 측량해 만든 공간이 아니에요."],
+    facts: ["역사관 뒤편에는 공습에 대비해 만든 방공호가 있어요.","공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요."],
     q: "방공호를 만든 목적은?", o: ["공습에 대비하기 위해","공연을 열기 위해","목화를 재배하기 위해","은행 업무를 보기 위해"], a: 0, sourceIds: ["mokpo","photos"] });
 }
 regEra(mxRoot, ['present'], colliders.slice(mxCol0));
@@ -7468,7 +7440,7 @@ function startMuseum() {
   ['startScreen', 'endScreen', 'introScreen'].forEach(id => { if ($(id)) $(id).hidden = true; });
   if ($('fin')) $('fin').hidden = true; if ($('achPop')) $('achPop').hidden = true; if ($('bh')) $('bh').hidden = true;
   MUSEUM.on = true; document.body.classList.add('museum');
-  try { const saved = JSON.parse(localStorage.getItem('rb_mx') || '[]'); MUSEUM.stamps = new Set(Array.isArray(saved) ? saved.filter(id => MX_VISIT_ORDER.includes(id)) : []); } catch (e) { MUSEUM.stamps = new Set(); }
+  try { const saved = JSON.parse(PRIVACY_MEMORY.getItem('rb_mx') || '[]'); MUSEUM.stamps = new Set(Array.isArray(saved) ? saved.filter(id => MX_VISIT_ORDER.includes(id)) : []); } catch (e) { MUSEUM.stamps = new Set(); }
   if (!state.team) { if (!REG_NAME) REG_NAME = rollName(); state.team = REG_NAME; }
   setDark(false); goEra('present');
   doors.front.target = doors.front.cur = 1.5; colById('frontDoor').forEach(c => { c.on = false; c.lockedOff = true; });
@@ -7533,7 +7505,7 @@ function mxGuide() {
 
 function mxStamp(m) {
   if (MUSEUM.stamps.has(m.id)) return;
-  MUSEUM.stamps.add(m.id); try { localStorage.setItem('rb_mx', JSON.stringify([...MUSEUM.stamps])); } catch (e) {}
+  MUSEUM.stamps.add(m.id); try { PRIVACY_MEMORY.setItem('rb_mx', JSON.stringify([...MUSEUM.stamps])); } catch (e) {}
   const P = $('findPop');
   P.querySelector('.fpK').textContent = '관람 도장';
   $('fpImg').src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#c8352a" stroke-width="7"/><circle cx="50" cy="50" r="33" fill="none" stroke="#c8352a" stroke-width="2"/><text x="50" y="58" font-size="24" font-weight="700" text-anchor="middle" fill="#c8352a" font-family="serif">관람</text></svg>');
@@ -7550,6 +7522,7 @@ function mxOpen(m) {
   if (m.arts) return mxArts();
   openModal(body => {
     head(body, '가상 공간 · ' + m.place, m.title); mxEvidence(body, m.sourceIds);
+    const artNote=el('p','srcNote');artNote.textContent='벽면의 그림은 당시의 모습을 상상해 게임에서 재현했어요. 실제 사진이나 전시 자료의 복제본은 아니에요.';body.appendChild(artNote);
     const ul = el('div', 'mxFacts'); m.facts.forEach(f => ul.appendChild(el('p', '', f))); body.appendChild(ul);
     if (!m.q && !m.photo) { const b = el('button', 'pbtn', '닫기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); return; }
     if (m.photo) {
@@ -7623,15 +7596,15 @@ POST.push(() => {
 
 
 /* =====================================================================
-   미래 · 2045 기억의 담벼락 — 그날의 사람들에게 보내는 말과 2045년의 나에게 쓴 말을 벽돌에 담아 광복 100주년까지 봉인해요
-   - 서버(COUNTER_URL)에 연결되면 우리 반 · 모두의 담벼락을 함께 쌓고, 안 되면 이 기기에만 쌓아요.
+   미래 · 2045 기억의 담벼락 — 이번 활동에서만 보는 기록과 상상 편지
+   - 모든 글은 현재 페이지의 메모리에서만 처리하며 저장·전송하지 않습니다.
    ===================================================================== */
 const WALL_COLORS = ['#a8462f', '#8e3424', '#b9653f', '#6d3a2a', '#d8cbb4'];
 const WALL_MOTIFS = ['없음', '태극', '무궁화', '댕기', '4·8', '별'];
 const WALL_BAD = ['시발', '씨발', 'ㅅㅂ', 'ㅆㅂ', '병신', 'ㅂㅅ', '개새', '좆', '존나', 'ㅈㄴ', '미친', '꺼져', '죽어', '닥쳐', 'fuck', 'shit', 'bitch'];
 const WALL = { room: 'redbrick', // 반 코드 없이 모두 한 담벼락에 계속 쌓여요
   bricks: [], online: false, mine: new Set(), poll: 0, color: 0, motif: 1, teacherKey: '', busy: false };
-try { WALL.mine = new Set(JSON.parse(localStorage.getItem('rb_mybricks') || '[]')); } catch (e) {}
+try { WALL.mine = new Set(JSON.parse(PRIVACY_MEMORY.getItem('rb_mybricks') || '[]')); } catch (e) {}
 
 function wallMotifSVG(m, light) {
   const c = light ? '#7a2a1a' : '#f6ead2';
@@ -7644,20 +7617,15 @@ function wallMotifSVG(m, light) {
 }
 function wallBad(s) { const t = String(s).replace(/\s|[.,!?~·_\-]/g, '').toLowerCase(); return WALL_BAD.some(w => t.includes(w)); }
 function wallPublicBrick(b) { return { room: b.room, name: b.name, msg: b.msg, color: b.color, motif: b.motif }; }
-function wallApi(path, opt) {
-  if (!COUNTER_URL || !window.fetch) return Promise.resolve(null);
-  const ctl = window.AbortController ? new AbortController() : null; const tm = setTimeout(() => ctl && ctl.abort(), 6000);
-  return fetch(COUNTER_URL.replace(/\/$/, '') + path, Object.assign({ cache: 'no-store', signal: ctl ? ctl.signal : undefined }, opt || {}))
-    .then(r => r.json().catch(() => null).then(j => { if (j && Number.isFinite(j.now)) WALL.skew = j.now - Date.now(); return { ok: r.ok, j }; })).catch(() => null).finally(() => clearTimeout(tm));
-}
+function wallApi() { return Promise.resolve(null); }
 const wallLocalKey = () => 'rb_wall_' + (WALL.room || '_all');
-function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocalKey()) || '[]'); return Array.isArray(q) ? q.filter(b => b && typeof b === 'object') : []; } catch (e) { return []; } }
+function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLocalKey()) || '[]'); return Array.isArray(q) ? q.filter(b => b && typeof b === 'object') : []; } catch (e) { return []; } }
 
 /* ---------- 화면 ---------- */
 (function wallBuild() {
   const w = el('section', 'screen', `
     <div class="wlTop">
-      <div class="wlTt"><span class="wlK">미래 편지 개봉 · 광복 100주년 2045. 8. 15. · <b id="wlLeft"></b></span><h2>2045 기억의 담벼락</h2></div>
+      <div class="wlTt"><span class="wlK">광복 100주년을 상상하며 · <b id="wlLeft"></b></span><h2>2045 기억의 담벼락</h2></div>
       <div class="wlTabs" role="tablist" hidden style="display:none"><button data-r="room" class="on">우리 반</button><button data-r="all">모두</button></div>
       <div class="wlRoom" hidden style="display:none"><span>반 코드</span><input id="wlRoom" maxlength="20" placeholder="예: 무안초4-2" autocomplete="off"><button id="wlRoomGo" type="button">들어가기</button></div>
       <div class="wlCnt"><b id="wlN">0</b><span>개</span><em id="wlMode"></em></div>
@@ -7666,21 +7634,21 @@ function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocal
     <div class="wlBody">
       <div class="wlWallWrap" id="wlWrap"><p class="wlNote" id="wlDone" role="status" hidden></p><div class="wlWall" id="wlWall"></div><div class="wlGround"></div><div class="wlEmpty" id="wlEmpty">아직 쌓인 벽돌이 없어요. 첫 벽돌을 놓아 주세요.</div></div>
       <aside class="wlMake" id="wlMake">
-        <div class="wlMk">내 기억을 미래에 남기기</div><p class="wlNote" id="wlBridge">민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?</p><p class="wlNote">오늘의 기록을 함께 쌓고, 광복 100주년인 2045년까지 기억을 이어 가요.</p>
+        <div class="wlMk">내 기억을 미래에 남기기</div><p class="wlNote" id="wlBridge">민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?</p><p class="wlNote">과거의 기록을 읽은 내가, 미래에 전하고 싶은 마음을 남겨 보아요.</p>
         <div class="wlPrev" id="wlPrev"></div>
-        <label class="wlLab" for="wlMsg">오늘의 기록 · 함께 보는 글</label>
+        <label class="wlLab" for="wlMsg">오늘의 기록 · 이번 활동 화면에서만 보기</label>
         <input id="wlMsg" maxlength="30" placeholder="예: 기록 속 이름들을 오래 기억할게요" autocomplete="off">
         <label class="wlLab" for="wlLetter">2045년의 나에게 <span class="wlSeal">선택</span></label>
         <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
         <textarea id="wlLetter" maxlength="60" rows="3" placeholder="원하면 미래의 나에게 한마디 남겨 주세요"></textarea>
         <p class="wlEx" id="wlEx"></p>
-        <p class="wlNote">미래 편지는 쓰지 않아도 벽돌을 쌓을 수 있어요. 작성한 편지는 서버에 보내지 않고 이 기기에만 보관하며, 게임 안에서 2045년 8월 15일부터 열 수 있어요. 기기를 바꾸거나 사이트 데이터를 지우면 사라질 수 있어요.</p>
+        <p class="wlNote">쓰고 싶은 사람만 2045년의 나에게 상상 편지를 써 보세요. 게임을 닫으면 사라지는 편지예요.</p>
         <label class="wlLab">벽돌 색</label><div class="wlSw" id="wlSw"></div>
         <label class="wlLab">무늬</label><div class="wlMo" id="wlMo"></div>
-        <label class="wlLab" for="wlName">새길 이름</label>
-        <input id="wlName" maxlength="10" autocomplete="off">
+        <label class="wlLab" for="wlName">자동 생성한 가상 이름</label>
+        <input id="wlName" maxlength="10" autocomplete="off" readonly aria-label="자동 생성된 가상 이름">
         <button class="big" id="wlPut" type="button">벽돌 쌓기</button>
-        <p class="wlNote" id="wlNote">오늘의 기록과 별명은 다른 사람에게 공개돼요. 실명 대신 별명을 써 주세요. 미래 편지는 공개되지 않아요.</p>
+        <p class="wlNote" id="wlNote">이름·학교·전화번호·주소는 쓰지 마세요. 글은 다른 사람에게 보내지지 않아요.</p>
       </aside>
     </div>
     <button class="wlOpenMk" id="wlOpenMk" type="button">벽돌 만들기</button>`);
@@ -7705,7 +7673,7 @@ function wallLocal() { try { const q = JSON.parse(localStorage.getItem(wallLocal
   $('wlHome').onclick = closeWall;
   $('wlOpenMk').onclick = () => { const open = $('wallScreen').classList.toggle('mk'); $('wlOpenMk').textContent = open ? '담벼락 보기' : '벽돌 만들기'; };
   w.querySelector('.wlTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; wallTab(b.dataset.r); };
-  $('wlRoomGo').onclick = () => { const v = $('wlRoom').value.trim().slice(0, 20); if (!v) { toast('반 코드를 적어 주세요.', 1600); return; } WALL.room = v; try { localStorage.setItem('rb_room', v); } catch (e) {} wallTab('room'); };
+  $('wlRoomGo').onclick = () => { const v = $('wlRoom').value.trim().slice(0, 20); if (!v) { toast('반 코드를 적어 주세요.', 1600); return; } WALL.room = v; try { PRIVACY_MEMORY.setItem('rb_room', v); } catch (e) {} wallTab('room'); };
   $('wlRoom').addEventListener('keydown', e => { if (e.key === 'Enter') $('wlRoomGo').click(); });
   // 선생님: 반 담벼락에서 벽돌을 길게 누르면 숨기기
   let lp = 0;
@@ -7732,7 +7700,7 @@ function wallTab(r) {
   wallLoad(true);
 }
 function closeWall() {
-  if (WALL.busy) { toast('벽돌을 저장하고 있어요. 잠시만 기다려 주세요.', 1800); return; }
+  if (WALL.busy) { toast('벽돌을 놓고 있어요. 잠시만 기다려 주세요.', 1800); return; }
   clearInterval(WALL.poll); WALL.rid = (WALL.rid || 0) + 1;
   $('wallScreen').hidden = true; $('wallScreen').classList.remove('mk');
   if ($('modal')) closeModal();
@@ -7750,28 +7718,17 @@ function openWall() {
   state.mode = 'orbit'; if (typeof MUSEUM !== 'undefined') MUSEUM.on = false;
   try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) {}
   $('wallScreen').hidden = false; $('wlLeft').textContent = wallLeft();
-  if (!$('wlName').value) $('wlName').value = state.team || REG_NAME || (REG_NAME = rollName());
+  if (!$('wlName').value) $('wlName').value = REG_NAME || (REG_NAME = rollName());
   $('wlRoom').value = WALL.room;
   wallPrev(); wallTab('room');
-  clearInterval(WALL.poll); WALL.poll = setInterval(() => { if (!$('wallScreen').hidden && !document.hidden) wallLoad(false); }, 8000);
+  clearInterval(WALL.poll);
 }
 function wallLoad(scroll) {
-  const all = WALL.view === 'all';
-  if (!all && !WALL.room) { WALL.bricks = []; wallRender(scroll); $('wlMode').textContent = '반 코드를 넣으면 우리 반 담벼락이 열려요'; return; }
-  const rid = WALL.rid = (WALL.rid || 0) + 1;
-  wallApi('/bricks' + (all ? '' : '?room=' + encodeURIComponent(WALL.room))).then(r => {
-    if (rid !== WALL.rid || $('wallScreen').hidden) return; // 늦게 온 옛 응답은 버려요
-    if (r && r.ok) wallFlush();
-    if (r && r.ok && r.j && Array.isArray(r.j.bricks)) {
-      WALL.online = true; WALL.bricks = r.j.bricks; WALL.total = r.j.total;
-      $('wlMode').textContent = all ? `전국에서 함께 쌓는 담벼락 · 다짐 글은 반 담벼락에서만 보여요` : `모두가 함께 쌓는 담벼락`;
-    } else {
-      WALL.online = false; WALL.bricks = wallLocal().map(b => ({ id: b.id, lid: b.lid, name: b.name, msg: b.msg, color: b.color, motif: b.motif }));
-      $('wlMode').textContent = '이 기기에만 쌓여요 (서버 연결 없음)';
-    }
-    wallRender(scroll);
-  });
+  WALL.online = false;
+  $('wlMode').textContent = '이번 게임에서만 보는 담벼락';
+  wallRender(scroll);
 }
+
 function wallRender(scroll) {
   const W = $('wlWall'), list = WALL.bricks;
   const per = innerWidth < 700 ? 6 : 9;
@@ -7791,79 +7748,41 @@ function wallRender(scroll) {
 }
 const OPEN2045 = new Date(2045, 7, 15).getTime();
 const wallNow = () => Date.now() + (WALL.skew || 0); // 서버 시각이 있으면 서버 기준
-function wallLeft() { const d = Math.ceil((OPEN2045 - wallNow()) / 864e5); return d > 0 ? `${Math.floor(d / 365.25)}년 ${Math.round(d % 365.25)}일 남음` : '개봉'; }
-function wallShow(b) {
-  let mine = null; try { mine = JSON.parse(localStorage.getItem('rb_letters') || '{}')[b.dataset.id]; } catch (e) {}
+function wallLeft() { return '이번 게임에서만 보기'; }
+function wallShow(node) {
+  const brick = WALL.bricks.find(item => String(item.id) === node.dataset.id); if (!brick) return;
   openModal(body => {
-    const eb = el('div', 'eyebrow'); eb.textContent = b.dataset.name || ''; body.appendChild(eb); body.appendChild(el('h2', '', '오늘의 기록'));
-    const mp = el('p', 'hand wlMsgBig'); mp.textContent = `“${b.dataset.msg || ''}”`; body.appendChild(mp);
-    if (mine && !mine.letter) { body.appendChild(el('p', 'wlNote', '미래 편지 없이 오늘의 기록을 남긴 벽돌이에요.')); const bt = el('button', 'pbtn', '닫기'); bt.onclick = closeModal; body.appendChild(bt); return; }
-    const sealed = wallNow() < OPEN2045;
-    body.appendChild(el('div', 'glab', '2045년의 나에게'));
-    if (sealed) {
-      body.appendChild(el('div', 'wlSealed', `<b>봉인</b><span>2045년 8월 15일 광복 100주년에 열려요 · ${wallLeft()}</span>`));
-      if (mine) body.appendChild(el('p', 'wlNote', '내가 쌓은 벽돌이에요. 편지는 쓴 사람도 2045년까지 열어 볼 수 없어요. 이 기기에만 보관되어 기기를 바꾸거나 방문 기록을 지우면 사라질 수 있어요.'));
-    } else if (mine && mine.letter) { const lp = el('p', 'hand wlLetterOpen'); lp.textContent = `“${mine.letter}”`; body.appendChild(lp); }
-    else body.appendChild(el('div', 'wlSealed', '<b>개봉</b><span>이 기기에 보관된 편지가 없어요</span>'));
-    const bt = el('button', 'pbtn', '닫기'); bt.style.marginTop = '12px'; bt.onclick = closeModal; body.appendChild(bt);
+    const name=el('div','eyebrow');name.textContent=brick.name;body.appendChild(name);
+    body.appendChild(el('h2','','오늘의 기록'));
+    const msg=el('p','hand wlMsgBig');msg.textContent=brick.msg;body.appendChild(msg);
+    if(brick.letter){body.appendChild(el('div','glab','2045년의 나에게 · 상상 편지'));const letter=el('p','hand wlLetterOpen');letter.textContent=brick.letter;body.appendChild(letter);}
+    body.appendChild(el('p','wlNote','이 글은 이번 활동 화면에서만 보여요. 새로고침하거나 페이지를 떠나면 사라져요.'));
+    const button=el('button','pbtn','닫기');button.onclick=closeModal;body.appendChild(button);
   });
 }
+
 function wallPut() {
-  if (WALL.busy) return;
-  const msg = $('wlMsg').value.trim(), letter = ($('wlLetter').value || '').trim().slice(0, 60).replace(/([가-힣])(를|을) 지키고 있을 거야/g, (m, ch) => ch + ((ch.charCodeAt(0) - 0xac00) % 28 ? '을' : '를') + ' 지키고 있을 거야'), name = ($('wlName').value.trim() || state.team || REG_NAME || '').slice(0, 10);
-  if (!msg) { toast('오늘 기억할 한 가지를 적어 주세요.', 1800); $('wlMsg').focus(); return; }
-  if (!name) { toast('벽돌에 새길 이름을 적어 주세요.', 1800); $('wlName').focus(); return; }
-  if (wallBad(msg) || wallBad(name) || wallBad(letter)) { sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
-  if (WALL.view === 'all' && !WALL.room) { toast('반 코드를 먼저 넣어 주세요. 우리 반 담벼락에 쌓이고, 모두의 담벼락에도 함께 쌓여요.', 3000); $('wlRoom').focus(); return; }
-  WALL.busy = true; $('wlPut').disabled = true;
-  const b = { room: WALL.room, name, msg, letter, color: WALL.color, motif: WALL.motif };
-  const done = id => {
-    WALL.busy = false; $('wlPut').disabled = false;
-    if (id) { WALL.mine.add(id); try { localStorage.setItem('rb_mybricks', JSON.stringify([...WALL.mine])); const L = JSON.parse(localStorage.getItem('rb_letters') || '{}'); L[id] = { letter, msg, name, t: Date.now() }; localStorage.setItem('rb_letters', JSON.stringify(L)); } catch (e) {} }
-    $('wlDone').hidden = false; $('wlDone').textContent = '민승이의 기록이 당신에게 닿았듯, 오늘 남긴 기억도 다음 사람에게 이어집니다.';
-    $('wlMsg').value = ''; $('wlLetter').value = ''; wallPrev(); $('wallScreen').classList.remove('mk'); $('wlOpenMk').textContent = '벽돌 만들기';
-    tone([196, 147], 0.3, 'sine', 0.05); setTimeout(() => tone([523, 659, 784], 0.6, 'triangle', 0.1), 250);
-    if (WALL.view === 'all') wallTab('room'); else wallLoad(true);
-    setTimeout(() => { const m = document.querySelector('.wb.mine:last-of-type') || [...document.querySelectorAll('.wb.mine')].pop(); if (m) m.classList.add('drop'); }, 900);
-    toast(WALL.offlineSave ? '서버에 닿지 않아 이 기기에 임시 저장했어요. 연결되면 다시 보내요.' : (letter ? '오늘의 기록을 공유했어요. 미래 편지는 이 기기에 보관했어요.' : '오늘의 기록을 함께 쌓았어요.'), 2600); WALL.offlineSave = false;
-  };
-  const anim = wallSealAnim(b);
-  const _done = done; const done2 = id => anim.then(() => _done(id));
-  wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(wallPublicBrick(b)) }).then(r => {
-    if (r && r.ok && r.j && r.j.id) return done2(r.j.id);
-    if (r && r.j && r.j.error === 'word') { anim.cancel(); WALL.busy = false; $('wlPut').disabled = false; sfx.bad(); toast('벽돌에 새기기 어려운 말이 있어요. 고운 말로 다시 적어 주세요.', 2400); return; }
-    const lid = 'l' + Date.now(); const L = wallLocal(); L.push({ id: lid, lid, room: b.room, name: b.name, msg: b.msg, color: b.color, motif: b.motif, pending: 1 });
-    try { localStorage.setItem(wallLocalKey(), JSON.stringify(L.slice(-400))); const Q = wallQueue(); Q.push(Object.assign({ lid }, wallPublicBrick(b))); localStorage.setItem('rb_wall_queue', JSON.stringify(Q.slice(-50))); } catch (e) {}
-    WALL.offlineSave = true; done2(lid);
+  if(WALL.busy)return;
+  const msg=$('wlMsg').value.trim(),letter=$('wlLetter').value.trim();
+  if(!msg){toast('오늘 기억할 한 가지를 적어 주세요.',1800);$('wlMsg').focus();return;}
+  if(!privacyValidate(msg,$('wlMsg')) || !privacyValidate(letter,$('wlLetter')))return;
+  if(wallBad(msg)||wallBad(letter)){toast('고운 말로 다시 적어 주세요.',2000);return;}
+  const name=REG_NAME || (REG_NAME=rollName());$('wlName').value=name;
+  const brick={id:'activity-'+(WALL.nextId=(WALL.nextId||0)+1),name,msg,letter,color:WALL.color,motif:WALL.motif};
+  WALL.busy=true;$('wlPut').disabled=true;
+  wallSealAnim(brick).then(()=>{
+    WALL.bricks.push(brick);WALL.mine.add(brick.id);WALL.busy=false;$('wlPut').disabled=false;
+    $('wlDone').hidden=false;$('wlDone').textContent='민승이의 기록이 당신에게 닿았듯, 오늘의 마음도 미래를 향해 이어집니다.';
+    $('wlMsg').value='';$('wlLetter').value='';$('wlEx').textContent='';wallPrev();$('wallScreen').classList.remove('mk');$('wlOpenMk').textContent='벽돌 만들기';
+    wallLoad(true);sfx.ok();toast('이번 활동의 담벼락에 놓았어요. 새로고침하면 사라져요.',2600);
   });
 }
-// 서버에 못 보낸 벽돌 다시 보내기(한 번에 하나씩, 겹쳐 보내지 않게)
-function wallQueue() { try { const q = JSON.parse(localStorage.getItem('rb_wall_queue') || '[]'); return Array.isArray(q) ? q.filter(b => b && typeof b === 'object' && b.lid) : []; } catch (e) { return []; } }
-function wallFlush() {
-  if (WALL.flushing) return; const Q = wallQueue(); if (!Q.length) return;
-  WALL.flushing = true; const it = Q[0], { lid } = it, body = wallPublicBrick(it);
-  wallApi('/brick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => {
-    WALL.flushing = false; if (!(r && r.ok && r.j && (r.j.id || r.j.error === 'word'))) return;
-    try {
-      localStorage.setItem('rb_wall_queue', JSON.stringify(wallQueue().filter(q => q.lid !== lid)));
-      const key = 'rb_wall_' + (it.room || '_all'); const L = JSON.parse(localStorage.getItem(key) || '[]').filter(x => x.lid !== lid); localStorage.setItem(key, JSON.stringify(L));
-      if (r.j.id) { const M = JSON.parse(localStorage.getItem('rb_letters') || '{}'); if (M[lid]) { M[r.j.id] = M[lid]; delete M[lid]; localStorage.setItem('rb_letters', JSON.stringify(M)); } WALL.mine.delete(lid); WALL.mine.add(r.j.id); localStorage.setItem('rb_mybricks', JSON.stringify([...WALL.mine])); }
-    } catch (e) {}
-    if (r.j.id) toast('임시 저장한 벽돌을 서버로 보냈어요.', 2000);
-    wallFlush(); if (!$('wallScreen').hidden) wallLoad(false);
-  });
-}
-function wallHide(id) {
-  if (!id) return;
-  openModal(body => {
-    head(body, '선생님 전용', '벽돌 숨기기');
-    body.appendChild(el('p', '', 'Cloudflare에 정해 둔 선생님 열쇠(ADMIN_KEY)를 넣으면 이 벽돌을 담벼락에서 숨겨요.'));
-    const i = el('input', 'wlKey'); i.type = 'password'; i.value = WALL.teacherKey; i.placeholder = '선생님 열쇠'; body.appendChild(i);
-    const b = el('button', 'pbtn', '숨기기'); b.style.marginTop = '12px';
-    b.onclick = () => { WALL.teacherKey = i.value; wallApi('/brick/hide', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, key: i.value }) }).then(r => { if (r && r.ok) { closeModal(); toast('벽돌을 숨겼어요.', 1600); wallLoad(false); } else toast('열쇠가 맞지 않아요.', 1800); }); };
-    body.appendChild(b);
-  });
-}
+
+function wallQueue() { return []; }
+
+function wallFlush() {}
+
+function wallHide() {}
 // 관람 확인증에서도 담벼락으로
 {
   const _done = typeof mxDone === 'function' ? mxDone : null;
@@ -7871,14 +7790,14 @@ function wallHide(id) {
 }
 window.addEventListener('resize', () => { if (!$('wallScreen').hidden) wallRender(false); });
 
-// 봉인 장면: 편지가 접혀 벽돌 속으로 들어가고 '2045. 8. 15. 개봉' 도장이 찍혀요
+// 상상 편지 연출: 실제 장기 보관이나 미래 개봉 기능은 없습니다.
 function wallSealAnim(b) {
   if (!b.letter) {
     const ov = el('div', 'wlSealFx', '<div class="sfBrick" style="background-color:' + (WALL_COLORS[b.color] || WALL_COLORS[0]) + '"><span>' + esc(b.name) + '</span></div><div class="sfStamp">기 억<small>오늘의 기록을 남겼어요</small></div>');
     $('wallScreen').appendChild(ov); requestAnimationFrame(() => ov.classList.add('s1', 's2', 's3'));
     const p = new Promise(resolve => setTimeout(() => { ov.remove(); resolve(); }, 1200)); p.cancel = () => ov.remove(); return p;
   }
-  const ov = el('div', 'wlSealFx', `<div class="sfBrick" style="background-color:${WALL_COLORS[b.color] || WALL_COLORS[0]}"><span>${esc(b.name)}</span></div><div class="sfPaper"><b>2045년의 나에게</b><p>${esc(b.letter)}</p><i>${esc(b.name)}</i></div><div class="sfStamp">봉 인<small>2045. 8. 15. 개봉</small></div>`);
+  const ov = el('div', 'wlSealFx', `<div class="sfBrick" style="background-color:${WALL_COLORS[b.color] || WALL_COLORS[0]}"><span>${esc(b.name)}</span></div><div class="sfPaper"><b>2045년의 나에게</b><p>${esc(b.letter)}</p><i>${esc(b.name)}</i></div><div class="sfStamp">기 억<small>이번 활동의 상상 편지</small></div>`);
   $('wallScreen').appendChild(ov);
   let cancel = false;
   const p = new Promise(res => {
@@ -7906,7 +7825,7 @@ function drawTaegukgi(g, W, H, x0 = 0, y0 = 0) {
   // [각도, 막대 3개의 끊김 여부(안쪽부터)] 건 ☰ 왼위 · 곤 ☷ 오른아래 · 감 ☵ 오른위 · 리 ☲ 왼아래
   [[Math.PI + th, [0, 0, 0]], [th, [1, 1, 1]], [-th, [1, 0, 1]], [Math.PI - th, [0, 1, 0]]].forEach(([a, br]) => {
     g.save(); g.translate(cx + Math.cos(a) * d, cy + Math.sin(a) * d); g.rotate(a); g.fillStyle = '#000';
-    br.forEach((b, i) => { const r0 = -(bw * 3 + gap * 2) / 2 + i * (bw + gap); if (!b) g.fillRect(r0, -L / 2, bw, L); else { g.fillRect(r0, -L / 2, bw, L * 0.46); g.fillRect(r0, L * 0.04, bw, L * 0.46); } });
+    br.forEach((b, i) => { const r0 = -(bw * 3 + gap * 2) / 2 + i * (bw + gap); if (!b) g.fillRect(r0, -L / 2, bw, L); else { g.fillRect(r0, -L / 2, bw, (L - bw) / 2); g.fillRect(r0, bw / 2, bw, (L - bw) / 2); } });
     g.restore(); });
   g.restore();
 }
@@ -8527,8 +8446,11 @@ TICK.push(() => { if (typeof work !== 'undefined') work.visible = !MUSEUM.on; })
   const banner = (seed, title) => mxBoard(0.75, 3.6, (g, W, H) => { g.fillStyle = '#d9d0c0'; g.fillRect(0, 0, W, H);
     oldPhoto(g, 0, H * 0.08, W, H * 0.3, seed, [222, 214, 198]); oldPhoto(g, 0, H * 0.4, W, H * 0.28, seed + 1, [222, 214, 198]); oldPhoto(g, 0, H * 0.7, W, H * 0.28, seed + 2, [222, 214, 198]);
     g.fillStyle = '#8a7a3a'; g.fillRect(title ? 0 : W - W * 0.12, 0, W * 0.12, H * 0.2);
-    mxText(g,'학습용 도안',W/2,H*.98,W*.08,'#514431',true,'center'); }, 150);
-  [[-2.6, 31, true], [2.6, 41, false]].forEach(([x, s, t]) => { const b = banner(s, t); b.position.set(x, 6.0, -5.82); scene.add(b); });
+    }, 150);
+  const hallArt = [];
+  [[-2.6, 31, true], [2.6, 41, false]].forEach(([x, s, t]) => { const b = banner(s, t); b.position.set(x, 6.0, -5.82); scene.add(b); hallArt.push(b); });
+  const hallInfo=mxDef({id:'mxHallArt',name:'홀의 그림 살펴보기',place:'2층 중앙 홀',lv:2,obj:hallArt[0],title:'그림으로 만나는 근대의 일상',facts:['항구와 거리, 배움터와 공연장의 모습을 그림으로 살펴보세요.','그림 속 사람들은 어떤 하루를 보냈을까요?'],sourceIds:[]});
+  hallArt.forEach(board=>regPick(board,hallInfo.id));interactables[hallInfo.id].pos=new THREE.Vector3(0,5.3,-5.7);NAMES[hallInfo.id]=hallInfo.name;
   const brass = new THREE.MeshPhongMaterial({ color: 0xc9a040, specular: 0xfff0c0, shininess: 80 }), alab = new THREE.MeshLambertMaterial({ color: 0xf4eee2, emissive: 0x3a3428 });
   const ch = grp(0, 7.98, -3.2);
   cyl(0.02, 0.02, 0.9, brass, 0, -0.45, 0, ch);
@@ -8704,10 +8626,10 @@ if (interactables.tele) { regEra(interactables.tele.obj, ['y1919', 'y1944']); se
 // ── 홈 버튼: 진행을 저장하고 처음 화면으로(로딩 벽돌은 건너뛰어요)
 function askHome(byEsc) {
   openModal(body => { head(body, byEsc ? '잠깐 멈춤' : '처음 화면', MUSEUM.on ? '역사관 관람을 종료할까요?' : '기억 살펴보기를 종료할까요?');
-    body.appendChild(el('p', '', MUSEUM.on ? '관람 도장은 그대로 남아 있어요.' : '지금까지 푼 단계는 저장돼요. 처음 화면에서 이어하기를 누르면 돼요.'));
+    body.appendChild(el('p', '', '처음 화면으로 가면 진행·관람 도장·작성한 글이 사라져요. 별도로 저장하지 않아요.'));
     const row = el('div', 'mxO'); const y = el('button', 'pbtn', '종료'), n = el('button', 'pbtn alt', '계속하기');
     y.onclick = goHomeNow; n.onclick = closeModal; row.append(y, n); body.appendChild(row); }); }
-function goHomeNow() { try { if (!MUSEUM.on && typeof saveGame === 'function' && state.mode === 'play') saveGame(); sessionStorage.setItem('rb_home', '1'); } catch (err) {} location.reload(); }
+function goHomeNow() { try { if (!MUSEUM.on && typeof saveGame === 'function' && state.mode === 'play') saveGame(); PRIVACY_SESSION.setItem('rb_home', '1'); } catch (err) {} location.reload(); }
 // PC 멈춤 메뉴: 오른쪽 위 기능을 한곳에
 function openPause() {
   const run = id => () => { closeModal(); setTimeout(() => { const b = $(id); if (b) b.click(); }, 60); };
@@ -9078,6 +9000,31 @@ if (window.MIRROR && MIRROR.mg) {
       message.innerHTML = '<strong>조작 연습 ' + (step+1) + '/3</strong><br>' + instructions[step];
     }
   });
+}
+
+
+/* ---------- 개인정보 없는 활동 ---------- */
+function privacyReason(value) {
+  const text=String(value).normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g,'');
+  if (/[A-Z0-9._%+-]+\s*[@＠]\s*[A-Z0-9.-]+\s*[.．]\s*[A-Z]{2,}/i.test(text)) return '이메일';
+  const digits=text.replace(/[^0-9]/g,'');
+  if (/(?:01[016789]\d{7,8}|0[2-6]\d{7,9}|\d{6}[1-4]\d{6})/.test(digits)) return '전화번호 또는 주민등록번호';
+  if (/(?:내|제)\s*(?:이름|성명|본명)\s*(?:은|는|이)?\s*[가-힣]{2,5}|(?:이름|성명|본명)\s*[:：=]\s*[가-힣]{2,5}/.test(text)) return '실명';
+  if (/(?:초등학교|중학교|고등학교|아파트|도로명|상세주소)|(?:주소|연락처|학번|부모님|엄마|아빠|가족)\s*[:：=]|[가-힣]{2,}(?:로|길)\s*\d+/.test(text)) return '학교·주소 또는 가족 정보';
+  return '';
+}
+function privacyValidate(value,node) {
+  const reason=privacyReason(value);if(!reason){node.removeAttribute('aria-invalid');return true;}
+  node.setAttribute('aria-invalid','true');toast(reason+'처럼 보이는 정보가 있어요. 개인정보를 빼고 마음이나 배운 내용만 써 주세요.',3500);node.focus();return false;
+}
+{
+  document.querySelectorAll('input,textarea').forEach(node=>{node.setAttribute('autocomplete','off');node.setAttribute('autocorrect','off');node.spellcheck=false;});
+  const note=el('p','privacyNote','이름 대신 게임 속 별명을 써요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.');note.id='privacyStartNote';document.querySelector('#startScreen .startrow').after(note);
+  const button=el('button','pbtn alt dk','개인정보 안내');button.id='btnPrivacy';button.onclick=()=>openModal(body=>{
+    head(body,'안심하고 놀아요','내 정보를 지켜요');
+    ['이름 대신 게임에서 만든 별명을 써요.','글에는 이름·학교·전화번호·주소를 쓰지 마세요.','쓴 글은 다른 사람에게 보내지지 않아요. 게임을 닫거나 새로고침하면 활동과 글이 사라져요.'].forEach(text=>{const p=el('p','');p.textContent=text;body.appendChild(p);});
+    const close=el('button','pbtn','알겠어요');close.onclick=closeModal;body.appendChild(close);
+  });$('btnWall').after(button);
 }
 
 </script>
