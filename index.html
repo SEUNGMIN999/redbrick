@@ -19,8 +19,8 @@ const PRIVACY_MEMORY = (() => { const data = new Map(); return Object.freeze({
   removeItem: key => data.delete(String(key)), clear: () => data.clear()
 }); })();
 const PRIVACY_SESSION = (() => { const data = new Map(); return Object.freeze({getItem:key=>data.get(String(key))??null,setItem:(key,value)=>data.set(String(key),String(value)),removeItem:key=>data.delete(String(key)),clear:()=>data.clear()}); })();
-// Delete this game's legacy browser data only; do not read or migrate it into the new activity.
-for (const kind of ['localStorage','sessionStorage']) { try { const store=window[kind]; const keys=[]; for(let i=0;i<store.length;i++) { const key=store.key(i); if (/^(?:bm-(?:save|settings)-v1|rb-controls-practiced-v1|rb_(?:snd|mx|mybricks|letters|room|pledge|quiz|home|wall(?:_.*)?))$/.test(key)) keys.push(key); } keys.forEach(key=>store.removeItem(key)); } catch (_) {} }
+// Delete this game's legacy activity data only. rb_snd is a device preference, not identity or learning history.
+for (const kind of ['localStorage','sessionStorage']) { try { const store=window[kind]; const keys=[]; for(let i=0;i<store.length;i++) { const key=store.key(i); if (/^(?:bm-(?:save|settings)-v1|rb-controls-practiced-v1|rb_(?:mx|mybricks|letters|room|pledge|quiz|home|wall(?:_.*)?))$/.test(key)) keys.push(key); } keys.forEach(key=>store.removeItem(key)); } catch (_) {} }
 addEventListener('pagehide',()=>{PRIVACY_MEMORY.clear();PRIVACY_SESSION.clear();document.querySelectorAll('input,textarea').forEach(node=>{node.value='';});});
 addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 </script>
@@ -86,6 +86,23 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .hbtn{pointer-events:auto;background:var(--paper);color:var(--text);border:0;border-radius:6px;padding:9px 14px;font-size:15px;font-weight:700;
   box-shadow:0 3px 0 #8f7d5c}
 .hbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #8f7d5c}
+/* 플레이 화면은 목표 한 줄과 메뉴 아이콘 하나만 보여요. 나머지 기능은 메뉴 안에 둡니다. */
+#hud #dots,#hud .rightcol>.actionPrimary{display:none!important}
+#hud .rightcol>.menuTrigger{display:flex!important}
+#hud .rightcol>.menuTrigger .hbtn:not(#btnGear){display:none!important}
+#btnGear{width:44px;height:44px;padding:0;font-size:22px;border-radius:50%}
+#goal{display:flex;align-items:center;gap:8px;max-width:min(620px,calc(100% - 130px));padding:7px 10px}
+#goal .era,#chalkProgress{display:none!important}
+#goal .lab{display:inline-flex;flex:none;align-items:center;justify-content:center;margin:0;padding:3px 7px;border-radius:999px;background:rgba(209,170,94,.18);color:#ffd98a;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+#goal .txt{margin:0;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#mapBox{display:none}
+#mapBox:not([hidden]){display:block}
+@media(max-width:700px),(max-height:560px){
+  .topbar{padding:calc(env(safe-area-inset-top,0px) + 6px) 8px 0;gap:6px}
+  #goal{max-width:calc(100% - 104px);font-size:13px;padding:6px 8px}
+  #goal .lab{font-size:10px;padding:2px 6px}
+  #artCnt{font-size:12px;padding:5px 8px}.rightcol{gap:5px}#btnGear{width:40px;height:40px;font-size:20px}
+}
 #crosshair{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;border:2px solid rgba(236,226,204,.75)}
 #crosshair.on{border-color:var(--brass);width:16px;height:16px;margin:-8px 0 0 -8px}
 #interact{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 34px);transform:translateX(-50%);pointer-events:auto;
@@ -579,7 +596,7 @@ body.museum #timer{display:none}
 #wlDone{position:absolute;top:14px;left:16px;right:16px;padding:12px;background:rgba(20,25,33,.9);color:#f3ead6;border:1px solid #d1aa5e;border-radius:8px;z-index:1;line-height:1.6}
 .wlBody{flex:1;min-height:0;display:flex}
 .wlWallWrap{position:relative;flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:20px 24px 0}
-.wlWall{display:flex;flex-direction:column;gap:4px;width:100%;max-width:980px;margin:0 auto}
+.wlWall{display:flex;flex-direction:column;gap:4px;width:100%;margin:0}
 .wr{display:flex;gap:4px}
 .wr.odd{padding-left:calc((100% - 32px) / 18)}
 .wr:not(.odd){padding-right:calc((100% - 32px) / 18)}
@@ -587,7 +604,7 @@ body.museum #timer{display:none}
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),inset 0 2px 0 rgba(255,220,190,.18),0 2px 3px rgba(0,0,0,.25);cursor:default;overflow:hidden}
 .wb[data-msg]{cursor:pointer}
 .wb::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.08),transparent 40%),repeating-linear-gradient(90deg,rgba(0,0,0,.04) 0 2px,transparent 2px 7px);pointer-events:none}
-.wb.ghost{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.wb.spacer{visibility:hidden;pointer-events:none;box-shadow:none}
 .wb .wm{flex:none;width:22px;height:22px}.wb .wm svg{width:100%;height:100%;display:block}
 .wb .wn{font-family:"Gowun Batang",serif;font-weight:700;font-size:14px;color:#f6ead2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em}
 .wb.lt .wn{color:#5a2a1a}
@@ -605,6 +622,7 @@ body.museum #timer{display:none}
 .wb .wseal{position:absolute;right:3px;top:2px;font:700 8.5px/1 "Gowun Batang",serif;color:#ffd98a;border:1px solid rgba(255,217,138,.7);border-radius:2px;padding:1px 2px;letter-spacing:.04em;z-index:1;opacity:.85}
 .wb.lt .wseal{color:#7a2a1a;border-color:rgba(122,42,26,.5)}
 .wlChips{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 2px}.wlChips button{font:inherit;font-size:12.5px;padding:5px 9px;border-radius:999px;border:1px solid #c9b48a;background:#fffaf0;color:#5a4630;cursor:pointer;white-space:nowrap;user-select:none}.wlChips button:active{background:#f1e4c8}.wlChips.st button{border-color:#a8462f;color:#7a2a1a;font-weight:700}
+.wlChoice button{flex:1 1 calc(50% - 5px);white-space:normal;min-height:34px;line-height:1.25}.wlChoice button.on{background:#a8462f;border-color:#7a2a1a;color:#fff4e2;font-weight:700}.wlChoice button:focus-visible{outline:3px solid #d1aa5e;outline-offset:1px}
 .wlMake>*{flex-shrink:0}
 .wlEx{margin:2px 2px 0;font-size:12.5px;color:#8a7558;line-height:1.4;min-height:0}.wlEx:empty{display:none}
 .wlChips.st button.on{background:#a8462f;color:#fff4e2}
@@ -638,6 +656,8 @@ body.museum #timer{display:none}
 #wlPut{margin-top:10px;white-space:nowrap}
 .wlNote{font-size:12px;color:#7a6a50;margin:4px 0 0}
 .wlOpenMk{display:none}
+.wlNameCard{border:1px solid #c9b48a;background:#f7efe0;border-radius:6px;padding:9px 10px;font:700 17px "Gowun Batang",serif;color:#3a2a1a;letter-spacing:.08em}
+.wlNameCard.empty{font:400 13px/1.45 sans-serif;color:#7a6a50;letter-spacing:0}
 .wlMsgBig{font-size:24px;line-height:1.5;text-align:center;margin:10px 0}
 .wlKey{width:100%;box-sizing:border-box;padding:10px;border:1px solid #c9b48a;border-radius:6px;font-size:15px}
 @media (max-width:820px),(max-height:520px){
@@ -647,6 +667,11 @@ body.museum #timer{display:none}
   .wlOpenMk{display:block;position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;background:#d1aa5e;color:#1a140f;border:0;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;box-shadow:0 6px 16px rgba(0,0,0,.4);white-space:nowrap}
   #wallScreen.mk .wlOpenMk{right:auto;left:14px;background:#2a2420;color:#f3ead6}
   .wb{height:40px}.wb .wn{font-size:12px}.wb .wm{width:17px;height:17px}.wlWallWrap{padding:12px 12px 0}.wlGround{margin:4px -12px 0}
+}
+@media (min-width:821px) and (min-height:521px){
+  .wlOpenMk{display:block;position:fixed;right:318px;bottom:18px;z-index:6;background:#d1aa5e;color:#1a140f;border:0;border-radius:999px;padding:10px 16px;font-weight:700;font-size:14px;box-shadow:0 5px 14px rgba(0,0,0,.35);white-space:nowrap}
+  #wallScreen.wallOnly .wlMake{display:none}
+  #wallScreen.wallOnly .wlOpenMk{right:18px}
 }
 /* 2026 화면: 가장자리를 살짝 어둡게 */
 body.nowLook #view{filter:none}
@@ -1015,6 +1040,15 @@ body.plFree #view{cursor:none}
 #chalkProgress .found{color:#ffe0a0;font-weight:700}
 @media(max-width:640px){#firstSteps{bottom:calc(env(safe-area-inset-bottom,0px) + 156px);font-size:14px}}
 
+/* 세로 화면에서는 게임 입력을 완전히 가리고 가로 전환만 안내해요. */
+#rotateGate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:linear-gradient(180deg,#151b24,#2f4054);color:#f3ead6;text-align:center;pointer-events:auto}
+#rotateGate[hidden]{display:none}
+.rotateCard{width:min(420px,90vw);padding:28px 22px;border:1px solid rgba(209,170,94,.65);border-radius:16px;background:rgba(22,18,15,.9);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.rotateIcon{font-size:54px;line-height:1;margin-bottom:12px;animation:rotatePhone 1.8s ease-in-out infinite}
+.rotateCard h2{margin:0 0 10px;color:#ffd98a;font:700 25px "Gowun Batang",serif}.rotateCard p{margin:0 0 18px;line-height:1.65}
+.rotateCard button{min-height:48px;border:0;border-radius:8px;padding:10px 18px;background:#d1aa5e;color:#1a140f;font-weight:700;font-size:16px}
+@keyframes rotatePhone{0%,35%{transform:rotate(0)}65%,100%{transform:rotate(90deg)}}
+
 
 .mxEvidence{margin:10px 0 16px;padding:12px 14px;background:#e5dac0;border-left:4px solid #8a5437;font:14px/1.6 var(--f-display);color:#3a312a}.mxEvidence p{margin:0 0 8px}.mxSourceLinks{display:flex;flex-wrap:wrap;gap:4px 14px}.mxSourceLinks a{display:inline-block;color:#1f5362;text-decoration:underline;padding:8px 0}.mxEvidence small{display:block;margin-top:6px;color:#66543e}
 /* 짧은 가로 화면에서도 마지막 선택 버튼이 화면 밖으로 잘리지 않게 */
@@ -1042,28 +1076,29 @@ body.plFree #view{cursor:none}
         <div id="artCnt" class="chip" aria-label="찾은 유물"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h14v9H3z M5 8V5h10v3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12h4" stroke="currentColor" stroke-width="1.6"/></svg><span class="lb">유물</span><b id="artN">0</b><span class="of">/ 7</span></div>
         <div id="inv" class="chip" hidden>🔦 민승이의 손전등</div>
         <div id="dots"></div>
-        <div class="btnrow">
+        <div class="btnrow actionPrimary">
           <button class="hbtn" id="btnNote">📖 수첩</button>
           <button class="hbtn" id="btnHint">힌트</button>
         </div>
-        <div class="btnrow">
+        <div class="btnrow menuTrigger">
           <button class="hbtn mini" id="btnHome" aria-label="처음 화면">홈</button>
-          <button class="hbtn mini" id="btnMap" aria-pressed="true" aria-label="지도 켜고 끄기">지도</button>
-          <button class="hbtn mini" id="btnGear" aria-label="설정">⚙</button>
+          <button class="hbtn mini" id="btnMap" aria-pressed="false" aria-label="지도 켜고 끄기">지도</button>
+          <button class="hbtn mini" id="btnGear" aria-label="메뉴 열기" title="메뉴">⚙</button>
           <button class="hbtn mini" id="btnFS" aria-label="전체 화면">⛶</button>
           <button class="hbtn mini" id="btnSnd" aria-pressed="true" aria-label="소리 켜고 끄기">🔊</button>
         </div>
-        <div id="mapBox"><div id="mapLoc">앞마당</div><canvas id="map" width="300" height="280"></canvas></div>
+        <div id="mapBox" hidden><div id="mapLoc">앞마당</div><canvas id="map" width="300" height="280"></canvas></div>
       </div>
     </div>
     <div id="crosshair"></div>
     <button id="interact" hidden>🔍 조사하기</button>
     <button id="near" hidden></button>
     <div id="joy" hidden><b></b></div>
-    <div id="keys">WASD 이동 · Shift 달리기 · 클릭/E 조사 · Esc 메뉴 · N 수첩 · H 힌트</div>
+    <div id="keys">WASD 이동 · Shift 달리기 · 클릭/E 조사 · Esc/⚙ 메뉴</div>
     <div id="plHint" hidden><b>🖱 화면을 클릭하세요</b><span>마우스를 움직이면 바로 둘러볼 수 있어요 · Esc를 누르면 마우스가 다시 나와요</span></div>
   </div>
   <div id="toast"></div>
+  <div id="rotateGate" role="dialog" aria-modal="true" aria-labelledby="rotateTitle" hidden><div class="rotateCard"><div class="rotateIcon" aria-hidden="true">📱</div><h2 id="rotateTitle">가로 화면으로 돌려 주세요</h2><p>이 게임은 넓은 화면에서만 진행할 수 있어요.<br>기기를 가로로 돌리면 바로 이어집니다.</p><button id="rotateStart" type="button">전체 화면으로 시작</button></div></div>
   <div id="candle"></div>
   <div id="evt" hidden></div>
   <div id="danger"></div><div id="pstamp"></div>
@@ -2696,15 +2731,15 @@ const NB = [
 ];
 const GOALS = [
   '',
-  '앞마당에 있는 민승이의 쪽지판을 찾아 조사하세요.',
-  '1관 현관문의 대칭 자물쇠를 여세요.',
-  '1층 서쪽 방(들어가서 왼쪽)의 벽난로를 조사하세요.',
-  '현관 홀 안쪽 계단으로 2층에 올라가 서쪽 방 창문을 조사하세요.',
-  '2층 동쪽 방의 서랍장을 조사하세요.',
-  '1층 뒷문으로 나가 뒤뜰의 봉안전 공고문을 조사하세요.',
-  '언덕의 방공호로 들어가 벽에 새긴 글자 네 개를 찾으세요.'
+  '앞마당 쪽지판 조사하기',
+  '현관문의 대칭 자물쇠 열기',
+  '1층 서쪽 방 벽난로 조사하기',
+  '2층 서쪽 방 창문 조사하기',
+  '2층 동쪽 방 서랍장 조사하기',
+  '뒤뜰 봉안전 공고문 조사하기',
+  '방공호에서 벽 글자 네 개 찾기'
 ];
-const GOAL_TORCH = '뒤뜰 서고(왼쪽 돌 건물)에 들어가 민승이가 남긴 물건을 찾으세요.';
+const GOAL_TORCH = '뒤뜰 서고에서 손전등 찾기';
 const FACTS = [
   null,
   { t: '1900년에 태어난 집', b: '1관은 1900년에 완공된 목포 일본영사관 건물이에요. 목포에서 가장 오래된 근대 건축물로, 붉은 벽돌과 흰 벽돌을 번갈아 쌓아 지었어요. 목포 시내를 내려다보는 언덕 위에 세웠어요.' },
@@ -2737,7 +2772,7 @@ function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.
 /* ================= 소리 ================= */
 let AC = null;
 function tone(freqs, dur = 0.12, type = 'triangle', gap = 0.09) {
-  if (!AC) return;
+  if (!AC || !sndOn) return;
   freqs.forEach((f, i) => {
     const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + i * gap;
     o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -2759,7 +2794,7 @@ function updateHUD() {
   if (state.stage === 7 && state.letters.size === 4) g = '방공호 출구에서 글자 네 개를 순서대로 맞추세요.';
   else if (state.stage === 7 && state.letters.size) g = `방공호 벽의 글자를 찾으세요. (${state.letters.size}/4)`;
   $('goalTxt').textContent = g;
-  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = (state.team ? state.team + ' · ' : '') + '다음 목표';
+  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = `목표 ${state.stage}/7`;
 }
 function fmt(sec) { sec = Math.max(0, Math.floor(sec)); return String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0'); }
 let warned = false;
@@ -3303,8 +3338,9 @@ function teleport(lv) {
 
 /* ================= 입력 ================= */
 const coarse = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+let ORIENTATION_BLOCKED = innerHeight > innerWidth;
 window.addEventListener('keydown', e => {
-  if (state.mode !== 'play') return;
+  if (state.mode !== 'play' || ORIENTATION_BLOCKED) return;
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
   if (state.modal) { if (e.code === 'Escape' && !MODAL_OPT.lock) closeModal(); return; }
   keys[e.code] = true;
@@ -3317,7 +3353,7 @@ window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; }
 
 let look = null;
 canvas.addEventListener('pointerdown', e => {
-  if (state.mode !== 'play' || state.modal) return;
+  if (state.mode !== 'play' || state.modal || ORIENTATION_BLOCKED) return;
   if (look) return;
   look = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now(), moved: 0 };
   canvas.setPointerCapture(e.pointerId);
@@ -3345,7 +3381,7 @@ function joyMove(e) {
   if (d > max) { dx *= max / d; dy *= max / d; }
   knob.style.transform = `translate(${dx}px,${dy}px)`; joy.x = dx / max; joy.y = dy / max;
 }
-joyEl.addEventListener('pointerdown', e => { joyId = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyMove(e); e.stopPropagation(); });
+joyEl.addEventListener('pointerdown', e => { if (ORIENTATION_BLOCKED) return; joyId = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyMove(e); e.stopPropagation(); });
 joyEl.addEventListener('pointermove', e => { if (e.pointerId === joyId) joyMove(e); });
 const joyEnd = e => { if (e.pointerId !== joyId) return; joyId = null; joy.x = joy.y = 0; knob.style.transform = ''; };
 joyEl.addEventListener('pointerup', joyEnd); joyEl.addEventListener('pointercancel', joyEnd);
@@ -3683,17 +3719,18 @@ const OLD_SUR = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', 
 const OLD_BOY = 20; // OLD_GIVEN 앞 20개는 남자 이름, 뒤 20개는 여자 이름
 const OLD_GIVEN = ['복동', '만석', '덕수', '순돌', '칠성', '용팔', '봉수', '삼룡', '갑돌', '판석', '억만', '쇠돌', '귀동', '돌쇠', '춘삼', '팔복', '수남', '영길', '천석', '막동',
   '순이', '옥분', '말순', '복순', '점례', '금순', '분이', '정순', '끝순', '귀남', '봉례', '을순', '삼월', '간난', '언년', '복례', '순덕', '막례', '옥례', '분례'];
-let REG_NAME = '', REG_PHOTO = '';
+let REG_NAME = '', REG_PHOTO = '', REG_LOCKED = false;
 function rollName() { const s = OLD_SUR[Math.floor(Math.random() * OLD_SUR.length)], gi = Math.floor(Math.random() * OLD_GIVEN.length); REG_PHOTO = pickPhoto(gi < OLD_BOY ? 'b' : 'g'); return s + OLD_GIVEN[gi]; }
 function pickPhoto(sex) { if (typeof ID_IMG === 'undefined') return ''; const ks = Object.keys(ID_IMG).filter(k => k[0] === sex); if (!ks.length) return ''; let k; do { k = ks[Math.floor(Math.random() * ks.length)]; } while (ks.length > 1 && ID_IMG[k] === REG_PHOTO); return ID_IMG[k]; }
 function showPhoto() { const im = $('idPhoto'); if (!im) return; if (REG_PHOTO) { im.src = REG_PHOTO; im.parentNode.classList.add('has'); } else im.parentNode.classList.remove('has'); }
 function diceName() {
-  const t = $('teamName'), d = $('nmDice'); if (!t || d.disabled) return; d.disabled = true;
+  const t = $('teamName'), d = $('nmDice'); if (!t || d.disabled || REG_LOCKED) return; d.disabled = true;
   let k = 0; const spin = () => { t.value = REG_NAME = rollName(); showPhoto(); tone([700 + k * 60], 0.03, 'square', 0); if (++k < 9) setTimeout(spin, 45 + k * 12); else { d.disabled = false; showPhoto(); t.classList.remove('nmpop'); void t.offsetWidth; t.classList.add('nmpop'); tone([523, 784], 0.25, 'triangle', 0.08); } };
   spin();
 }
 function wireReg() {
-  const t = $('teamName'); t.readOnly = true; t.setAttribute('aria-label', '자동 생성된 가상 이름'); t.autocomplete = 'off'; REG_NAME = rollName(); t.value = REG_NAME; showPhoto(); // 통행증을 받을 때마다 새 이름 · 새 사진
+  const t = $('teamName'); t.readOnly = true; t.setAttribute('aria-label', '시간 여행에서 사용할 이름'); t.autocomplete = 'off';
+  if (!REG_LOCKED) { REG_NAME = rollName(); t.value = REG_NAME; showPhoto(); } // 게임 시작 전에는 통행증 이름과 사진을 고를 수 있어요
   $('nmDice').onclick = e => { e.stopPropagation(); diceName(); };
   t.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); startGame(); } };
 }
@@ -3702,7 +3739,7 @@ function startGame() {
   cntCall(true);
   const nm = REG_NAME || (REG_NAME = rollName()); $('teamName').value = nm;
   if (!nm) { diceName(); return; }
-  state.team = nm;
+  state.team = nm; REG_LOCKED = true; $('nmDice').disabled = true; $('nmDice').title = '게임을 시작해 이름이 확정되었어요';
   const card = document.querySelector('.idcard');
   if (card && !card.classList.contains('ok')) { card.classList.add('ok'); tone([196], 0.15, 'square', 0); setTimeout(startGame, 650); return; }
   $('introScreen').hidden = true; $('hud').hidden = false;
@@ -3726,7 +3763,7 @@ const clock = new THREE.Clock();
 let orbitT = 0;
 function loop() {
   requestAnimationFrame(loop);
-  const frameDt = clock.getDelta(), dt = Math.min(frameDt, 0.05), t = clock.elapsedTime;
+  const frameDt = clock.getDelta(), dt = ORIENTATION_BLOCKED ? 0 : Math.min(frameDt, 0.05), t = clock.elapsedTime;
   TICK.forEach(f => f(dt, t));
   if (state.mode === 'cine') {
     updateCine(Math.min(frameDt, 0.25)); // 영상은 저프레임에서도 실제 경과 시간에 가깝게 진행해요.
@@ -3742,7 +3779,7 @@ function loop() {
     camera.rotation.set(player.pitch, player.yaw, 0);
     setDark(player.lv === 1 && player.z < TZ - 0.3 && Math.abs(player.x) < 14.5);
     if (!state.modal) updateHover();
-    updateTimer();
+    if (!ORIENTATION_BLOCKED) updateTimer();
   }
   for (const k of ['front', 'back', 'seogo']) { const d = doors[k]; d.cur += (d.target - d.cur) * Math.min(1, dt * 2.5); d.pivot.rotation.y = d.cur; }
   if (gateOpen && gate.rotation.y < 1.6) gate.rotation.y = Math.min(1.6, gate.rotation.y + dt * 1.1); // 철문이 굴 안쪽으로 끼익 열려요
@@ -3757,7 +3794,8 @@ updateHUD();
 loop();
 
 /* ================= 시대별 배경 소리 ================= */
-let sndOn = true;
+const SOUND_SETTING_KEY = 'rb_snd';
+let sndOn = (() => { try { return localStorage.getItem(SOUND_SETTING_KEY) !== '0'; } catch (e) { return true; } })();
 const AMB = { bed: null, bedG: null, next: {}, dripIn: null };
 function now() { return performance.now() / 1000; }
 function noiseBuffer(sec) { const b = AC.createBuffer(1, Math.floor(AC.sampleRate * sec), AC.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
@@ -3861,14 +3899,14 @@ POST.push(dt => {
 
 /* ================= 소리 켜고 끄기 ================= */
 function setSnd(on) {
-  sndOn = on; $('btnSnd').textContent = sndOn ? '🔊' : '🔇'; $('btnSnd').setAttribute('aria-pressed', sndOn);
+  sndOn = !!on; $('btnSnd').textContent = sndOn ? '🔊' : '🔇'; $('btnSnd').setAttribute('aria-pressed', sndOn);
   const b = $('btnSndStart'); if (b) { b.textContent = sndOn ? '🔊 소리 켜짐' : '🔇 소리 꺼짐'; b.setAttribute('aria-pressed', sndOn); }
-  try { PRIVACY_MEMORY.setItem('rb_snd', sndOn ? '1' : '0'); } catch (e) {}
+  try { localStorage.setItem(SOUND_SETTING_KEY, sndOn ? '1' : '0'); } catch (e) {}
   if (AC) { if (sndOn) AC.resume(); else AC.suspend(); }
 }
 $('btnSnd').onclick = () => setSnd(!sndOn);
 if ($('btnSndStart')) $('btnSndStart').onclick = e => { e.stopPropagation(); setSnd(!sndOn); if (sndOn && typeof tone === 'function') tone([523, 784], 0.25, 'triangle', 0.08); };
-try { if (PRIVACY_MEMORY.getItem('rb_snd') === '0') setSnd(false); } catch (e) {}
+setSnd(sndOn);
 
 /* ================= 작은 지도 ================= */
 const mapC = $('map'), mg = mapC.getContext('2d');
@@ -4398,7 +4436,7 @@ const ARTS = [
   { e: '🎀', t: '여학생의 댕기', d: '정명여학교 학생들은 1919년 4월 8일 목포 만세운동에 함께했어요.', at: [2.3, 4.06, 6.4], era: ['y1919'] },
   { e: '🔑', t: '부청 서랍 열쇠', d: '목포부청 직원이 쓰던 놋쇠 열쇠예요. 목포부청으로 쓰이던 시절의 열쇠를 상상해 만든 게임 소품이에요.', at: [8.5, 0.83, 1.2], era: ['y1919'] },
   { e: '⛑', t: '방공 두건', d: '공습 때 머리를 보호하려고 쓴 두건이에요. 1944년 무렵 사람들은 공습 훈련에 동원되었어요.', at: [-9.0, 0.06, -12.0], era: ['y1944'] },
-  { e: '⛏', t: '녹슨 곡괭이', d: '방공호를 파는 데 쓰인 곡괭이예요. 굴을 파는 일에 많은 조선 사람들이 강제로 동원되었어요.', at: [cellX(8) + 0.4, 0.06, cellZ(5) + 0.5], era: ['y1944', 'present'] }
+  { e: '⛏', t: '녹슨 곡괭이', d: '방공호를 파는 데 쓰인 곡괭이예요. 굴을 파는 일에 많은 조선 사람들이 강제로 동원되었어요.', at: [cellX(8) + 0.4, 0.06, cellZ(5) + 0.5], era: ['y1944'] }
 ];
 const artMeshes = ARTS.map((a, i) => {
   const g = new THREE.Group(); g.position.set(...a.at); scene.add(g);
@@ -4435,7 +4473,7 @@ useInteract = function (id) {
   if (id.startsWith('mark')) { const i = +id.slice(4); if (!FX.candle && !FX.marks.has(i)) { toast('너무 어두워서 잘 안 보여요.', 1500); return; } if (!FX.marks.has(i)) { FX.marks.add(i); sfx.pick(); toast(`벽 글씨를 찾았어요: "${MARKS[i][0]}" (${FX.marks.size}/3)`, 2400); updateHUD(); } return; }
   if (id.startsWith('piece')) { const i = +id.slice(5); if (!FX.pieces.has(i)) { FX.pieces.add(i); show(pieceMeshes[i], false); sfx.pick(); } return; }
   if (id.startsWith('bat')) { const i = +id.slice(3); show(batMeshes[i], false); FX.battery = 1; sfx.pick(); toast('새 건전지! 손전등이 다시 밝아졌다.', 1800); return; }
-  if (id.startsWith('npc')) { talk(+id.slice(3)); return; }
+  if (id.startsWith('npc')) { if (typeof markFirstPracticeTalk === 'function') markFirstPracticeTalk(); talk(+id.slice(3)); return; }
   if (id.startsWith('art')) { takeArt(+id.slice(3)); return; }
   if (id.startsWith('ship')) return;
   return _useInteract(id);
@@ -4471,11 +4509,11 @@ const _updateHUD = updateHUD;
 updateHUD = function () {
   _updateHUD();
   const s = state.stage; let g = null;
-  if (s === 1 && FX.bricks.size < 4) g = `건물 바깥벽에서 분필 표시를 찾으세요. (${FX.bricks.size}/4)`;
-  else if (s === 1) g = '앞마당 쪽지판에서 흰 벽돌을 세어 자물쇠를 여세요.';
-  if (s === 3 && FX.candle && FX.marks.size < 3) g = `촛불을 들고 서쪽 방 벽에 숨은 글씨를 찾으세요. (${FX.marks.size}/3)`;
-  else if (s === 3 && FX.candle) g = '벽난로로 돌아가 이름을 바뀐 순서대로 놓으세요.';
-  if (s === 5 && FX.pieces.size === PIECE_N) g = '2층 동쪽 방 서랍장에서 태극기를 맞추세요.';
+  if (s === 1 && FX.bricks.size < 4) g = `분필 표시 찾기 ${FX.bricks.size}/4`;
+  else if (s === 1) g = '쪽지판에서 흰 벽돌 세기';
+  if (s === 3 && FX.candle && FX.marks.size < 3) g = `숨은 벽 글씨 찾기 ${FX.marks.size}/3`;
+  else if (s === 3 && FX.candle) g = '벽난로에서 이름 순서 맞추기';
+  if (s === 5 && FX.pieces.size === PIECE_N) g = '서랍장에서 태극기 완성하기';
   if (g) $('goalTxt').textContent = g;
 };
 TICK.push(() => {
@@ -5761,11 +5799,33 @@ const FS = {
   },
   exit() { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
 };
+let orientationPauseAt = ORIENTATION_BLOCKED ? performance.now() : 0;
+function lockLandscape() {
+  if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
+}
+function updateOrientationGate() {
+  const portrait = innerHeight > innerWidth;
+  if (portrait && !ORIENTATION_BLOCKED) orientationPauseAt = performance.now();
+  if (!portrait && ORIENTATION_BLOCKED && orientationPauseAt && state && Number.isFinite(state.start)) state.start += performance.now() - orientationPauseAt;
+  ORIENTATION_BLOCKED = portrait;
+  $('rotateGate').hidden = !portrait;
+  document.body.classList.toggle('portraitBlocked', portrait);
+  if (portrait) {
+    for (const k in keys) keys[k] = false; joy.x = joy.y = 0;
+    if (document.pointerLockElement) document.exitPointerLock();
+  } else {
+    orientationPauseAt = 0; lockLandscape(); setTimeout(resize, 120);
+  }
+}
+$('rotateStart').onclick = e => { e.stopPropagation(); FS.enter(); setTimeout(lockLandscape, 80); };
+window.addEventListener('orientationchange', () => setTimeout(updateOrientationGate, 120));
+window.addEventListener('resize', updateOrientationGate);
+updateOrientationGate();
 let fsAuto = true;
 ['pointerup', 'keydown'].forEach(ev => window.addEventListener(ev, e => {
   if (!fsAuto || (e.key && e.key === 'Escape')) return;
   if (e.target && e.target.id === 'btnFS') return;
-  fsAuto = false; FS.enter();
+  fsAuto = false; FS.enter(); setTimeout(lockLandscape, 80);
 }, { capture: true }));
 ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { $('btnFS').textContent = FS.on() ? '🗗' : '⛶'; setTimeout(resize, 150); }));
 $('btnFS').onclick = () => { fsAuto = false; FS.on() ? FS.exit() : FS.enter(); };
@@ -6365,7 +6425,7 @@ if (coarse) {
 
 /* ---------- PC: 배틀그라운드처럼 마우스를 움직이면 바로 둘러보기(포인터 잠금) ---------- */
 const PL = { want: !coarse && !!canvas.requestPointerLock, last: 0, get on() { return document.pointerLockElement === canvas; } };
-function plCan() { return state.mode === 'play' && !state.modal && !(typeof vn !== 'undefined' && vn.on) && !FX.scope && !state.fading && $('startScreen').hidden && $('endScreen').hidden && (!$('typeSheet') || $('typeSheet').hidden); }
+function plCan() { return !ORIENTATION_BLOCKED && state.mode === 'play' && !state.modal && !(typeof vn !== 'undefined' && vn.on) && !FX.scope && !state.fading && $('startScreen').hidden && $('endScreen').hidden && (!$('typeSheet') || $('typeSheet').hidden); }
 function plLock() {
   if (!PL.want || PL.on || !plCan() || performance.now() - PL.last < 1100) return;
   clearTimeout(PL.chk); PL.chk = setTimeout(() => { if (PL.want && !PL.on && plCan() && !PL.ok) plFree(); }, 900); // 잠금이 조용히 막히면 자유 시선으로
@@ -7456,6 +7516,7 @@ function startMuseum() {
   window.TELE_SHOWN = true; warned = true;
   state.mode = 'play'; state.start = performance.now();
   $('hud').hidden = false; $('joy').hidden = !coarse; $('keys').hidden = coarse;
+  $('mapBox').hidden = true; $('btnMap').setAttribute('aria-pressed', 'false');
   updateHUD();
   setTimeout(() => openModal(body => {
     head(body, '목포근대역사관 1관 · 가상 학습', '공식 안내로 둘러보기'); mxEvidence(body);
@@ -7474,8 +7535,8 @@ updateHUD = function () {
   if (!MUSEUM.on) return _uhMx.apply(this, arguments);
   $('dots').innerHTML = ''; $('inv').hidden = true;
   const n = MUSEUM.stamps.size, nx = mxNext();
-  $('goalTxt').textContent = nx ? `${nx.place}의 「${nx.title}」 살펴보기 (${n}/${MXN})` : `관람 완료 (${n}/${MXN})`;
-  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = (state.team ? state.team + ' · ' : '') + '가상 관람 · 학습용 재구성';
+  $('goalTxt').textContent = nx ? `「${nx.title}」 살펴보기` : '모든 전시 관람 완료';
+  const lab = document.querySelector('#goal .lab'); if (lab) lab.textContent = `관람 ${n}/${MXN}`;
 };
 const _mtMx = markerTarget;
 markerTarget = function () {
@@ -7608,9 +7669,22 @@ POST.push(() => {
    ===================================================================== */
 const WALL_COLORS = ['#a8462f', '#8e3424', '#b9653f', '#6d3a2a', '#d8cbb4'];
 const WALL_MOTIFS = ['없음', '태극', '무궁화', '댕기', '4·8', '별'];
+const WALL_FEELINGS = [
+  { label: '뭉클했어요', short: '뭉클함' }, { label: '안타까웠어요', short: '안타까움' },
+  { label: '고마웠어요', short: '고마움' }, { label: '놀라웠어요', short: '놀라움' },
+  { label: '용기가 생겼어요', short: '용기' }, { label: '더 알고 싶어요', short: '더 알고 싶음' }
+];
+const WALL_MEMORIES = [
+  { label: '민승이가 남긴 기록', sentence: '민승이가 남긴 기록을 기억할래요' },
+  { label: '4월 8일 만세운동', sentence: '4월 8일 만세운동을 기억할래요' },
+  { label: '지켜 낸 이름과 우리말', sentence: '지켜 낸 이름과 우리말을 기억할래요' },
+  { label: '함께 완성한 태극기', sentence: '함께 완성한 태극기를 기억할래요' },
+  { label: '방공호에 남은 아픈 역사', sentence: '방공호에 남은 아픈 역사를 기억할래요' },
+  { label: '지금도 남아 있는 붉은 벽돌 건물', sentence: '붉은 벽돌 역사관을 기억할래요' }
+];
 const WALL_BAD = ['시발', '씨발', 'ㅅㅂ', 'ㅆㅂ', '병신', 'ㅂㅅ', '개새', '좆', '존나', 'ㅈㄴ', '미친', '꺼져', '죽어', '닥쳐', 'fuck', 'shit', 'bitch'];
 const WALL = { room: 'redbrick', // 반 코드 없이 모두 한 담벼락에 계속 쌓여요
-  bricks: [], online: false, mine: new Set(), poll: 0, color: 0, motif: 1, teacherKey: '', busy: false };
+  bricks: [], online: false, mine: new Set(), poll: 0, color: 0, motif: 1, feeling: -1, memory: -1, teacherKey: '', busy: false };
 try { WALL.mine = new Set(JSON.parse(PRIVACY_MEMORY.getItem('rb_mybricks') || '[]')); } catch (e) {}
 
 function wallMotifSVG(m, light) {
@@ -7643,8 +7717,10 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
       <aside class="wlMake" id="wlMake">
         <div class="wlMk">내 기억을 미래에 남기기</div><p class="wlNote" id="wlBridge">민승이는 자기 시대의 이야기를 남겼어요. 당신은 미래에 무엇을 전하고 싶나요?</p><p class="wlNote">과거의 기록을 읽은 내가, 미래에 전하고 싶은 마음을 남겨 보아요.</p>
         <div class="wlPrev" id="wlPrev"></div>
-        <label class="wlLab" for="wlMsg">오늘의 기록 · 이번 활동 화면에서만 보기</label>
-        <input id="wlMsg" maxlength="30" placeholder="예: 기록 속 이름들을 오래 기억할게요" autocomplete="off">
+        <label class="wlLab">오늘 느낀 마음 · 하나 선택</label>
+        <div class="wlChips wlChoice" id="wlFeelChips"></div>
+        <label class="wlLab">기억하고 싶은 장면 · 하나 선택</label>
+        <div class="wlChips wlChoice" id="wlMemoryChips"></div>
         <label class="wlLab" for="wlLetter">2045년의 나에게 <span class="wlSeal">선택</span></label>
         <div class="wlChips st" id="wlLetterChips"><button type="button" data-t="그분들 덕분에 지금 나는 ">고마움</button><button type="button" data-t="2045년에도 나는 ">다짐</button><button type="button" data-t="광복 100주년에 나는 ">미래 계획</button></div>
         <textarea id="wlLetter" maxlength="60" rows="3" placeholder="원하면 미래의 나에게 한마디 남겨 주세요"></textarea>
@@ -7652,8 +7728,8 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
         <p class="wlNote">쓰고 싶은 사람만 2045년의 나에게 상상 편지를 써 보세요. 게임을 닫으면 사라지는 편지예요.</p>
         <label class="wlLab">벽돌 색</label><div class="wlSw" id="wlSw"></div>
         <label class="wlLab">무늬</label><div class="wlMo" id="wlMo"></div>
-        <label class="wlLab" for="wlName">자동 생성한 가상 이름</label>
-        <input id="wlName" maxlength="10" autocomplete="off" readonly aria-label="자동 생성된 가상 이름">
+        <label class="wlLab">이번 시간 여행에서 사용한 이름</label>
+        <div id="wlName" class="wlNameCard empty" role="status">시간 여행을 마치면 통행증 이름으로 벽돌을 쌓을 수 있어요.</div>
         <button class="big" id="wlPut" type="button">벽돌 쌓기</button>
         <p class="wlNote" id="wlNote">이름·학교·전화번호·주소는 쓰지 마세요. 글은 다른 사람에게 보내지지 않아요.</p>
       </aside>
@@ -7662,9 +7738,12 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
   w.id = 'wallScreen'; w.hidden = true; $('app').appendChild(w);
   WALL_COLORS.forEach((c, i) => { const b = el('button', i === WALL.color ? 'on' : ''); b.type = 'button'; b.style.background = c; b.dataset.i = i; b.setAttribute('aria-label', '색 ' + (i + 1)); $('wlSw').appendChild(b); });
   WALL_MOTIFS.forEach((m, i) => { const b = el('button', i === WALL.motif ? 'on' : '', `${wallMotifSVG(i, true) || '<i></i>'}<span>${m}</span>`); b.type = 'button'; b.dataset.i = i; $('wlMo').appendChild(b); });
+  WALL_FEELINGS.forEach((item, i) => { const b = el('button', '', item.label); b.type = 'button'; b.dataset.i = i; b.setAttribute('aria-pressed', 'false'); $('wlFeelChips').appendChild(b); });
+  WALL_MEMORIES.forEach((item, i) => { const b = el('button', '', item.label); b.type = 'button'; b.dataset.i = i; b.setAttribute('aria-pressed', 'false'); $('wlMemoryChips').appendChild(b); });
   $('wlSw').onclick = e => { const b = e.target.closest('button'); if (!b) return; WALL.color = +b.dataset.i; [...$('wlSw').children].forEach(x => x.classList.toggle('on', x === b)); wallPrev(); sfx.click(); };
   $('wlMo').onclick = e => { const b = e.target.closest('button'); if (!b) return; WALL.motif = +b.dataset.i; [...$('wlMo').children].forEach(x => x.classList.toggle('on', x === b)); wallPrev(); sfx.click(); };
-  ['wlMsg', 'wlName'].forEach(id => $(id).addEventListener('input', wallPrev));
+  const choose = (box, key) => { $(box).onclick = e => { const b = e.target.closest('button'); if (!b) return; WALL[key] = +b.dataset.i; [...$(box).children].forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); }); wallPrev(); sfx.click(); }; };
+  choose('wlFeelChips', 'feeling'); choose('wlMemoryChips', 'memory');
   const EXS = { '그분들 덕분에 지금 나는 ': '그분들 덕분에 지금 나는 마음껏 우리말로 공부해.', '2045년에도 나는 ': '2045년에도 나는 태극기 다는 날을 지키고 있을 거야.', '광복 100주년에 나는 ': '광복 100주년에 나는 이 담벼락을 다시 열어 보고 싶어.' };
   const ENDS = { '그분들 덕분에 지금 나는 ': '', '2045년에도 나는 ': '를 지키고 있을 거야.', '광복 100주년에 나는 ': ' 하고 싶어.' };
   // '를/을'을 앞 글자 받침에 맞게 고쳐요(예: 날를 → 날을)
@@ -7678,7 +7757,7 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
   setInterval(() => { const e = $('wlLeft'); if (e) e.textContent = wallLeft(); }, 60000);
   $('wlPut').onclick = wallPut;
   $('wlHome').onclick = closeWall;
-  $('wlOpenMk').onclick = () => { const open = $('wallScreen').classList.toggle('mk'); $('wlOpenMk').textContent = open ? '담벼락 보기' : '벽돌 만들기'; };
+  $('wlOpenMk').onclick = wallToggleMaker;
   w.querySelector('.wlTabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; wallTab(b.dataset.r); };
   $('wlRoomGo').onclick = () => { const v = $('wlRoom').value.trim().slice(0, 20); if (!v) { toast('반 코드를 적어 주세요.', 1600); return; } WALL.room = v; try { PRIVACY_MEMORY.setItem('rb_room', v); } catch (e) {} wallTab('room'); };
   $('wlRoom').addEventListener('keydown', e => { if (e.key === 'Enter') $('wlRoomGo').click(); });
@@ -7692,8 +7771,27 @@ function wallLocal() { try { const q = JSON.parse(PRIVACY_MEMORY.getItem(wallLoc
   ($('btnMuseum') || $('btnPlay')).after(h);
   const f = el('button', 'pbtn alt dk', '내 기억을 미래에 남기기'); f.id = 'fWall'; f.onclick = () => openWall(); $('fAgain').after(f);
 })();
+function wallRecord() {
+  const feeling = WALL_FEELINGS[WALL.feeling], memory = WALL_MEMORIES[WALL.memory];
+  return feeling && memory ? `${feeling.label} · ${memory.sentence}` : '';
+}
+function wallResetChoices() {
+  WALL.feeling = WALL.memory = -1;
+  ['wlFeelChips', 'wlMemoryChips'].forEach(id => [...$(id).children].forEach(b => { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }));
+}
+function wallToggleMaker() {
+  const compact = innerWidth <= 820 || innerHeight <= 520;
+  if (compact) {
+    const open = $('wallScreen').classList.toggle('mk');
+    $('wlOpenMk').textContent = open ? '담벼락 보기' : '벽돌 만들기';
+  } else {
+    const wallOnly = $('wallScreen').classList.toggle('wallOnly');
+    $('wlOpenMk').textContent = wallOnly ? '벽돌 만들기' : '담벼락 크게 보기';
+    requestAnimationFrame(() => wallRender(false));
+  }
+}
 function wallPrev() {
-  const name = ($('wlName').value || '').trim() || '이름', msg = ($('wlMsg').value || '').trim() || '오늘 내가 기억할 한 가지';
+  const name = REG_LOCKED && state.team ? state.team : '시간 여행자', msg = wallRecord() || '마음과 기억할 장면을 골라 주세요';
   $('wlPrev').innerHTML = wallBrickHTML({ color: WALL.color, motif: WALL.motif, name, msg }, true);
 }
 function wallBrickHTML(b, big) {
@@ -7709,7 +7807,7 @@ function wallTab(r) {
 function closeWall() {
   if (WALL.busy) { toast('벽돌을 놓고 있어요. 잠시만 기다려 주세요.', 1800); return; }
   clearInterval(WALL.poll); WALL.rid = (WALL.rid || 0) + 1;
-  $('wallScreen').hidden = true; $('wallScreen').classList.remove('mk');
+  $('wallScreen').hidden = true; $('wallScreen').classList.remove('mk', 'wallOnly');
   if ($('modal')) closeModal();
   (WALL.returnTo || ['startScreen']).forEach(id => { if ($(id)) $(id).hidden = false; });
   state.mode = WALL.returnMode || 'orbit';
@@ -7725,8 +7823,12 @@ function openWall() {
   state.mode = 'orbit'; if (typeof MUSEUM !== 'undefined') MUSEUM.on = false;
   try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) {}
   $('wallScreen').hidden = false; $('wlLeft').textContent = wallLeft();
-  if (!$('wlName').value) $('wlName').value = REG_NAME || (REG_NAME = rollName());
+  const canMake = !!(REG_LOCKED && state.team);
+  $('wlName').textContent = canMake ? state.team : '시간 여행을 마치면 통행증 이름으로 벽돌을 쌓을 수 있어요.';
+  $('wlName').classList.toggle('empty', !canMake); $('wlPut').disabled = !canMake;
   $('wlRoom').value = WALL.room;
+  $('wallScreen').classList.remove('mk', 'wallOnly');
+  $('wlOpenMk').textContent = innerWidth <= 820 || innerHeight <= 520 ? '벽돌 만들기' : '담벼락 크게 보기';
   wallPrev(); wallTab('room');
   clearInterval(WALL.poll);
 }
@@ -7740,19 +7842,20 @@ function wallLoad(scroll, refresh=true) {
 
 function wallRender(scroll) {
   const W = $('wlWall');
+  const motifCycle = [1, 2, 0, 3, 4, 0, 5, 2, 1, 0, 4, 3, 5, 0];
   const automatic=Array.from({length:Math.min(CNT.total||0,360)},(_,i)=>{
     const n=Math.max(0,(CNT.total||0)-360)+i;
-    return {color:((n*17+3)%11)%4,motif:n%7===0?5:0};
+    return {color:((n*17+3)%11)%4,motif:motifCycle[(n*5+3)%motifCycle.length]};
   });
   const list = [...automatic,...WALL.bricks];
-  const per = innerWidth < 700 ? 6 : 9;
+  const wrapWidth = Math.max(320, $('wlWrap').clientWidth - (innerWidth <= 820 ? 24 : 48));
+  const per = Math.max(innerWidth < 700 ? 4 : 6, Math.min(14, Math.floor(wrapWidth / (innerWidth < 700 ? 82 : 108))));
   const rows = []; for (let i = 0; i < list.length; i += per) rows.push(list.slice(i, i + per));
-  const minRows = Math.max(rows.length + 1, innerHeight < 500 ? 4 : 6);
   let h = '';
-  for (let r = minRows - 1; r >= 0; r--) {
-    const row = rows[r] || [];
+  for (let r = rows.length - 1; r >= 0; r--) {
+    const row = rows[r];
     h += `<div class="wr${r % 2 ? ' odd' : ''}">`;
-    for (let k = 0; k < per; k++) { const b = row[k]; h += b ? wallBrickHTML(b).replace('class="wb', `class="wb${WALL.mine.has(b.id || b.lid) ? ' mine' : ''}`) : '<div class="wb ghost"></div>'; }
+    for (let k = 0; k < per; k++) { const b = row[k]; h += b ? wallBrickHTML(b).replace('class="wb', `class="wb${WALL.mine.has(b.id || b.lid) ? ' mine' : ''}`) : '<div class="wb spacer" aria-hidden="true"></div>'; }
     h += '</div>';
   }
   W.innerHTML = h;
@@ -7767,7 +7870,7 @@ function wallShow(node) {
   const brick = WALL.bricks.find(item => String(item.id) === node.dataset.id); if (!brick) return;
   openModal(body => {
     const name=el('div','eyebrow');name.textContent=brick.name;body.appendChild(name);
-    body.appendChild(el('h2','','오늘의 기록'));
+    body.appendChild(el('h2','','오늘의 마음과 기억'));
     const msg=el('p','hand wlMsgBig');msg.textContent=brick.msg;body.appendChild(msg);
     if(brick.letter){body.appendChild(el('div','glab','2045년의 나에게 · 상상 편지'));const letter=el('p','hand wlLetterOpen');letter.textContent=brick.letter;body.appendChild(letter);}
     body.appendChild(el('p','wlNote','이 글은 이번 활동 화면에서만 보여요. 새로고침하거나 페이지를 떠나면 사라져요.'));
@@ -7777,17 +7880,21 @@ function wallShow(node) {
 
 function wallPut() {
   if(WALL.busy)return;
-  const msg=$('wlMsg').value.trim(),letter=$('wlLetter').value.trim();
-  if(!msg){toast('오늘 기억할 한 가지를 적어 주세요.',1800);$('wlMsg').focus();return;}
-  if(!privacyValidate(msg,$('wlMsg')) || !privacyValidate(letter,$('wlLetter')))return;
-  if(wallBad(msg)||wallBad(letter)){toast('고운 말로 다시 적어 주세요.',2000);return;}
-  const name=REG_NAME || (REG_NAME=rollName());$('wlName').value=name;
+  if(!REG_LOCKED || !state.team){toast('시간 여행을 시작해 통행증 이름을 먼저 확정해 주세요.',2200);return;}
+  if(WALL.feeling<0){toast('오늘 느낀 마음을 하나 골라 주세요.',1800);$('wlFeelChips').querySelector('button').focus();return;}
+  if(WALL.memory<0){toast('기억하고 싶은 장면을 하나 골라 주세요.',1800);$('wlMemoryChips').querySelector('button').focus();return;}
+  const msg=wallRecord(),letter=$('wlLetter').value.trim();
+  if(!privacyValidate(letter,$('wlLetter')))return;
+  if(wallBad(letter)){toast('고운 말로 다시 적어 주세요.',2000);return;}
+  const name=state.team;
   const brick={id:'activity-'+(WALL.nextId=(WALL.nextId||0)+1),name,msg,letter,color:WALL.color,motif:WALL.motif};
   WALL.busy=true;$('wlPut').disabled=true;
   wallSealAnim(brick).then(()=>{
     WALL.bricks.push(brick);WALL.mine.add(brick.id);WALL.busy=false;$('wlPut').disabled=false;
     $('wlDone').hidden=false;$('wlDone').textContent='민승이의 기록이 당신에게 닿았듯, 오늘의 마음도 미래를 향해 이어집니다.';
-    $('wlMsg').value='';$('wlLetter').value='';$('wlEx').textContent='';wallPrev();$('wallScreen').classList.remove('mk');$('wlOpenMk').textContent='벽돌 만들기';
+    $('wlLetter').value='';$('wlEx').textContent='';wallResetChoices();wallPrev();
+    if(innerWidth<=820||innerHeight<=520){$('wallScreen').classList.remove('mk');$('wlOpenMk').textContent='벽돌 만들기';}
+    else{$('wallScreen').classList.add('wallOnly');$('wlOpenMk').textContent='벽돌 만들기';}
     wallLoad(true);sfx.ok();toast('이번 활동의 담벼락에 놓았어요. 새로고침하면 사라져요.',2600);
   });
 }
@@ -8211,24 +8318,42 @@ const GLARE = (() => {
   [[2, 5], [5, 1], [7, 6], [9, 3], [9, 8]].forEach(([r, c]) => { const L = new THREE.PointLight(0xff9a40, 1.3, 7, 1.6); L.position.set(cellX(c), TH - 0.5, cellZ(r)); scene.add(L); });
   // 실제 방공호 안 재현물: 흰 석고상(굴 파는 노동자 · 감시하는 일본 순사), 청동상(피난한 사람들), 벽에 비친 푸른 글씨
   const plaster = new THREE.MeshLambertMaterial({ color: 0xe6dfd2 }), bronze = new THREE.MeshPhongMaterial({ color: 0x7a5530, specular: 0x6a4a2a, shininess: 30 });
-  const statue = (opt, mat, x, z, ry, pose) => { const f = makeFigure(opt); f.traverse(o => { if (o.isMesh) o.material = mat; }); f.position.set(x, 0, z); f.rotation.y = ry; scene.add(f);
-    const A = f.userData.arms, Lg = f.userData.legs;
-    if (pose === 'dig') { A.forEach(a => { a.rotation.x = -2.4; }); f.rotation.x = 0.0; const pk = new THREE.Group(); pk.position.set(0, 2.1, 0.25); f.add(pk); const h = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.9, 6), mat); h.rotation.x = 0.9; pk.add(h); const hd = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.05, 0.05), mat); hd.position.set(0, 0.36, 0.3); pk.add(hd); }
-    if (pose === 'carry') { A.forEach(a => { a.rotation.x = -0.9; if (a.userData.elbow) a.userData.elbow.rotation.x = -0.6; }); f.rotation.x = 0.35; f.position.y = -0.12; const rk = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18), new THREE.MeshLambertMaterial({ color: 0x9a8a70 })); rk.position.set(0, 0.95, 0.42); f.add(rk); }
-    if (pose === 'point') { A[1].rotation.x = -1.45; }
-    if (pose === 'sit') { Lg.forEach(l => { l.rotation.x = -1.45; if (l.userData.knee) l.userData.knee.rotation.x = 1.5; }); f.position.y = -0.42; A.forEach(a => a.rotation.x = -0.5); }
-    if (pose === 'crouch') { Lg.forEach(l => { l.rotation.x = -1.9; if (l.userData.knee) l.userData.knee.rotation.x = 2.3; }); f.position.y = -0.62; f.rotation.x = 0.25; A.forEach(a => a.rotation.x = -0.8); }
-    return f; };
+  // 일반 NPC 관절을 돌려 놓으면 팔·다리가 몸에서 어긋나므로, 조형물은 고정 자세 전용 골격으로 만들어요.
+  const statue = (opt, mat, x, z, ry, pose) => {
+    const f = new THREE.Group(), Y = new THREE.Vector3(0, 1, 0);
+    const V = a => new THREE.Vector3(a[0], a[1], a[2]);
+    const joint = (p, r = 0.075) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 9), mat); m.position.copy(V(p)); f.add(m); return m; };
+    const bone = (a, b, r = 0.06, material = mat) => { const A = V(a), B = V(b), d = B.clone().sub(A), m = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.88, r, d.length(), 10), material); m.position.copy(A).add(B).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(Y, d.clone().normalize()); f.add(m); return m; };
+    const P = {
+      dig: { hip:[0,.72,0], chest:[0,1.13,.2], head:[0,1.48,.39], sh:[[-.18,1.24,.2],[.18,1.24,.2]], el:[[-.27,1.03,.5],[.2,1.02,.56]], hand:[[-.15,.88,.72],[.18,.91,.71]], knee:[[-.2,.43,.28],[.18,.44,-.03]], foot:[[-.25,.06,.56],[.2,.06,.18]] },
+      carry: { hip:[0,.69,0], chest:[0,1.08,.25], head:[0,1.43,.43], sh:[[-.18,1.19,.24],[.18,1.19,.24]], el:[[-.26,.91,.5],[.26,.91,.5]], hand:[[-.18,.75,.72],[.18,.75,.72]], knee:[[-.18,.4,.24],[.2,.4,-.02]], foot:[[-.2,.06,.47],[.23,.06,.2]] },
+      point: { hip:[0,.9,0], chest:[0,1.28,0], head:[0,1.65,.02], sh:[[-.2,1.38,0],[.2,1.38,0]], el:[[-.23,1.05,.02],[.45,1.34,.15]], hand:[[-.2,.82,.08],[.78,1.31,.24]], knee:[[-.1,.48,0],[.1,.48,0]], foot:[[-.11,.06,.09],[.11,.06,.09]] },
+      sit: { hip:[0,.48,0], chest:[0,.88,.02], head:[0,1.24,.04], sh:[[-.18,.98,.02],[.18,.98,.02]], el:[[-.25,.75,.25],[.25,.75,.25]], hand:[[-.12,.58,.43],[.12,.58,.43]], knee:[[-.18,.45,.55],[.18,.45,.55]], foot:[[-.2,.06,.62],[.2,.06,.62]] },
+      crouch: { hip:[0,.43,.05], chest:[0,.78,.27], head:[0,1.08,.45], sh:[[-.18,.88,.26],[.18,.88,.26]], el:[[-.28,.68,.48],[.28,.68,.48]], hand:[[-.12,.5,.63],[.12,.5,.63]], knee:[[-.24,.32,.45],[.24,.32,.45]], foot:[[-.28,.06,.67],[.28,.06,.67]] }
+    }[pose];
+    bone(P.hip, P.chest, .17); joint(P.hip, .13); joint(P.chest, .16);
+    bone(P.chest, [P.head[0], P.head[1] - .18, P.head[2]], .045); const hd = joint(P.head, .16); hd.scale.set(.82, 1.05, .88);
+    for (let s = 0; s < 2; s++) { bone(P.sh[s], P.el[s], .055); bone(P.el[s], P.hand[s], .047); joint(P.el[s], .058); joint(P.hand[s], .052); bone([P.hip[0] + (s ? .09 : -.09), P.hip[1], P.hip[2]], P.knee[s], .073); bone(P.knee[s], P.foot[s], .062); joint(P.knee[s], .07); const ft = bone(P.foot[s], [P.foot[s][0], P.foot[s][1], P.foot[s][2] + .18], .065); ft.scale.x = 1.15; }
+    if (pose === 'dig') { const tool = new THREE.MeshLambertMaterial({ color: 0x77736b }); bone([-.16,.88,.72],[.22,1.75,.9],.022,tool); bone([-.08,1.72,.88],[.55,1.82,.93],.035,tool); }
+    if (pose === 'carry') { const basket = new THREE.Mesh(new THREE.CylinderGeometry(.24,.19,.22,12), new THREE.MeshLambertMaterial({ color: 0x88745c })); basket.position.set(0,.68,.73); basket.rotation.x = Math.PI / 2; f.add(basket); for(let i=0;i<4;i++){ const r=new THREE.Mesh(new THREE.DodecahedronGeometry(.08+i*.008),new THREE.MeshLambertMaterial({color:0x82745f})); r.position.set((i-1.5)*.09,.78,.72+(i%2)*.07); f.add(r); } }
+    if (pose === 'point' && opt.hat) { const cap = new THREE.Mesh(new THREE.CylinderGeometry(.17,.18,.09,16), mat); cap.position.set(P.head[0],P.head[1]+.13,P.head[2]); f.add(cap); const brim = new THREE.Mesh(new THREE.BoxGeometry(.28,.035,.18),mat); brim.position.set(P.head[0],P.head[1]+.1,P.head[2]+.12); f.add(brim); }
+    if (pose === 'sit' || pose === 'crouch') { const wrap = new THREE.Mesh(new THREE.TorusGeometry(.31,.045,8,20,Math.PI),mat); wrap.position.set(0,.7,.34); wrap.rotation.z = Math.PI; f.add(wrap); }
+    f.position.set(x, 0, z); f.rotation.y = ry; scene.add(f); return f;
+  };
   const worker = { top: 0, bottom: 0 }, guard = { top: 0, bottom: 0, hat: 'cap', belt: true, buttons: true };
+  const bunkerStatues = [];
+  const addStatue = (...args) => { const s = statue(...args); bunkerStatues.push(s); return s; };
   // 노동 현장 ①(입구 쪽 굽은 길) · ②(오른쪽 깊은 곳)
-  statue(worker, plaster, cellX(1) - 0.3, cellZ(7) + 0.2, 0.6, 'dig'); statue(worker, plaster, cellX(1) + 0.4, cellZ(6) + 0.6, -0.4, 'carry');
-  statue(guard, plaster, cellX(2) + 0.5, cellZ(7) - 0.5, -1.9, 'point'); statue(worker, plaster, cellX(3) - 0.2, cellZ(7) + 0.4, 2.4, 'dig');
-  statue(worker, plaster, cellX(9) + 0.3, cellZ(5) + 0.3, -0.5, 'dig'); statue(worker, plaster, cellX(8), cellZ(5) - 0.4, 0.8, 'carry'); statue(guard, plaster, cellX(9) - 0.5, cellZ(6) + 0.3, 2.6, 'point');
-  const rubble = new THREE.MeshLambertMaterial({ color: 0x8a7a62 });
-  [[7, 1], [7, 3], [5, 9], [5, 8]].forEach(([r, c], i) => { const R = rng(400 + i); for (let k = 0; k < 9; k++) { const s = new THREE.Mesh(new THREE.DodecahedronGeometry(0.08 + R() * 0.12), rubble); s.position.set(cellX(c) + (R() - 0.5) * 1.6, 0.06, cellZ(r) + (R() - 0.5) * 1.6); s.rotation.set(R() * 3, R() * 3, 0); scene.add(s); } });
+  addStatue(worker, plaster, cellX(1) + 0.35, cellZ(7) + 0.25, -0.15, 'dig');
+  addStatue(worker, plaster, cellX(2), cellZ(7) - 0.2, 0.35, 'carry');
+  addStatue(guard, plaster, cellX(3) - 0.2, cellZ(7) + 0.72, -1.55, 'point');
+  addStatue(worker, plaster, cellX(9) + 0.3, cellZ(5) + 0.3, -0.5, 'dig'); addStatue(worker, plaster, cellX(8), cellZ(5) - 0.4, 0.8, 'carry'); addStatue(guard, plaster, cellX(9) - 0.5, cellZ(6) + 0.3, 2.6, 'point');
+  const exhibitRubble = new THREE.MeshLambertMaterial({ color: 0x8a7a62 });
+  [[7, 1], [7, 3], [5, 9], [5, 8]].forEach(([r, c], i) => { const R = rng(400 + i); for (let k = 0; k < 9; k++) { const s = new THREE.Mesh(new THREE.DodecahedronGeometry(0.08 + R() * 0.12), exhibitRubble); s.position.set(cellX(c) + (R() - 0.5) * 1.6, 0.06, cellZ(r) + (R() - 0.5) * 1.6); s.rotation.set(R() * 3, R() * 3, 0); scene.add(s); } });
   // 피난 체험(입구 왼쪽 방): 웅크리고 앉아 공습이 끝나기를 기다리는 청동상
-  statue({ top: 0, bottom: 0 }, bronze, cellX(1), cellZ(2) + 0.5, 0.4, 'sit'); statue({ top: 0, bottom: 0 }, bronze, cellX(2), cellZ(2) - 0.5, -2.6, 'crouch');
-  statue({ top: 0, bottom: 0, coat: true }, bronze, cellX(3), cellZ(2) + 0.6, 3.0, 'sit'); statue({ top: 0, bottom: 0 }, bronze, cellX(1) + 0.6, cellZ(3), 1.2, 'crouch');
+  addStatue({ top: 0, bottom: 0 }, bronze, cellX(1), cellZ(2) + 0.5, 0.4, 'sit'); addStatue({ top: 0, bottom: 0 }, bronze, cellX(2), cellZ(2) - 0.5, -2.6, 'crouch');
+  addStatue({ top: 0, bottom: 0, coat: true }, bronze, cellX(3), cellZ(2) + 0.6, 3.0, 'sit'); addStatue({ top: 0, bottom: 0 }, bronze, cellX(1) + 0.6, cellZ(3), 1.2, 'crouch');
+  window.MX_BUNKER_STATUES = bunkerStatues;
   [[1, 2, 0.5], [3, 2, 0.6]].forEach(([c, r, dz]) => dk(0.5, 0.36, 0.4, new THREE.MeshLambertMaterial({ color: 0x6a5a40 }), cellX(c) - 0.2, 0.18, cellZ(r) + dz - 0.45));
   // 벽에 비친 푸른 글씨(미디어아트)
   const blueT = canvasTex(256, 256, (g, w, h) => { g.clearRect(0, 0, w, h); const gr = g.createRadialGradient(128, 128, 10, 128, 128, 128); gr.addColorStop(0, 'rgba(90,160,255,.25)'); gr.addColorStop(1, 'rgba(90,160,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -8245,6 +8370,10 @@ const GLARE = (() => {
   const sign = textPlane([{ t: '방공호 피난 체험', size: 0.12, bold: true }, { t: '가상 체험 · 실제 전시 구조와 다를 수 있어요', size: 0.06 }], 1.0, 0.4, { bg: '#1d1d20', fg: '#f1ece2', fg2: '#c9a157' });
   sign.position.set(cellX(5) - 1.1, 1.6, cellZ(2) + 1.15); scene.add(sign);
   regSince(N0, ['present']);
+  // 1944년 탈출 퍼즐에서 사용하던 물건은 2026 관람 공간에 남기지 않아요.
+  // 현재 전시의 곡괭이·돌은 위 조형물에 붙은 고정 소품으로만 보여요.
+  regEra(batMeshes, ['y1944']);
+  regEra(rubble, ['y1944'], [rubbleCol]);
   // 1944년 수수께끼 글자와 '출구' 팻말은 지금은 보이지 않아요
   if (typeof letterMeshes !== 'undefined') regEra(letterMeshes, ['y1919', 'y1944']);
   if (exitDoor) exitDoor.children.forEach(o => { if (o.geometry && o.geometry.type === 'PlaneGeometry') regEra(o, ['y1919', 'y1944']); });
@@ -8649,18 +8778,20 @@ function goHomeNow() { try { if (!MUSEUM.on && typeof saveGame === 'function' &&
 // PC 멈춤 메뉴: 오른쪽 위 기능을 한곳에
 function openPause() {
   const run = id => () => { closeModal(); setTimeout(() => { const b = $(id); if (b) b.click(); }, 60); };
-  openModal(body => { head(body, MUSEUM.on ? '2026 역사관 관람' : '1919년 봄 · 목포부청', '잠깐 멈춤');
+  openModal(body => { head(body, '메뉴', MUSEUM.on ? '2026 역사관 관람' : '1919년 봄 · 목포부청');
     const g = el('div', 'pauseMenu');
     const B = (t, k, fn, cls) => { const b = el('button', 'pbtn ' + (cls || 'alt'), `<span>${t}</span>${k ? `<kbd>${k}</kbd>` : ''}`); b.type = 'button'; b.onclick = fn; g.appendChild(b); return b; };
     B('계속하기', 'Esc', closeModal, 'go');
-    if (!MUSEUM.on) B('수첩', 'N', run('btnNote')); B('힌트', 'H', run('btnHint'));
+    if (MUSEUM.on) { B('관람 안내', 'N', run('btnNote')); B('다음 장소', 'H', run('btnHint')); }
+    else { B('수첩', 'N', run('btnNote')); B('힌트', 'H', run('btnHint')); }
     B($('mapBox') && getComputedStyle($('mapBox')).display !== 'none' ? '지도 끄기' : '지도 켜기', 'M', () => { $('btnMap').click(); closeModal(); });
     B(typeof sndOn !== 'undefined' && !sndOn ? '소리 켜기' : '소리 끄기', '', () => { $('btnSnd').click(); closeModal(); });
-    B('전체 화면', 'F', () => { $('btnFS').click(); closeModal(); });
-    B('설정', '', run('btnGear'));
+    B(FS.on() ? '전체 화면 나가기' : '전체 화면으로', 'F', () => { $('btnFS').click(); closeModal(); });
+    B('화면·조작 설정', '', () => { closeModal(); setTimeout(settingsModal, 60); });
     B('처음 화면으로', '', goHomeNow, '');
     body.appendChild(g); });
 }
+$('btnGear').onclick = e => { e.stopPropagation(); if (document.pointerLockElement) document.exitPointerLock(); openPause(); };
 $('btnHome').onclick = e => { e.stopPropagation(); if (document.pointerLockElement) document.exitPointerLock(); askHome(false); };
 // PC: Esc를 누르면(마우스 잠금이 풀리면) 종료할지 물어봐요. 게임이 스스로 잠금을 풀 때는 묻지 않아요
 {
@@ -8968,7 +9099,9 @@ if (window.MIRROR && MIRROR.mg) {
 }
 
 
-/* 첫 탐색 안내: 이동 → 둘러보기 → 첫 분필 조사. 기존 퍼즐 흐름은 그대로 사용해요. */
+/* 첫 탐색 안내: 이동 → 둘러보기 → 바로 옆 인물과 대화. */
+let FIRST_PRACTICE_TALKED = false;
+function markFirstPracticeTalk() { FIRST_PRACTICE_TALKED = true; }
 {
   const panel = document.createElement('aside');
   panel.id = 'firstSteps'; panel.hidden = true;
@@ -8993,6 +9126,7 @@ if (window.MIRROR && MIRROR.mg) {
       progress.innerHTML = '분필 표시 ' + FX.bricks.size + '/4 · ' + [0,1,2,3].map(i =>
         '<span class="' + (FX.bricks.has(i) ? 'found' : '') + '">' + '①②③④'[i] + (FX.bricks.has(i) ? ' 발견' : ' 미발견') + '</span>').join(' · ');
     }
+    if (!finished && step === 2 && FIRST_PRACTICE_TALKED) { finish(); toast('조작 연습을 마쳤어요. 이제 첫 번째 목표를 따라가 보세요!', 2600); }
     if (finished || !active || state.modal || state.fading || FX.scope || (typeof vn !== 'undefined' && vn.on)) { panel.hidden = true; return; }
     // 이어하기와 이미 진행한 게임에는 첫 안내를 다시 띄우지 않아요.
     if (state.stage !== 1 || FX.bricks.size > 0) { finish(); return; }
@@ -9007,11 +9141,11 @@ if (window.MIRROR && MIRROR.mg) {
       const instructions = coarse ? [
         '왼쪽 아래 조이스틱을 밀어 몇 걸음 걸어 보세요.',
         '오른쪽 게임 화면을 손가락으로 끌어 주위를 둘러보세요.',
-        '건물 바깥벽의 분필 표시를 찾아 가까이 간 뒤 조사 버튼을 누르세요.'
+        '바로 옆 짐꾼 아저씨에게 가까이 가서 조사 버튼으로 말을 걸어 보세요.'
       ] : [
         'W·A·S·D 키로 몇 걸음 걸어 보세요.',
         '게임 화면에서 마우스를 움직여 주위를 둘러보세요. 시점이 움직이지 않으면 화면을 클릭하거나 드래그하세요.',
-        '건물 바깥벽의 분필 표시를 찾아 가까이 간 뒤 클릭하거나 E 키로 조사하세요.'
+        '바로 옆 짐꾼 아저씨에게 가까이 가서 클릭하거나 E 키로 말을 걸어 보세요.'
       ];
       message.innerHTML = '<strong>조작 연습 ' + (step+1) + '/3</strong><br>' + instructions[step];
     }
