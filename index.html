@@ -1748,7 +1748,7 @@ function buildProps() {
   box(0.08, 0.9, 0.08, M.brass, 4.0, 0.45, -5.6, rope); box(0.08, 0.9, 0.08, M.brass, 4.0, 0.45, -4.6, rope);
   const rp = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.0, 6), M.red); rp.rotation.x = Math.PI / 2; rp.position.set(4.0, 0.8, -5.1); add(rp, rope);
   const stSign = textPlane([{ t: '2층 계단', size: 0.14, bold: true }], 0.8, 0.35);
-  stSign.position.set(2.95, 1.9, -2.2); stSign.rotation.y = -Math.PI / 2; add(stSign);
+  stSign.position.set(1.72, 1.15, -3.7); stSign.rotation.y = -Math.PI / 2; add(stSign); // 계단 옆판(홀 쪽)에 — 예전 자리는 계단 속에 묻혀 있었어요
   doors.rope = rope;
   makeInteract('stairsUp', st, new THREE.Vector3(scx, 0.8, S1.z0 - 0.4));
   // 2층: 계단 내려가기(난간 너머)
@@ -4199,6 +4199,7 @@ const markMeshes = MARKS.map(([t, x, y, z, ry], i) => {
   m.material.transparent = true; m.material.opacity = 0; m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); regPick(m, 'mark' + i);
   return m;
 });
+regEra(markMeshes, ['y1919', 'y1944']); setEra(curEra); // 벽 글씨는 그 시대에만(현재 전시실 벽에서 눌리지 않게)
 function inWestRoom() { return player.lv === 1 && player.x < -3 && player.x > -10 && player.z > -6 && player.z < 6; }
 TICK.push(() => {
   const on = FX.candle && state.mode === 'play' && inWestRoom() && !state.solved[3];
