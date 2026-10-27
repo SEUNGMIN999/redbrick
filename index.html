@@ -30,6 +30,12 @@ addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 @font-face{font-family:'Gaegu';font-style:normal;font-weight:400;src:url('assets/Gaegu-Regular.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'Gaegu';font-style:normal;font-weight:700;src:url('assets/Gaegu-Bold.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'Nanum Pen Script';font-style:normal;font-weight:400;src:url('assets/NanumPenScript-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:400;src:url('assets/Pretendard-Regular.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:600;src:url('assets/Pretendard-SemiBold.woff2') format('woff2');font-display:swap}
+@font-face{font-family:'Pretendard';font-style:normal;font-weight:700;src:url('assets/Pretendard-Bold.woff2') format('woff2');font-display:swap}
+#startScreen h1,.fEmb,.gMini,.bootTxt,.hand{font-family:var(--f-serif)}
+.hand{font-family:var(--f-hand)}
+.eyebrow,.vnEra,.bhKick{letter-spacing:.04em!important}
 .privacyNote{font-size:12px;line-height:1.7;color:#f3ead6;max-width:650px;margin-top:12px}
 
 /* 첫 로딩: 붉은 벽돌 쌓기 */
@@ -42,7 +48,7 @@ addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 .bootRow i:nth-child(3n){background:#9a3e29}.bootRow i:nth-child(4n+1){background:#b4513a}
 @keyframes brickIn{0%{opacity:0;transform:translateY(-40px)}6%{opacity:1;transform:none}86%{opacity:1;transform:none}94%,100%{opacity:0;transform:none}}
 .bootBase{width:150px;height:2px;background:linear-gradient(90deg,transparent,rgba(209,170,94,.6),transparent)}
-.bootTxt{font:400 15px/1.4 "Gowun Batang",serif;color:rgba(236,226,204,.78);letter-spacing:.12em;white-space:nowrap}
+.bootTxt{font:400 15px/1.4 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:rgba(236,226,204,.78);letter-spacing:.12em;white-space:nowrap}
 .bootTxt b{display:block;text-align:center;font-size:12px;letter-spacing:.3em;color:#d1aa5e;font-weight:700;margin-bottom:6px}
 @media (prefers-reduced-motion:reduce){.bootRow i{animation:none;opacity:1}}
 /* 레이아웃: 화면 전체 3D 캔버스 + 가장자리에 붙는 수첩/HUD, 퍼즐은 가운데 종이 카드 */
@@ -51,8 +57,8 @@ addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
   color-scheme: dark;
   --ink:#16120f; --ink2:#241d18; --paper:#efe4cc; --paper2:#e2d3b2;
   --brick:#a8462f; --lime:#ece2cc; --brass:#d1aa5e; --sea:#3d6a78;
-  --text:#2a211a; --muted:#7a6a58; --ok:#4e7d4a; --bad:#a8462f;
-  --f-display:"Gowun Batang","Noto Serif KR","Batang",serif;
+  --text:#2a211a; --muted:#5a4b3c; --ok:#4e7d4a; --bad:#a8462f;
+  --f-display:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --f-serif:"Gowun Batang","Noto Serif KR",serif;
   --f-hand:"Nanum Pen Script","Gowun Batang",cursive;
 }
 html,body{height:100%}
@@ -477,13 +483,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .brief::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--brick),#7a2a1a);border-radius:6px 0 0 6px}
 .bhead .eyebrow{display:flex;align-items:center;gap:10px;font-size:12.5px;letter-spacing:.22em}
 .bhead .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.6}
-.bstep{font-family:"Gowun Batang",serif;font-size:13px;letter-spacing:.1em}
-.brief h2{font-family:"Gowun Batang",serif;font-size:27px;font-weight:700;letter-spacing:.02em;margin:8px 0 14px;padding-bottom:12px;border-bottom:1px solid rgba(120,90,50,.22)}
+.bstep{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:13px;letter-spacing:.1em}
+.brief h2{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:27px;font-weight:700;letter-spacing:.02em;margin:8px 0 14px;padding-bottom:12px;border-bottom:1px solid rgba(120,90,50,.22)}
 #bBody{min-height:0;gap:14px}
 .it:not(.on){display:none}
 .it.on{animation:itIn .5s cubic-bezier(.2,.9,.3,1) both}
 @keyframes itIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#bBody .it:first-child p{font-family:"Gowun Batang",serif;font-size:18px;line-height:1.8;word-break:keep-all;-webkit-text-stroke:0}
+#bBody .it:first-child p{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:18px;line-height:1.8;word-break:keep-all;-webkit-text-stroke:0}
 .glab{display:flex;align-items:center;gap:8px;letter-spacing:.2em}
 .glab::after{content:"";flex:1;height:1px;background:rgba(168,70,47,.22)}
 .gtile{border-radius:8px;border-color:rgba(168,70,47,.18);background:rgba(255,252,243,.75);box-shadow:0 1px 0 rgba(120,90,50,.08)}
@@ -558,14 +564,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .mxPhoto.flash{filter:brightness(2.2)}
 .mxPh{flex:none;width:96px;aspect-ratio:3/4;background:#4a3e34;border:4px solid #f1ece2;box-shadow:0 4px 10px rgba(0,0,0,.4);transform:rotate(-2deg)}
 .mxPh img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) sepia(.7) contrast(1.08)}
-.mxPc b{display:block;font-family:"Gowun Batang",serif;font-size:22px;letter-spacing:.12em}.mxPc span{display:block;font-size:13px;color:rgba(241,236,226,.7);margin:4px 0}.mxPc em{font-style:normal;font-weight:700;color:#ffd98a;font-size:17px;letter-spacing:.08em}
+.mxPc b{display:block;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:22px;letter-spacing:.12em}.mxPc span{display:block;font-size:13px;color:rgba(241,236,226,.7);margin:4px 0}.mxPc em{font-style:normal;font-weight:700;color:#ffd98a;font-size:17px;letter-spacing:.08em}
 .mxArts{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:8px}
 .mxArt{background:#f3ece0;border:1px solid #d6c39a;border-radius:8px;padding:8px;text-align:center;opacity:.55}
 .mxArt.got{opacity:1;background:#fffaf0;border-color:#c9a157}
 .mxArt .im{height:70px;display:grid;place-items:center}.mxArt img{max-width:100%;max-height:70px;object-fit:contain}
 .mxArt:not(.got) img{filter:grayscale(1) brightness(.7)}
 .mxArt b{display:block;font-size:13.5px;margin-top:4px}.mxArt span{font-size:11.5px;color:#7a6a50}
-.mxCert{position:relative;background:#f3e6c4;border:3px double #7a2a1a;padding:16px 20px;font-family:"Gowun Batang",serif;text-align:center}
+.mxCert{position:relative;background:#f3e6c4;border:3px double #7a2a1a;padding:16px 20px;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;text-align:center}
 .mxCt{font-weight:700;font-size:20px;letter-spacing:.3em;color:#6b2316}.mxCn{font-size:26px;font-weight:700;letter-spacing:.2em;margin:8px 0}
 .mxCert p{font-size:14.5px;line-height:1.7;word-break:keep-all;margin:6px 0 10px}
 .mxSt{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}.mxSt i{width:34px;height:34px;border-radius:50%;border:2px solid rgba(200,53,42,.85);box-shadow:inset 0 0 0 3px rgba(200,53,42,.18);display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:700;color:rgba(200,53,42,.9);transform:rotate(-12deg)}
@@ -579,7 +585,7 @@ body.museum #timer{display:none}
 #wallScreen[hidden]{display:none}
 #wallScreen>*{margin:0}
 .wlTop{flex:none;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 18px;background:rgba(15,12,10,.55);border-bottom:1px solid rgba(209,170,94,.3)}
-.wlTt h2{margin:0;font-family:"Gowun Batang",serif;font-size:24px;color:#f3ead6;letter-spacing:.06em;white-space:nowrap}
+.wlTt h2{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:24px;color:#f3ead6;letter-spacing:.06em;white-space:nowrap}
 .wlK{display:block;font-size:12px;letter-spacing:.24em;color:#d1aa5e;font-weight:700;white-space:nowrap}
 .wlTabs{display:flex;background:rgba(0,0,0,.3);border-radius:999px;padding:3px}
 .wlTabs button{border:0;background:none;color:rgba(236,226,204,.75);font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;white-space:nowrap}
@@ -591,7 +597,7 @@ body.museum #timer{display:none}
 #wallScreen.all .wlRoom{opacity:.55}
 .wlCnt{display:flex;align-items:baseline;gap:4px;margin-left:auto;white-space:nowrap}
 .wlCnt b{font-size:24px;color:#ffd98a;font-variant-numeric:tabular-nums}.wlCnt span{font-size:13px}
-.wlCnt em{font-style:normal;font-size:12px;color:rgba(236,226,204,.7);margin-left:10px;white-space:normal;max-width:260px;line-height:1.3}
+.wlCnt em{font-style:normal;font-size:12px;color:rgba(236,226,204,.7);margin-left:10px;white-space:nowrap;line-height:1.4;align-self:center}
 .wlHome{border:1px solid rgba(236,226,204,.4);background:transparent;color:#f3ead6;border-radius:6px;padding:7px 12px;font-size:13.5px;white-space:nowrap}
 #wlDone{position:absolute;top:14px;left:16px;right:16px;padding:12px;background:rgba(20,25,33,.9);color:#f3ead6;border:1px solid #d1aa5e;border-radius:8px;z-index:1;line-height:1.6}
 .wlBody{flex:1;min-height:0;display:flex}
@@ -606,7 +612,7 @@ body.museum #timer{display:none}
 .wb::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.08),transparent 40%),repeating-linear-gradient(90deg,rgba(0,0,0,.04) 0 2px,transparent 2px 7px);pointer-events:none}
 .wb.spacer{visibility:hidden;pointer-events:none;box-shadow:none}
 .wb .wm{flex:none;width:22px;height:22px}.wb .wm svg{width:100%;height:100%;display:block}
-.wb .wn{font-family:"Gowun Batang",serif;font-weight:700;font-size:14px;color:#f6ead2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em}
+.wb .wn{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:700;font-size:14px;color:#f6ead2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em}
 .wb.lt .wn{color:#5a2a1a}
 .wb.mine{outline:2px solid #ffd98a;outline-offset:1px}
 .wb.drop{animation:wbDrop .8s cubic-bezier(.3,1.4,.5,1)}
@@ -619,7 +625,7 @@ body.museum #timer{display:none}
 .wlPrev{padding:10px 0 4px}
 .wb.big{height:auto;min-height:74px;flex-direction:column;gap:2px;padding:8px 10px;flex:none}
 .wb.big .wm{width:24px;height:24px}.wb.big .wn{font-size:16px}
-.wb .wseal{position:absolute;right:3px;top:2px;font:700 8.5px/1 "Gowun Batang",serif;color:#ffd98a;border:1px solid rgba(255,217,138,.7);border-radius:2px;padding:1px 2px;letter-spacing:.04em;z-index:1;opacity:.85}
+.wb .wseal{position:absolute;right:3px;top:2px;font:700 8.5px/1 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#ffd98a;border:1px solid rgba(255,217,138,.7);border-radius:2px;padding:1px 2px;letter-spacing:.04em;z-index:1;opacity:.85}
 .wb.lt .wseal{color:#7a2a1a;border-color:rgba(122,42,26,.5)}
 .wlChips{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 2px}.wlChips button{font:inherit;font-size:12.5px;padding:5px 9px;border-radius:999px;border:1px solid #c9b48a;background:#fffaf0;color:#5a4630;cursor:pointer;white-space:nowrap;user-select:none}.wlChips button:active{background:#f1e4c8}.wlChips.st button{border-color:#a8462f;color:#7a2a1a;font-weight:700}
 .wlChoice button{flex:1 1 calc(50% - 5px);white-space:normal;min-height:34px;line-height:1.25}.wlChoice button.on{background:#a8462f;border-color:#7a2a1a;color:#fff4e2;font-weight:700}.wlChoice button:focus-visible{outline:3px solid #d1aa5e;outline-offset:1px}
@@ -628,13 +634,13 @@ body.museum #timer{display:none}
 .wlChips.st button.on{background:#a8462f;color:#fff4e2}
 .wlSealFx{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(15,12,10,.55);transition:opacity .4s}.wlSealFx.out{opacity:0}
 .wlSealFx>*{grid-area:1/1}
-.sfPaper{width:min(320px,80vw);padding:18px 20px;background:#f6ecd6;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);font-family:"Gowun Batang",serif;color:#3a2a1a;transform:translateY(30px) scale(.9);opacity:0;transition:transform .6s cubic-bezier(.2,1.3,.4,1),opacity .4s;transform-origin:50% 100%}
+.sfPaper{width:min(320px,80vw);padding:18px 20px;background:#f6ecd6;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#3a2a1a;transform:translateY(30px) scale(.9);opacity:0;transition:transform .6s cubic-bezier(.2,1.3,.4,1),opacity .4s;transform-origin:50% 100%}
 .sfPaper b{display:block;color:#a8462f;font-size:13px;letter-spacing:.2em;margin-bottom:8px}.sfPaper p{margin:0;font-size:17px;line-height:1.55;word-break:keep-all}.sfPaper i{display:block;text-align:right;font-style:normal;font-size:13px;margin-top:8px;color:#6b5a42}
 .wlSealFx.s1 .sfPaper{transform:none;opacity:1}
 .wlSealFx.s2 .sfPaper{transform:translateY(60px) scaleY(.04) scaleX(.5);opacity:0;transition:transform .7s ease-in,opacity .7s ease-in}
-.sfBrick{width:200px;height:64px;border-radius:4px;display:grid;place-items:center;font:700 17px "Gowun Batang",serif;color:#f6ead2;letter-spacing:.08em;box-shadow:inset 0 -5px 0 rgba(0,0,0,.25),0 8px 20px rgba(0,0,0,.35);transform:translateY(80px);opacity:0;transition:transform .5s ease,opacity .4s}
+.sfBrick{width:200px;height:64px;border-radius:4px;display:grid;place-items:center;font:700 17px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#f6ead2;letter-spacing:.08em;box-shadow:inset 0 -5px 0 rgba(0,0,0,.25),0 8px 20px rgba(0,0,0,.35);transform:translateY(80px);opacity:0;transition:transform .5s ease,opacity .4s}
 .wlSealFx.s2 .sfBrick{transform:translateY(60px);opacity:1}
-.sfStamp{width:118px;height:118px;border:5px double #c0392b;border-radius:50%;display:grid;place-items:center;align-content:center;color:#c0392b;font:700 26px "Gowun Batang",serif;letter-spacing:.2em;background:rgba(255,244,226,.12);transform:translateY(60px) rotate(-14deg) scale(2.6);opacity:0}
+.sfStamp{width:118px;height:118px;border:5px double #c0392b;border-radius:50%;display:grid;place-items:center;align-content:center;color:#c0392b;font:700 26px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:.2em;background:rgba(255,244,226,.12);transform:translateY(60px) rotate(-14deg) scale(2.6);opacity:0}
 .sfStamp small{display:block;font-size:11px;letter-spacing:.04em;margin-top:2px}
 .wlSealFx.s3 .sfStamp{transform:translate(70px,40px) rotate(-14deg) scale(1);opacity:.95;transition:transform .25s cubic-bezier(.5,0,.8,.4),opacity .1s}
 .wlSeal{display:inline-block;margin-left:4px;font-size:11px;padding:1px 6px;border-radius:3px;background:#7a2a1a;color:#fff4e2}
@@ -656,7 +662,7 @@ body.museum #timer{display:none}
 #wlPut{margin-top:10px;white-space:nowrap}
 .wlNote{font-size:12px;color:#7a6a50;margin:4px 0 0}
 .wlOpenMk{display:none}
-.wlNameCard{border:1px solid #c9b48a;background:#f7efe0;border-radius:6px;padding:9px 10px;font:700 17px "Gowun Batang",serif;color:#3a2a1a;letter-spacing:.08em}
+.wlNameCard{border:1px solid #c9b48a;background:#f7efe0;border-radius:6px;padding:9px 10px;font:700 17px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#3a2a1a;letter-spacing:.08em}
 .wlNameCard.empty{font:400 13px/1.45 sans-serif;color:#7a6a50;letter-spacing:0}
 .wlMsgBig{font-size:24px;line-height:1.5;text-align:center;margin:10px 0}
 .wlKey{width:100%;box-sizing:border-box;padding:10px;border:1px solid #c9b48a;border-radius:6px;font-size:15px}
@@ -793,10 +799,10 @@ body.deskUI #btnNote::after{content:"N";font:700 10.5px/1 sans-serif;margin-left
 @media (max-width:520px){.idphoto{width:56px}.idstamp{width:52px;height:52px;font-size:15px}}
 
 /* 안내: 도움·조작 */
-.glab{font-size:12px;letter-spacing:.16em;color:var(--brick);font-weight:700;margin:2px 0 6px}
+.glab{font-size:14px;letter-spacing:.04em;color:var(--brick);font-weight:700;margin:2px 0 6px}
 .guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gtile{word-break:keep-all;display:flex;gap:10px;align-items:center;background:#fffaf0;border:1px solid #dccfb0;border-radius:10px;padding:10px 12px;min-width:0;font-size:13px;color:var(--muted);line-height:1.4}
-.gtile b{display:block;font-size:15px;color:var(--text)}
+.gtile b{display:block;font-size:16px;color:var(--text)}.gtile>span:not(.gico){font-size:14px;color:#3d3128;line-height:1.45}
 .gico{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ink2);display:grid;place-items:center}
 .gico svg{width:20px;height:20px}
 .ctrls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:linear-gradient(180deg,#2e241c,#1f1813);border-radius:12px;padding:14px 10px;box-shadow:inset 0 0 0 1px rgba(209,170,94,.35)}
@@ -904,7 +910,7 @@ body.plFree #view{cursor:none}
 /* 1919년 통행증 · 관청 증명서(한지 · 괘선 · 붉은 관인) */
 .idcard.idc3{background:none;border:0;border-radius:0;padding:0;box-shadow:none;overflow:visible}
 .idc3 .ic-defs{position:absolute;width:0;height:0}
-.idc3 .ic-paper{position:relative;display:flex;gap:0;padding:14px 12px 14px 16px;color:#2b2118;font-family:"Gowun Batang",serif;
+.idc3 .ic-paper{position:relative;display:flex;gap:0;padding:14px 12px 14px 16px;color:#2b2118;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .18 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
     radial-gradient(ellipse at 12% 88%,rgba(140,95,40,.16),transparent 30%),
     radial-gradient(circle at 86% 14%,rgba(150,105,45,.12),transparent 18%),
@@ -928,16 +934,16 @@ body.plFree #view{cursor:none}
 .idc3 .ic-photo img{display:none;filter:grayscale(1) sepia(.7) contrast(1.08) brightness(.95)}
 .idc3 .ic-photo.has img{display:block}.idc3 .ic-photo.has .ic-sil{display:none}
 .idc3 .ic-photo::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .18 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:multiply;opacity:.8;pointer-events:none}
-.idc3 .ic-kei{position:absolute;right:-6px;bottom:2px;width:30px;height:30px;border-radius:50%;border:2px solid rgba(178,36,26,.7);color:rgba(178,36,26,.75);font:700 13px/26px "Gowun Batang",serif;font-style:normal;text-align:center;transform:rotate(-12deg);filter:url(#inkRough);mix-blend-mode:multiply}
+.idc3 .ic-kei{position:absolute;right:-6px;bottom:2px;width:30px;height:30px;border-radius:50%;border:2px solid rgba(178,36,26,.7);color:rgba(178,36,26,.75);font:700 13px/26px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-style:normal;text-align:center;transform:rotate(-12deg);filter:url(#inkRough);mix-blend-mode:multiply}
 .idc3 .ic-nm .nmrow{display:flex;align-items:center;gap:8px}
-.idc3 #teamName{flex:1;min-width:0;width:100%;border:0;background:transparent;padding:0;margin:0;font-family:"Gowun Batang",serif;font-size:27px;font-weight:700;letter-spacing:.2em;color:#1c1712;outline:none;cursor:default;caret-color:transparent;text-shadow:0 0 .6px rgba(28,23,18,.8)}
-.idc3 #nmDice{flex:none;font:700 12.5px/1 "Gowun Batang",serif;padding:6px 8px;border-radius:2px;border:1px solid rgba(90,60,30,.6);background:rgba(255,248,228,.55);color:#4a3520;margin:0;box-shadow:none;letter-spacing:.02em}
+.idc3 #teamName{flex:1;min-width:0;width:100%;border:0;background:transparent;padding:0;margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:27px;font-weight:700;letter-spacing:.2em;color:#1c1712;outline:none;cursor:default;caret-color:transparent;text-shadow:0 0 .6px rgba(28,23,18,.8)}
+.idc3 #nmDice{flex:none;font:700 12.5px/1 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;padding:6px 8px;border-radius:2px;border:1px solid rgba(90,60,30,.6);background:rgba(255,248,228,.55);color:#4a3520;margin:0;box-shadow:none;letter-spacing:.02em}
 .idc3 #nmDice:active{transform:translateY(1px)}
 .idc3 .ic-txt{margin:10px 0 2px!important;font-size:14.5px;letter-spacing:.08em;color:#2b2118}
 .idc3 .ic-sign{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;padding-right:34px;font-size:13.5px}
 .idc3 .ic-sign b{font-size:15px;letter-spacing:.06em}
 .idc3 .idstamp{position:absolute;right:2px;bottom:-6px;top:auto;left:auto;width:58px;height:58px;border-radius:3px;border:3px solid rgba(182,34,24,.82);background:none;color:rgba(182,34,24,.86);display:grid;place-items:center;
-  font:700 17px/1.08 "Gowun Batang",serif;letter-spacing:0;text-align:center;mix-blend-mode:multiply;filter:url(#inkRough);
+  font:700 17px/1.08 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:0;text-align:center;mix-blend-mode:multiply;filter:url(#inkRough);
   box-shadow:inset 0 0 0 2px rgba(182,34,24,.25);transform:rotate(-7deg) scale(1.7);opacity:0;transition:opacity .2s,transform .25s cubic-bezier(.2,1.5,.4,1)}
 .idc3 .idstamp span{display:block}
 .idcard.idc3.ok .idstamp{opacity:.92;transform:rotate(-7deg) scale(1)}
@@ -975,22 +981,22 @@ body.plFree #view{cursor:none}
 .bhH:first-child{margin-top:2px}
 .bhP{background:#f8f1df;border:1px solid #d6c39a;border-radius:8px;padding:12px 14px;margin:0 0 10px;box-shadow:0 2px 0 rgba(120,90,40,.12)}
 .bhPh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.bhPh b{font-family:"Gowun Batang",serif;font-size:21px;color:#2b2118}
+.bhPh b{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:21px;color:#2b2118}
 .bhPh small{display:block;font-size:13px;color:#7a6a50;letter-spacing:.02em}
 .bhTag{flex:none;font-size:12.5px;font-weight:700;color:#fff4e2;background:#7a2a1a;padding:4px 9px;border-radius:999px}
 .bhP p{margin:8px 0 0}
 .bhNames{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.bhNames span{font-family:"Gowun Batang",serif;font-weight:700;font-size:16px;padding:3px 10px;border:1px solid #b9a37a;border-radius:4px;background:#fffaf0}
+.bhNames span{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:700;font-size:16px;padding:3px 10px;border:1px solid #b9a37a;border-radius:4px;background:#fffaf0}
 .bhPlaces{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
 .bhPl{background:#f8f1df;border:1px solid #d6c39a;border-radius:8px;padding:10px 12px}
 .bhPl b{display:block;font-size:15.5px}.bhPl small{display:block;color:#7a6a50;font-size:12.5px}.bhPl p{margin:6px 0 0;font-size:14px;line-height:1.5}
 .bhPledge{display:flex;flex-direction:column;gap:6px}
 .bhPledge label{display:flex;gap:10px;align-items:center;background:#fffaf0;border:1px solid #d6c39a;border-radius:8px;padding:9px 12px;cursor:pointer}
 .bhPledge input{width:22px;height:22px;accent-color:#a8462f;flex:none}
-.bhPc{position:relative;margin:14px auto 4px;max-width:440px;background:#f3e6c4;border:3px double #7a2a1a;padding:14px 18px;font-family:"Gowun Batang",serif}
+.bhPc{position:relative;margin:14px auto 4px;max-width:440px;background:#f3e6c4;border:3px double #7a2a1a;padding:14px 18px;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
 .bhPcT{text-align:center;font-weight:700;font-size:20px;letter-spacing:.3em;color:#6b2316;margin-bottom:6px}
 .bhPc ol{margin:0;padding-left:22px}.bhPcS{text-align:right;margin-top:8px;font-size:14px;padding-right:64px}
-.bhPcStamp{position:absolute;right:12px;bottom:8px;width:50px;height:50px;border:3px solid rgba(182,34,24,.85);color:rgba(182,34,24,.9);border-radius:3px;display:grid;place-items:center;text-align:center;font:700 13px/1.1 "Gowun Batang",serif;transform:rotate(-8deg);animation:stPop .5s cubic-bezier(.2,1.8,.4,1)}
+.bhPcStamp{position:absolute;right:12px;bottom:8px;width:50px;height:50px;border:3px solid rgba(182,34,24,.85);color:rgba(182,34,24,.9);border-radius:3px;display:grid;place-items:center;text-align:center;font:700 13px/1.1 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;transform:rotate(-8deg);animation:stPop .5s cubic-bezier(.2,1.8,.4,1)}
 .bhQ{background:#f8f1df;border:1px solid #d6c39a;border-radius:8px;padding:10px 12px;margin:0 0 10px}
 .bhQ.ok{border-color:#4f8a4a}.bhQ.no{border-color:#b3261e}
 .bhQq{font-weight:700;margin-bottom:8px}
@@ -1007,7 +1013,7 @@ body.plFree #view{cursor:none}
 .bhLk button.on{background:#7a2a1a;border-color:#7a2a1a}.bhLk button.on i,.bhLk button.on small{color:#fff4e2}
 .bhRes{text-align:center;background:#2b2118;color:#f3ead6;border-radius:10px;padding:14px;margin:6px 0 10px}
 .bhRes p{margin:6px 0 0}.bhRes .bhSmall{color:#d8c8a8}
-.bhResN{font:700 42px/1 "Gowun Batang",serif;color:#ffd98a}.bhResN small{font-size:20px;color:#d8c8a8}
+.bhResN{font:700 42px/1 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#ffd98a}.bhResN small{font-size:20px;color:#d8c8a8}
 .bhCmp{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:8px}.bhCmp div{display:flex;flex-direction:column}.bhCmp small{font-size:12px;color:#d8c8a8}.bhCmp b{font-size:26px;color:#ffd98a}.bhCmp span{font-size:22px;color:#d8b25a}
 .srcNote{font-size:13.5px;color:#6b5a42;background:#f3ecdc;border-left:3px solid #6a4a8a;padding:6px 10px;border-radius:4px;margin-top:6px}
 .srcTag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 11px/1 "Pretendard",sans-serif;padding:4px 7px;border-radius:999px;letter-spacing:0;white-space:nowrap}
@@ -1045,7 +1051,7 @@ body.plFree #view{cursor:none}
 #rotateGate[hidden]{display:none}
 .rotateCard{width:min(420px,90vw);padding:28px 22px;border:1px solid rgba(209,170,94,.65);border-radius:16px;background:rgba(22,18,15,.9);box-shadow:0 18px 50px rgba(0,0,0,.45)}
 .rotateIcon{font-size:54px;line-height:1;margin-bottom:12px;animation:rotatePhone 1.8s ease-in-out infinite}
-.rotateCard h2{margin:0 0 10px;color:#ffd98a;font:700 25px "Gowun Batang",serif}.rotateCard p{margin:0 0 18px;line-height:1.65}
+.rotateCard h2{margin:0 0 10px;color:#ffd98a;font:700 25px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}.rotateCard p{margin:0 0 18px;line-height:1.65}
 .rotateCard button{min-height:48px;border:0;border-radius:8px;padding:10px 18px;background:#d1aa5e;color:#1a140f;font-weight:700;font-size:16px}
 @keyframes rotatePhone{0%,35%{transform:rotate(0)}65%,100%{transform:rotate(90deg)}}
 
@@ -1264,7 +1270,7 @@ function canvasTex(w, h, draw) {
   draw(c.getContext('2d'), w, h);
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.anisotropy = 4;
+  t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4);
   return t;
 }
 const brickTex = canvasTex(256, 256, (g, w, h) => {
@@ -1923,8 +1929,14 @@ let exitCell = { x: 0, z: 0 };
 buildOutside(); buildBuilding(); buildProps(); buildHill();
 
 /* ================= 목표 표시(금색 마름모) ================= */
-const marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.22), new THREE.MeshBasicMaterial({ color: 0xf2c76b }));
-marker.scale.y = 1.5; scene.add(marker);
+// 다음 목표 표시: 빛나는 빨간 입체 보석(면마다 밝기가 달라 입체로 보이고, 둘레에 붉은 빛이 번져요)
+const marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.2), new THREE.MeshPhongMaterial({ color: 0xff1f2f, emissive: 0x9a0010, specular: 0xffffff, shininess: 90, flatShading: true, fog: false }));
+marker.scale.y = 1.45; scene.add(marker);
+{ const edge = new THREE.LineSegments(new THREE.EdgesGeometry(marker.geometry), new THREE.LineBasicMaterial({ color: 0xffe2c8, fog: false })); marker.add(edge);
+  const gt = canvasTex(64, 64, (g, w, h) => { const r = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); r.addColorStop(0, 'rgba(255,90,70,.95)'); r.addColorStop(.35, 'rgba(255,40,40,.45)'); r.addColorStop(1, 'rgba(255,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h); });
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: gt, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false })); glow.scale.set(0.9, 0.62, 1); marker.add(glow);
+  const ml = new THREE.PointLight(0xff3030, 0.0, 2.2); marker.add(ml);
+  setTimeout(() => TICK.push((dt, t) => { if (!marker.visible) return; const k = 0.5 + 0.5 * Math.sin(t * 4); glow.material.opacity = 0.65 + 0.35 * k; marker.material.emissive.setRGB(0.45 + 0.35 * k, 0.0, 0.03); }), 0); }
 
 /* ================= 가구와 소품 ================= */
 const F = {
@@ -1962,7 +1974,7 @@ function paintingTex(seed) {
   // 역사 카드 그림을 액자 그림으로 써요(시대에 맞는 것만)
   const CARD_OF = { 5: 1, 11: 4, 23: 2 };
   if (typeof CARD_IMG !== 'undefined' && CARD_IMG[CARD_OF[seed]]) {
-    const t = new THREE.TextureLoader().load(CARD_IMG[CARD_OF[seed]]); t.anisotropy = 4; return t;
+    const t = new THREE.TextureLoader().load(CARD_IMG[CARD_OF[seed]]); t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4); return t;
   }
   if (seed === 17) return canvasTex(480, 320, (g, w, h) => { // 유달산 수묵 산수화
     const R = rng(170); g.fillStyle = '#efe6d0'; g.fillRect(0, 0, w, h);
@@ -3068,8 +3080,8 @@ function puzzle3() {
     const hg = hidden.getContext('2d');
     hg.fillStyle = '#e9d6a8'; hg.fillRect(0, 0, 880, 550);
     hg.fillStyle = '#5a2b18'; hg.textAlign = 'center';
-    hg.font = '700 40px "Nanum Pen Script","Gowun Batang",serif'; hg.fillText('이 집의 이름이 바뀐 차례', 440, 70);
-    hg.font = '700 58px "Nanum Pen Script","Gowun Batang",serif';
+    hg.font = '700 40px "Nanum Pen Script","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif'; hg.fillText('이 집의 이름이 바뀐 차례', 440, 70);
+    hg.font = '700 58px "Nanum Pen Script","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
     hg.fillText('1906 · 이사청', 640, 210); hg.fillText('1900 · 영사관', 210, 300); hg.fillText('1914 · 부청', 470, 470);
     const mg = mask.getContext('2d');
     let pt = null;
@@ -3559,8 +3571,8 @@ const cineBook = new THREE.Group(); cineBook.position.set(-9.05, 0.07, 0.15); ci
     g.strokeStyle = 'rgba(232,201,138,.45)'; g.lineWidth = 3; g.strokeRect(26, 8, w - 34, h - 16);
     g.fillStyle = '#f0d79e'; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillRect(w / 2 - 50, 92, 116, 2); g.fillRect(w / 2 - 50, 236, 116, 2);
-    g.font = '700 40px "Gowun Batang",serif'; g.fillText('붉은 벽돌의', w / 2 + 8, 140); g.fillText('기억', w / 2 + 8, 192);
-    g.font = '700 15px "Gowun Batang",serif'; g.fillStyle = '#e8c98a'; g.textAlign = 'right'; g.fillText('정민승', w - 22, h - 26);
+    g.font = '700 40px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif'; g.fillText('붉은 벽돌의', w / 2 + 8, 140); g.fillText('기억', w / 2 + 8, 192);
+    g.font = '700 15px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif'; g.fillStyle = '#e8c98a'; g.textAlign = 'right'; g.fillText('정민승', w - 22, h - 26);
   });
   const pages = canvasTex(64, 16, (g, w, h) => { g.fillStyle = '#e9dcbc'; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(120,100,70,.35)'; for (let y = 1; y < h; y += 2) g.fillRect(0, y, w, 1); });
   const brown = new THREE.MeshLambertMaterial({ color: 0x4a2616 }), pg = new THREE.MeshLambertMaterial({ map: pages });
@@ -3675,7 +3687,7 @@ const ctlHTML = coarse
 const BRIEF = [
   { eb: '1919년 4월 7일 · 이야기 속 목포부청', title: '수첩이 가리키는 곳으로', items: [
     '<p>민승이는 검열을 피해 기록을 나누어 숨겼어요. 건물의 모습과 역사를 단서 삼아 일곱 기록을 찾아 주세요. 민승이와 암호 장치, 비밀 서랍은 창작 설정이에요.</p>',
-    `<div class="glab">이렇게 도움을 받아요</div><div class="guide"><div class="gtile"><span class="gico">${ICO.dia}</span><span><b>금색 표시</b>막히면 다음 장소 위에 떠요</span></div><div class="gtile"><span class="gico">${ICO.book}</span><span><b>수첩</b>이야기와 단서가 적혀 있어요</span></div><div class="gtile"><span class="gico">${ICO.bulb}</span><span><b>힌트</b>세 단계로 하나씩 열려요</span></div></div>`,
+    `<div class="glab">이렇게 도움을 받아요</div><div class="guide"><div class="gtile"><span class="gico">${ICO.dia}</span><span><b>빨간 표시</b>막히면 다음 장소 위에 떠요</span></div><div class="gtile"><span class="gico">${ICO.book}</span><span><b>수첩</b>이야기와 단서가 적혀 있어요</span></div><div class="gtile"><span class="gico">${ICO.bulb}</span><span><b>힌트</b>세 단계로 하나씩 열려요</span></div></div>`,
     `<div class="glab">${coarse ? '태블릿 조작' : '컴퓨터 조작'}</div><div class="ctrls">${ctlHTML}</div>`] },
   { eb: '1919년 목포 사람', title: '나의 통행증', reg: true, items: [
     '<div class="idcard idc3"><svg class="ic-defs" aria-hidden="true"><filter id="inkRough"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter></svg><div class="ic-paper"><div class="ic-main"><div class="ic-no">제 &nbsp;408&nbsp; 호</div><table class="ic-tb"><tr><td class="ic-pcell" rowspan="4"><div class="ic-photo"><img id="idPhoto" alt=""><svg class="ic-sil" viewBox="0 0 60 80"><rect width="60" height="80" fill="#d9cba8"/><circle cx="30" cy="31" r="12" fill="#9c8a66"/><path d="M8 80 Q8 50 30 48 Q52 50 52 80Z" fill="#9c8a66"/></svg></div><i class="ic-kei">인</i></td><th>성 명</th><td class="ic-nm"><div class="nmrow"><input id="teamName" maxlength="12" readonly tabindex="-1" autocomplete="off" spellcheck="false"><button type="button" id="nmDice" title="다른 이름 뽑기">🎲 다시 뽑기</button></div></td></tr><tr><th>주 소</th><td>목포 양동</td></tr><tr><th>행선지</th><td>목포부청</td></tr><tr><th>기 한</th><td>1919년 4월 30일까지</td></tr></table><p class="ic-txt">위 사람의 통행을 허가함.</p><div class="ic-sign"><span>1919년 4월 1일</span><b>목포부청</b></div><div class="idstamp"><span>목포<br>부청</span></div></div><div class="ic-side">통 행 증</div></div></div><p class="nmnote ic-note">이야기 속 부청을 오가기 위한 가상 통행증이에요. 시간 여행에 쓸 이름과 얼굴을 골라 보세요.</p>'] }
@@ -3960,7 +3972,7 @@ function drawMap() {
   });
   // 방공호 입구
   if (player.lv === 1) { const [gx, gy] = P(0, TZ); mg.fillStyle = later ? '#111' : '#6c665c'; mg.fillRect(gx - 7, gy - 4, 14, 5); }
-  mg.fillStyle = '#efe4cc'; mg.font = `700 ${inB ? 18 : 13}px "Gowun Batang",serif`; mg.textAlign = 'center';
+  mg.fillStyle = '#efe4cc'; mg.font = `700 ${inB ? 18 : 13}px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif`; mg.textAlign = 'center';
   const [sx, sy] = P(2.4, -3.0); mg.fillText('계단', sx, sy + 5);
   const mt = markerTarget(); if (mt) { const [tx, ty] = P(mt.x, mt.z); diamond(tx, ty, 8, '#f2c76b'); }
   const [px, py] = P(player.x, player.z); arrow(px, py, player.yaw, 9);
@@ -3971,7 +3983,7 @@ function drawMaze() {
   const cs = Math.min(MW / 11, MH / MAZE.length), ox = (MW - cs * 11) / 2, oy = (MH - cs * MAZE.length) / 2;
   mg.fillStyle = '#1b1612'; mg.fillRect(0, 0, MW, MH);
   visited.forEach(key => { const [rr, cc] = key.split(',').map(Number); mg.fillStyle = '#8a7b64'; mg.fillRect(ox + cc * cs, oy + rr * cs, cs + 0.5, cs + 0.5); });
-  LETTER_CELLS.forEach(([rr, cc], i) => { if (!visited.has(rr + ',' + cc)) return; const x = ox + (cc + 0.5) * cs, y = oy + (rr + 0.5) * cs; mg.fillStyle = state.letters.has(i) ? '#f2c76b' : '#efe4cc'; mg.font = `700 ${cs * 0.7}px "Gowun Batang",serif`; mg.textAlign = 'center'; mg.textBaseline = 'middle'; mg.fillText(state.letters.has(i) ? CONFIG.tunnelWord[i] : '?', x, y); });
+  LETTER_CELLS.forEach(([rr, cc], i) => { if (!visited.has(rr + ',' + cc)) return; const x = ox + (cc + 0.5) * cs, y = oy + (rr + 0.5) * cs; mg.fillStyle = state.letters.has(i) ? '#f2c76b' : '#efe4cc'; mg.font = `700 ${cs * 0.7}px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif`; mg.textAlign = 'center'; mg.textBaseline = 'middle'; mg.fillText(state.letters.has(i) ? CONFIG.tunnelWord[i] : '?', x, y); });
   const er = MAZE.length - 1; if (visited.has(er + ',5')) diamond(ox + 5.5 * cs, oy + (er + 0.9) * cs, cs * 0.35, '#f2c76b');
   mg.fillStyle = '#d1aa5e'; mg.fillRect(ox + 5 * cs, oy - 3, cs, 3);
   const px = ox + (player.x / S + 5.5) * cs, py = oy + ((TZ - player.z) / S) * cs; arrow(px, py, player.yaw, cs * 0.45);
@@ -5323,7 +5335,7 @@ function billboard(fig, id) {
   const c = CHARS[id], img = new Image(), mat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.45, color: 0xefe9de, side: THREE.DoubleSide, depthWrite: true });
   const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat); plane.visible = false;
   img.onload = () => {
-    const t = new THREE.Texture(img); t.needsUpdate = true; t.anisotropy = 4; mat.map = t; mat.needsUpdate = true;
+    const t = new THREE.Texture(img); t.needsUpdate = true; t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4); mat.map = t; mat.needsUpdate = true;
     const asp = img.width / img.height; plane.geometry.dispose(); plane.geometry = new THREE.PlaneGeometry(c.h * asp, c.h).translate(0, c.h / 2, 0);
     fig.traverse(o => { if (o.isMesh && o !== plane && !o.userData.keep) o.visible = false; });
     plane.visible = true;
@@ -6426,7 +6438,7 @@ if (coarse) {
 
 /* ---------- PC: 배틀그라운드처럼 마우스를 움직이면 바로 둘러보기(포인터 잠금) ---------- */
 const PL = { want: !coarse && !!canvas.requestPointerLock, last: 0, get on() { return document.pointerLockElement === canvas; } };
-function plCan() { return !ORIENTATION_BLOCKED && state.mode === 'play' && !state.modal && !(typeof vn !== 'undefined' && vn.on) && !FX.scope && !state.fading && $('startScreen').hidden && $('endScreen').hidden && (!$('typeSheet') || $('typeSheet').hidden); }
+function plCan() { return !ORIENTATION_BLOCKED && state.mode === 'play' && !state.modal && !(typeof vn !== 'undefined' && vn.on) && !FX.scope && !state.fading && $('startScreen').hidden && $('endScreen').hidden && (!$('typeSheet') || $('typeSheet').hidden) && (!$('bh') || $('bh').hidden) && (!$('wallScreen') || $('wallScreen').hidden); }
 function plLock() {
   if (!PL.want || PL.on || !plCan() || performance.now() - PL.last < 1100) return;
   clearTimeout(PL.chk); PL.chk = setTimeout(() => { if (PL.want && !PL.on && plCan() && !PL.ok) plFree(); }, 900); // 잠금이 조용히 막히면 자유 시선으로
@@ -6951,7 +6963,7 @@ function lazyCanvasTex(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const t = new THREE.Texture(c); let done = false; // 아직 올리지 않은 그림(version 0)
   t.paint = () => { if (done) return; done = true; draw(c.getContext('2d'), w, h); t.needsUpdate = true; };
-  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; MX_LAZY.push(t.paint);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4); MX_LAZY.push(t.paint);
   return t;
 }
 (function idlePaint() {
@@ -6959,7 +6971,7 @@ function lazyCanvasTex(w, h, draw) {
   const next = () => window.requestIdleCallback ? requestIdleCallback(run, { timeout: 400 }) : setTimeout(run, 60);
   window.addEventListener('load', () => setTimeout(next, 2500));
 })();
-function mxBoard(w, h, draw, ppm = 220) {
+function mxBoard(w, h, draw, ppm = 300) {
   const tex = lazyCanvasTex(Math.round(w * ppm), Math.round(h * ppm), draw);
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: tex }));
@@ -7062,7 +7074,7 @@ function oldPhoto(g,x,y,w,h,seed,tone) {
     g.fillStyle='#4f4946';g.fillRect(0,0,w,H);g.fillStyle='#8b4c3b';g.fillRect(0,0,w*.22,H*.88);g.fillRect(w*.78,0,w*.22,H*.88);g.fillRect(0,0,w,H*.13);g.fillStyle='#d3b783';g.beginPath();g.moveTo(w*.5,H*.15);g.lineTo(w*.23,H*.85);g.lineTo(w*.77,H*.85);g.closePath();g.fill();g.fillStyle='#59483d';g.fillRect(0,H*.86,w,H*.14);g.beginPath();g.arc(w*.5,H*.54,w*.044,0,Math.PI*2);g.fill();g.fillRect(w*.467,H*.59,w*.066,H*.2);
   }
   g.strokeStyle='rgba(100,77,48,.4)';g.lineWidth=Math.max(1,w*.014);g.strokeRect(w*.025,h*.025,w*.95,H-h*.025);
-  g.fillStyle='#564733';g.textAlign='center';g.textBaseline='middle';g.font='700 '+Math.max(7,Math.min(w*.105,h*.13))+'px "Gowun Batang",serif';g.fillText(titles[kind],w*.5,h*.9,w*.9);g.restore();
+  g.fillStyle='#564733';g.textAlign='center';g.textBaseline='middle';g.font='700 '+Math.max(7,Math.min(w*.105,h*.13))+'px "Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif';g.fillText(titles[kind],w*.5,h*.9,w*.9);g.restore();
 }
 // 어두운 설명판(금색·붉은 띠 제목, 흰 글씨) — 실제 1관의 검은 패널
 function darkText(g, W, H, title, en, lines, accent, x0, y0, w) {
@@ -7076,7 +7088,7 @@ const MX_PANEL_TEXT = {"목포진":["서남해를 지키던 조선 수군 진영
 function darkPanelTex(title, en, lines, accent, seed) {
   const verified = MX_PANEL_TEXT[title];
   if (verified) { lines = verified; en = ''; }
-  else { title = '근대 목포 살펴보기'; en = ''; lines = ['공식 안내의 전시 주제로 배워요', '공간과 모형은 학습용 재구성이에요']; }
+  else if (!title || !lines || !lines.length) { title = title || '근대 목포'; lines = []; }
 
   return (g, W, H) => {
     const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#3a393d'); bg.addColorStop(1, '#2a292d'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
@@ -7101,7 +7113,7 @@ function mxUnit(x, y, z, ry, parts, opt = {}) {
   const H = opt.h || 2.3, base = opt.base || 0.35; let cx = 0;
   const total = parts.reduce((s, p) => s + p.w + 0.03, 0); cx = -total / 2;
   parts.forEach(p => {
-    const b = mxBoard(p.w, H, p.draw, 150); b.position.set(cx + p.w / 2, base + H / 2, 0.03 + (p.strip ? 0.04 : 0)); g.add(b);
+    const b = mxBoard(p.w, H, p.draw, 300); b.position.set(cx + p.w / 2, base + H / 2, 0.03 + (p.strip ? 0.04 : 0)); g.add(b);
     if (!p.strip) { dk(p.w, 0.12, 0.34, MXM.black, cx + p.w / 2, base + H + 0.06, 0.14, g); const gl = new THREE.Mesh(new THREE.PlaneGeometry(p.w * 0.85, 0.04), MXM.glow); gl.rotation.x = Math.PI / 2; gl.position.set(cx + p.w / 2, base + H - 0.005, 0.24); g.add(gl); }
     cx += p.w + 0.03;
   });
@@ -7131,7 +7143,7 @@ function paperTex(g,W,H,seed,opt={}) {
   g.fillStyle='#e6d3a4';g.fillRect(0,0,W,H);
   g.strokeStyle='#9d8760';g.strokeRect(W*.08,H*.08,W*.84,H*.84);
   mxText(g,'학습용 문서 도안',W/2,H*.42,H*.07,'#514431',true,'center');
-  mxText(g,'실제 사료 원문 아님',W/2,H*.6,H*.06,'#514431',false,'center');
+  
 }
 // 소품의 검증 범위를 현장에서 읽을 수 있는 안내. 통행용 충돌판은 만들지 않아요.
 function mxPropNote() { return new THREE.Group(); } // 제작·검증용 표지는 학생 화면에 표시하지 않습니다.
@@ -7230,7 +7242,7 @@ function mxModelCase(x, y, z, ry, kind) {
 {
   const R = mxRoot, PI = Math.PI;
   /* ── 0. 1층 현관 홀 · 건물이 걸어온 시간(안내) ── */
-  const tl = mxBoard(3.6, 1.5, (g, W, H) => {
+  const tl = mxBoard(2.55, 1.25, (g, W, H) => {
     g.fillStyle = '#efe7d6'; g.fillRect(0, 0, W, H);
     mxText(g, '붉은 벽돌 건물이 걸어온 시간', W * 0.05, H * 0.13, H * 0.085, '#1f1a16', true);
     mxText(g, '구 목포 일본영사관 · 사적', W * 0.05, H * 0.25, H * 0.05, '#a8462f', true);
@@ -7240,7 +7252,7 @@ function mxModelCase(x, y, z, ry, kind) {
     ev.forEach(([yr, t], i) => { const x = x0 + (x1 - x0) * i / (ev.length - 1); g.fillStyle = '#a8462f'; g.beginPath(); g.arc(x, y, H * 0.03, 0, 7); g.fill();
       mxText(g, yr, x, y - H * 0.11, H * 0.065, '#1f1a16', true, 'center'); mxText(g, t, x, y + H * 0.13, H * 0.05, '#3a312a', false, 'center'); });
   });
-  mxAdd(tl, -2.83, 2.05, 3.0, PI / 2, R); // 왼쪽 방 문(z -1~1)을 가리지 않게
+  mxAdd(tl, -2.83, 2.0, 2.47, PI / 2, R); // 왼쪽 벽의 두 문(z ~1.1, 3.85~) 사이에 꼭 맞게
   const desk = grp(2.3, 0, 4.2); R.add(desk); // 안내도: INFORMATION은 홀 오른쪽 앞
   dk(0.7, 1.0, 1.8, MXM.white, 0, 0.5, 0, desk); dk(0.78, 0.04, 1.9, M.darkwood, 0, 1.02, 0, desk);
   const dsign = textPlane([{ t: 'INFORMATION', size: 0.12, bold: true }, { t: '관람 순서 · 1층 → 2층 → 방공호', size: 0.07 }], 1.4, 0.45, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' });
@@ -7257,20 +7269,20 @@ function mxModelCase(x, y, z, ry, kind) {
     MXP('목포진', 'Mokpojin', ['조선 수군이 서남해를 지키던 진영', '만호가 다스리던 바다 방어 기지', '1895년에 문을 닫았어요'], '#c9a157', 1.0, 3),
     MXP('목포의 개항', 'Opening of Mokpo Port', ['1897년 10월 1일 목포항이 열리다', '외국인이 사는 「각국공동조계」', '근대 도시 목포가 출발하다'], '#c9a157', 1.0, 5),
     MXP('근대 도시 목포의 출발', 'Beginning of Modern Mokpo', ['바다를 메워 반듯한 길을 내다', '영사관 · 세관 · 은행이 들어서다'], '#c9a157', 1.0, 8)]);
-  const ft = grp(6.9, 0, 2.4); R.add(ft);
+  const ft = grp(6.45, 0, 2.6); R.add(ft);
   dk(1.7, 0.85, 1.3, MXM.black, 0, 0.425, 0, ft);
   dk(1.5, 0.04, 1.1, new THREE.MeshLambertMaterial({ color: 0x7d8a5a }), 0, 0.87, 0, ft);
   const wallM = new THREE.MeshLambertMaterial({ color: 0xb8ad98 });
   [[0, -0.38, 1.0, 0.06], [0, 0.38, 1.0, 0.06], [-0.48, 0, 0.06, 0.8], [0.48, 0, 0.06, 0.8]].forEach(([x, z, w, d]) => dk(w, 0.14, d, wallM, x, 0.96, z, ft));
   [[-0.2, -0.1], [0.2, -0.12], [0, 0.14]].forEach(([x, z]) => { dk(0.22, 0.1, 0.16, mxWhite, x, 0.94, z, ft); const r = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.1, 4), new THREE.MeshLambertMaterial({ color: 0x3a3430 })); r.rotation.y = PI / 4; r.position.set(x, 1.04, z); ft.add(r); });
   const gl1 = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.5, 1.15), MXM.glass); gl1.position.y = 1.12; ft.add(gl1);
-  colR(6.9, 2.4, 1.8, 1.4, 1);
+  colR(6.45, 2.6, 1.8, 1.4, 1);
   mxPropNote(9.48, 1.05, 4.5, -PI / 2, '목포진 · 경계비 모형', ['실제 전시품과 같은 형태인지 미확인', '모형의 수량과 배치는 게임의 재구성이에요.']);
-  mxStele(9.0, 0, 1.5, -PI / 2, '各國居留地界', '', 0.34, 1.25);
-  mxStele(9.0, 0, 3.4, -PI / 2, '各國居留地界', '', 0.34, 1.1);
+  mxStele(9.42, 0, 1.6, -PI / 2, '各國居留地界', '', 0.34, 1.25);
+  mxStele(9.42, 0, 3.5, -PI / 2, '各國居留地界', '', 0.34, 1.1);
   mxDef({ id: 'mx1', name: "목포진 이야기", place: '1층 오른쪽 방 앞쪽', lv: 1, obj: ft, at: [6.9, 1.0], title: "목포진으로 출발하다",
-    facts: ["목포진은 조선 수군의 진영이었어요.","서남해를 지키던 목포진의 역할이 이 전시의 주제예요."],
-    q: "목포진은 어떤 역할을 했을까요?", o: ["바다 방어","영화 상영","은행 업무","철도 운행"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["목포진은 조선 수군의 진영이었어요.", "영산강이 바다와 만나는 길목에서 서남해 바닷길을 지켰어요.", "1895년 군사 제도가 바뀌면서 문을 닫았어요."],
+    q: "목포진이 서남해 바닷길을 지키기에 좋은 자리였던 까닭은?", o: ["깊은 산속이라 적이 찾기 어려워서", "영산강과 바다가 만나는 길목이어서", "큰 시장 한가운데 있어서", "바다에서 멀리 떨어져 있어서"], a: 1, sourceIds: ["mokpo","photos"] });
 
   // 2 zone · 개항장으로 재출발하다 (회색 벽 · 육지면 발상지비 · 측량기 · 무안보첩)
   mxUnit(6.75, 0, -5.75, 0, [MXS('개항장으로 재출발하다', '#a8462f'),
@@ -7293,8 +7305,8 @@ function mxModelCase(x, y, z, ry, kind) {
   });
   addCol(9.15, -4.8, 9.8, -2.9, 1);
   mxDef({ id: 'mx2', name: "개항과 삼백 이야기", place: '1층 오른쪽 방 안쪽', lv: 1, obj: vt2, at: [7.2, -1.3], title: "개항장으로 재출발하다",
-    facts: ["목포는 1897년 고종의 칙령으로 개항했어요.","쌀·목화·소금은 목포를 삼백의 고장으로 알린 물산이에요."],
-    q: "삼백에 해당하는 물산은?", o: ["쌀·목화·소금","김·미역·굴","종이·먹·붓","배·기차·자동차"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["목포는 1897년 고종의 칙령으로 개항했어요.", "쌀·목화·소금으로 이름나 '삼백의 고장'이라 불렸어요.", "호남의 쌀이 목포항으로 모였고, 많은 쌀이 일본으로 실려 갔어요."],
+    q: "개항 뒤 목포항으로 모인 호남의 쌀은 주로 어디로 실려 갔을까요?", o: ["청나라", "러시아", "일본", "미국"], a: 2, sourceIds: ["mokpo","photos"] });
 
   /* ════════ 1층 왼쪽 방 ════════ */
   // 안내도: 뒤쪽 가운데 6 zone · 뒤쪽 구석 작은 방 · 앞쪽 큰 7 zone
@@ -7302,7 +7314,7 @@ function mxModelCase(x, y, z, ry, kind) {
   mxPartition(-4.3, -1.0, -3.0, -1.0, 0, 3.6, new THREE.MeshLambertMaterial({ color: 0xece8e0 }));
   mxPartition(-6.58, -6, -6.58, -1.0, 0, 3.6, new THREE.MeshLambertMaterial({ color: 0xece8e0 }));
   // 7 zone · 근대 도시 건축 특별전 (큰 도시 모형 + 건물 모형 진열장)
-  const city = grp(-6.4, 0, 2.35); R.add(city);
+  const city = grp(-6.25, 0, 2.3); R.add(city); city.scale.set(0.72, 1, 0.76); // 둘레 통로 1.1m 이상
   { const fr = MXM.black; dk(3.1, 0.08, 2.1, fr, 0, 0.82, 0, city); dk(3.0, 0.24, 2.0, fr, 0, 0.68, 0, city);
     [[-1.45, -0.95], [1.45, -0.95], [-1.45, 0.95], [1.45, 0.95]].forEach(([x, z]) => dk(0.05, 0.56, 0.05, fr, x, 0.28, z, city));
     const brace = (x) => { const b = dk(0.04, 0.04, 2.3, fr, x, 0.3, 0, city); b.rotation.x = 0.5; }; brace(-1.45); brace(1.45);
@@ -7322,8 +7334,8 @@ function mxModelCase(x, y, z, ry, kind) {
     for (let i = 0; i < 40; i++) { const t = new THREE.Mesh(new THREE.SphereGeometry(0.02, 5, 4), new THREE.MeshLambertMaterial({ color: 0x5a6a48 })); const along = Rr() < 0.5; t.position.set(along ? -1.4 + Rr() * 2.8 : -0.12, 0.9, along ? -0.03 : -0.9 + Rr() * 1.8); city.add(t); }
     const g = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.5, 1.95), MXM.glass); g.position.y = 1.13; city.add(g);
     const st = dk(0.18, 1.0, 0.06, MXM.white, 1.0, 0.5, 1.12, city); st.rotation.x = 0.0; }
-  const modelLabel = mxPanel('학습용 도시 모형', '실제 지도 아님', ['건물과 도로의 위치는 재구성이에요.'], 2.3, .6); modelLabel.position.set(0,1.65,1.08); city.add(modelLabel);
-  colR(-6.4, 2.35, 3.15, 2.15, 1);
+  const modelLabel = textPlane([{ t: '근대 도시 목포 모형', size: 0.12, bold: true }], 0.9, 0.22, { bg: '#2a2420', fg: '#f1ece2', fg2: '#c9a157' }); modelLabel.position.set(-6.25, 0.93, 3.12); modelLabel.rotation.x = -0.9; R.add(modelLabel);
+  colR(-6.25, 2.3, 2.3, 1.65, 1);
   const OL = '#6f6a3a';
   const bp = (title, en, lines, seed) => MXP(title, en, lines, '#c9b46a', 0.75, seed);
   mxUnit(-6.6, 0, 5.75, PI, [MXS('조선은행 목포지점', OL), bp('1924년', 'Joseon Bank', ['르네상스 양식 2층 조적조', '정면의 도리스 양식 기둥 넷'], 31),
@@ -7339,8 +7351,8 @@ function mxModelCase(x, y, z, ry, kind) {
     MXS('정명여학교 선교사 사택', OL), bp('1905년 무렵', 'Missionary House', ['목포에 처음 지어진', '서양식 석조 주택'], 55)]);
   [4.02, 2.9, 1.78].forEach((z, i) => mxModelCase(-8.9, 0, z, PI / 2, ['church', 'hanok', 'mission'][i]));
   mxDef({ id: 'mx7', name: "근대 건축 이야기", place: '1층 왼쪽 방', lv: 1, obj: city, at: [-4.5, 2.35], title: "근대 도시 특별전",
-    facts: ["목포역과 오거리 일대의 건축물 모형을 소개하는 전시예요.","동본원사·호남은행·양동교회·일본영사관 등이 다뤄져요.","게임 속 모형은 학습용으로 단순화했어요. 실제 거리나 전시 배치를 나타내지 않아요."],
-    q: "공식 안내가 소개하는 도시 모형의 지역은?", o: ["목포역과 오거리 일대","서울 강남 일대","부산 해운대 일대","제주 성산 일대"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["목포역과 오거리 일대의 근대 건축물을 소개하는 전시예요.", "호남은행 목포지점(1929)은 우리 민족 자본으로 세운 은행이에요.", "동양척식주식회사는 우리 땅과 자원을 빼앗던 회사였어요."],
+    q: "같은 시기 목포에 있던 곳 가운데, 우리 민족 자본으로 세운 곳은?", o: ["동양척식주식회사", "조선은행 목포지점", "호남은행 목포지점", "일본영사관"], a: 2, sourceIds: ["mokpo","photos"] });
 
   // 6 zone · 만세운동 함께해요 (홍보관)
   const mural = (w, h, seed) => mxBoard(w, h, (g, W, H) => {
@@ -7394,8 +7406,8 @@ function mxModelCase(x, y, z, ry, kind) {
   const ppl = mxBoard(1.6, 1.3, (g, W, H) => { g.fillStyle = '#eee4d1'; g.fillRect(0,0,W,H); mxText(g, "시민들의 저항", W*.07,H*.15,H*.055,'#2a211a',true); ["만세운동과 청년운동","억압에 맞선 사람들을 기억해요."].forEach((t,i)=>mxText(g,t,W*.07,H*(.34+i*.13),H*.033,'#3a312a',false)); mxText(g,'출처: 목포시 문화관광',W*.07,H*.93,H*.026,'#6a5842',false); });
   mxAdd(ppl, -9.83, 6.0, -2.6, PI / 2, R);
   mxDef({ id: 'mx3', name: "저항의 역사 안내", place: '2층 서쪽 방', lv: 2, obj: gin, at: [-7.6, 1.2], title: "저항의 제일선이 되다",
-    facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.","만세운동과 청년운동이 주요 내용이에요."],
-    q: "이 전시가 다루는 시민들의 활동은?", o: ["만세운동과 청년운동","우주 탐사","고속도로 건설","인터넷 개발"], a: 0, sourceIds: ["mokpo","photos","cottonPhoto"] });
+    facts: ["일제강점기의 억압과 이에 맞선 시민들의 활동을 다뤄요.", "1925년 시민들의 성금으로 목포 청년회관을 지었어요.", "청년회관은 강연과 모임이 열린 민족운동의 중심이었어요."],
+    q: "시민들이 성금을 모아 지어 민족운동의 중심이 된 건물은?", o: ["목포 청년회관", "동본원사 목포별원", "목포부청", "동양척식주식회사"], a: 0, sourceIds: ["mokpo","photos","cottonPhoto"] });
 
   mxPropNote(-9.78, 5.45, 3.65, PI / 2, '조면기 모형', ['전시 이력은 확인되지만', '실물의 형태·크기·배치는 재현하지 않았어요.']);
   /* 2층 중앙 · 건물 외관 모형과 구조 모형. 현장 사진의 두 모형 나란한 구성을 반영. */
@@ -7465,7 +7477,7 @@ function mxModelCase(x, y, z, ry, kind) {
     g.strokeStyle = '#3a3430'; g.lineWidth = 3; g.beginPath(); g.moveTo(W * 0.92, H * 0.1); g.lineTo(W * 0.92, H * 0.9); g.stroke(); g.beginPath(); g.moveTo(W * 0.92, H * 0.15); g.lineTo(W * 0.4, H * 0.3); g.stroke();
   }, 120);
   mxAdd(street, 7.6, 5.45, -5.83, 0, R);
-  const streetLabel = mxPanel('학습용 거리 그림', '실제 기록 사진 아님', ['거리와 건물의 모습은 재구성이에요.'], 3.0, .65); mxAdd(streetLabel,7.6,4.45,-5.78,0,R);
+  
   const shop = grp(9.8, 4, -3.6, -PI / 2); R.add(shop);
   { const pine = new THREE.MeshLambertMaterial({ color: 0xc9a066 }), dark = new THREE.MeshLambertMaterial({ color: 0x8a6a3a });
     dk(4.4, 2.8, 0.1, pine, 0, 1.4, 0, shop); for (let i = 0; i < 18; i++) dk(0.03, 2.8, 0.02, dark, -2.1 + i * 0.25, 1.4, 0.06, shop);
@@ -7484,11 +7496,11 @@ function mxModelCase(x, y, z, ry, kind) {
   mxPropNote(9.48, 5.3, -3.6, -PI / 2, '상점 · 인력거 모형', ['현장 사진의 거리 그림·상점·인력거를 참고했어요.', '방향과 인접 관계를 반영한 근사 재구성이에요.']);
   mxPropNote(5.6, 1.3, -3.0, 0, '측량기 · 문서 · 포대 소품', ['측량기의 실물 형태·배치는 미확인', '문서·포대는 학습용 재구성이에요.']);
   mxDef({ id: 'mx4', name: "종교와 교육 이야기", place: '2층 오른쪽 방 앞쪽', lv: 2, obj: vt4, at: [6.6, 3.3], title: "외래 문화가 전파되다",
-    facts: ["개항 이후 여러 종교와 학교가 목포에 들어왔어요.","종교·교육·문화의 변화를 살펴보는 주제예요."],
-    q: "이 전시에서 살펴볼 변화는?", o: ["종교와 교육의 변화","빙하기의 기후","공룡의 진화","화산의 생성"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["개항 이후 여러 종교와 학교가 목포에 들어왔어요.", "1903년 선교사들이 정명여학교를 세웠어요.", "정명여학교 학생들은 1919년 목포 만세운동에도 함께했어요."],
+    q: "외래 문화 가운데 '새로운 교육'과 가장 관계 깊은 곳은?", o: ["목포극장", "정명여학교", "조선은행", "방공호"], a: 1, sourceIds: ["mokpo","photos"] });
   mxDef({ id: 'mx5', name: "극장과 공연 이야기", place: '2층 오른쪽 방 안쪽', lv: 2, obj: rk, at: [4.9, -4.5], title: "대중 문화의 시대",
-    facts: ["목포극장은 1920년, 평화관은 1927년에 세워졌어요.","영화·연극·대중가요 등 문화활동이 펼쳐졌어요."],
-    q: "근대 목포의 대중문화 활동은?", o: ["영화와 연극 관람","온라인 게임 방송","우주여행","스마트폰 영상통화"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["목포극장은 1920년, 평화관은 1927년에 세워졌어요.", "영화·연극·대중가요 등 문화활동이 펼쳐졌어요."],
+    q: "1920년대 목포 사람들이 영화와 연극을 보러 간 곳은?", o: ["무안감리서", "목포진", "목포극장", "방공호"], a: 2, sourceIds: ["mokpo","photos"] });
 }
 
 
@@ -7497,12 +7509,12 @@ function mxModelCase(x, y, z, ry, kind) {
   const gp = interactables.gate ? interactables.gate.pos : new THREE.Vector3(0, 1.4, -20);
   const sg = grp(gp.x + 2.4, 0, gp.z + 1.6, -0.3); mxRoot.add(sg);
   dk(0.08, 1.3, 0.08, M.darkwood, -0.85, 0.65, 0, sg); dk(0.08, 1.3, 0.08, M.darkwood, 0.85, 0.65, 0, sg);
-  const bp = mxPanel('방공호 특별전시', '건물 뒤편', ['공습에 대비해 만든 방어시설', '강제동원된 조선인의 노동을 기억해요', '게임 속 공간은 학습용 재구성이에요'], 1.9, 1.15, '#5a5048');
+  const bp = mxPanel('방공호 특별전시', '건물 뒤편', ['공습에 대비해 만든 방어시설', '강제동원된 조선인의 노동을 기억해요'], 1.9, 1.15, '#5a5048');
   bp.position.set(0, 1.55, 0.05); sg.add(bp); dk(1.95, 1.2, 0.06, M.darkwood, 0, 1.55, 0, sg);
   addCol(gp.x + 1.4, gp.z + 1.3, gp.x + 3.4, gp.z + 1.9, 1);
   mxDef({ id: 'mx8', name: "방공호 이야기", place: '뒤뜰 방공호 앞', lv: 1, obj: sg, at: [gp.x + 2.2, gp.z + 3.0], title: "전쟁준비의 흔적, 방공호",
-    facts: ["역사관 뒤편에는 공습에 대비해 만든 방공호가 있어요.","공식 안내는 굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시를 소개해요."],
-    q: "방공호를 만든 목적은?", o: ["공습에 대비하기 위해","공연을 열기 위해","목화를 재배하기 위해","은행 업무를 보기 위해"], a: 0, sourceIds: ["mokpo","photos"] });
+    facts: ["역사관 뒤편에는 공습에 대비해 만든 방공호가 있어요.", "전쟁이 커지던 1940년대에 만들어졌어요.", "굴을 파는 데 강제동원된 조선인의 모습을 재현한 전시가 있어요."],
+    q: "방공호가 만들어진 1940년대, 일제는 무엇에 대비하려 했을까요?", o: ["홍수", "지진", "전염병", "전쟁 중 비행기의 폭격"], a: 3, sourceIds: ["mokpo","photos"] });
 }
 regEra(mxRoot, ['present'], colliders.slice(mxCol0));
 mxRoot.updateMatrixWorld(true);
@@ -7571,14 +7583,14 @@ useInteract = function (id) {
   if (state.modal || state.fading || state.mode !== 'play') return;
   if (id === 'stairsUp' || id === 'stairsDown') { teleport(player.lv === 1 ? 2 : 1); return; }
   const m = MX.find(x => x.id === id); if (m) { mxOpen(m); return; }
-  toast('지금은 역사관을 관람하고 있어요. 금색 표시를 따라 전시물을 살펴보세요.', 2200);
+  toast('지금은 역사관을 관람하고 있어요. 빨간 표시를 따라 전시물을 살펴보세요.', 2200);
 };
 // 수첩 단추 → 관람 안내도, 힌트 단추 → 다음 전시실 안내
 {
   const nb = $('btnNote'), hb = $('btnHint');
   const _nb = nb.onclick, _hb = hb.onclick;
   nb.onclick = function () { if (!MUSEUM.on) return _nb.apply(this, arguments); mxGuide(); };
-  hb.onclick = function () { if (!MUSEUM.on) return _hb.apply(this, arguments); const nx = mxNext(); toast(nx ? `다음은 ${nx.place}의 「${nx.title}」이에요. 금색 표시를 따라가 보세요.` : '모든 전시실을 둘러보았어요!', 2600); };
+  hb.onclick = function () { if (!MUSEUM.on) return _hb.apply(this, arguments); const nx = mxNext(); toast(nx ? `다음은 ${nx.place}의 「${nx.title}」이에요. 빨간 표시를 따라가 보세요.` : '모든 전시실을 둘러보았어요!', 2600); };
 }
 function mxGuide() {
   openModal(body => {
@@ -7607,7 +7619,7 @@ function mxOpen(m) {
   if (m.arts) return mxArts();
   openModal(body => {
     head(body, '가상 공간 · ' + m.place, m.title); mxEvidence(body, m.sourceIds);
-    const artNote=el('p','srcNote');artNote.textContent='벽면의 그림은 당시의 모습을 상상해 게임에서 재현했어요. 실제 사진이나 전시 자료의 복제본은 아니에요.';body.appendChild(artNote);
+    
     const ul = el('div', 'mxFacts'); m.facts.forEach(f => ul.appendChild(el('p', '', f))); body.appendChild(ul);
     if (!m.q && !m.photo) { const b = el('button', 'pbtn', '닫기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); return; }
     if (m.photo) {
@@ -7851,8 +7863,8 @@ function openWall() {
 }
 function wallLoad(scroll, refresh=true) {
   WALL.online = false;
-  $('wlMode').textContent = CNT.total===null ? (CNT.failed?'횟수를 불러오지 못했어요':'횟수 불러오는 중') :
-    '자동 벽돌은 여행 횟수 · 내 글은 이번 게임에서만 보기'+(CNT.total>360?' · 최근 360회 표시':'');
+  $('wlMode').innerHTML = CNT.total===null ? (CNT.failed?'횟수를 불러오지 못했어요':'횟수 불러오는 중') :
+    '자동 벽돌은 여행 횟수<br>내 글은 이번 게임에서만 보기'+(CNT.total>360?'<br>최근 360회 표시':'');
   wallRender(scroll);
   if(refresh)cntCall();
 }
@@ -8985,7 +8997,13 @@ if (!coarse) {
     const behind = v.z > 1, W = innerWidth, H = innerHeight;
     let x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H;
     const inside = !behind && x > 40 && x < W - 40 && y > 70 && y < H - 60;
-    if (inside) { a.style.display = 'none'; return; }
+    if (inside) {
+      const d = Math.hypot(marker.position.x - player.x, marker.position.z - player.z), same = (marker.position.y > 4 ? 2 : 1) === player.lv;
+      if (same && d < 2.2) { a.style.display = 'none'; return; }
+      a.style.left = x + 'px'; a.style.top = Math.max(80, y - 60) + 'px'; a.style.display = 'block';
+      a.querySelector('svg').style.transform = 'rotate(180deg)';
+      const t2 = same ? `다음 장소 ${Math.round(d)}m` : `${marker.position.y > 4 ? 2 : 1}층으로`; const lb2 = a.querySelector('b'); if (lb2.textContent !== t2) lb2.textContent = t2;
+      return; }
     if (behind) { x = W - x; y = H - y; }
     const L0 = 50, T0 = 170, R0 = W - 50, B0 = H - 90, cx = (L0 + R0) / 2, cy = (T0 + B0) / 2; let dx = x - cx, dy = y - cy; if (behind && Math.abs(dx) < 1 && Math.abs(dy) < 1) dy = 1;
     const k = Math.min((R0 - cx) / Math.abs(dx || 1e-6), (B0 - cy) / Math.abs(dy || 1e-6));
@@ -9088,7 +9106,9 @@ if (window.MIRROR && MIRROR.mg) {
   const oldMat = refl.material; refl.material = mirMat; refl.visible = true;
   const mp = new THREE.Vector3(), nrm = new THREE.Vector3(), cp = new THREE.Vector3(), la = new THREE.Vector3(), tg = new THREE.Vector3(), rotM = new THREE.Matrix4(), clipP = new THREE.Plane(), sz = new THREE.Vector2(), q4 = new THREE.Vector4(), qq = new THREE.Vector4();
   const bias = new THREE.Matrix4().set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
-  refl.onBeforeRender = (rend, scn, cam) => {
+  refl.onBeforeRender = () => {}; // 비추기 끔(버벅임 방지)
+  refl.material = new THREE.MeshPhongMaterial({ color: 0x8e9a9e, specular: 0xffffff, shininess: 120, emissive: 0x1a2024 }); sheen.material.opacity = 0.9; mg.add(sheen);
+  const _unusedMirror = (rend, scn, cam) => {
     if (refl._busy || cam === vCam) return;
     refl.getWorldPosition(mp); rotM.extractRotation(refl.matrixWorld); nrm.set(0, 0, 1).applyMatrix4(rotM);
     cam.getWorldPosition(cp); la.subVectors(mp, cp); if (la.dot(nrm) > 0 || la.length() > 9) return;
@@ -9388,6 +9408,22 @@ const PERF = (() => {
   // 조명은 그대로 둬요: 켜고 끌 때 조명 개수가 바뀌면 그래픽 프로그램을 새로 만들며 버벅이기 때문이에요
   const refreshLights = () => {};
   const calm = () => state.mode === 'orbit' || !!state.modal; // 시작 화면이나 창이 떠 있을 때만 무거운 일을 해요
+  // 시작 화면 배경: 몇 프레임만 그린 뒤 멈추고, 화면 확대·이동은 CSS로 천천히(그래픽 처리와 따로 돌아 끊기지 않아요)
+  // 그 사이 무거운 준비(물체 합치기·그래픽 미리 만들기·패널 그림)를 해도 배경이 버벅이지 않아요
+  { const st = document.createElement('style');
+    st.textContent = '@keyframes bgDrift{0%{transform:scale(1.02) translate(0,0)}50%{transform:scale(1.09) translate(-1.2%,-.6%)}100%{transform:scale(1.04) translate(1%,-.3%)}}canvas#view.bgStill{animation:bgDrift 46s ease-in-out infinite alternate;transform-origin:50% 45%;will-change:transform}';
+    document.head.appendChild(st); }
+  const cv = renderer.domElement; let stillFrames = 0, still = false, stillT0 = 0;
+  const _render = renderer.render.bind(renderer);
+  renderer.render = function (s, c) {
+    const bootOn = !!(document.getElementById('boot') && !document.getElementById('boot').classList.contains('out'));
+    const want = state.mode === 'orbit' && !bootOn && c === camera;
+    if (!want) { if (still) { still = false; cv.classList.remove('bgStill'); } stillFrames = 0; stillT0 = 0; return _render(s, c); }
+    if (!stillT0) stillT0 = performance.now();
+    if ((stillFrames < 8 || performance.now() - stillT0 < 1200) || P.dirty) { stillFrames++; P.dirty = false; return _render(s, c); } // 처음 몇 프레임(그림이 다 들어오도록)만 그려요
+    if (!still) { still = true; cv.classList.add('bgStill'); }
+  };
+  addEventListener('resize', () => { P.dirty = true; });
   // 그래픽 프로그램 미리 만들기: 로딩 화면 동안 지금 시대, 시작 화면에서 쉬는 틈에 나머지 시대
   const precompile = era => { try { const prev = curEra; if (era && era !== prev) setEra(era); refreshLights(); renderer.compile(scene, camera); if (era && era !== prev) setEra(prev); } catch (e) {} };
   // 로딩 화면이 걷힌 뒤 시작 화면에 머무는 동안 차례로 만들어요(로딩은 짧게, 게임 첫걸음은 매끄럽게)
