@@ -6955,7 +6955,7 @@ function lazyCanvasTex(w, h, draw) {
   return t;
 }
 (function idlePaint() {
-  const run = dl => { const t0 = performance.now(); do { if (MX_LAZY.length) MX_LAZY.shift()(); } while (MX_LAZY.length && performance.now() - t0 < 8 && (!dl || dl.didTimeout || dl.timeRemaining() > 2)); if (MX_LAZY.length) next(); };
+  const run = dl => { if (typeof state !== 'undefined' && !(state.mode === 'orbit' || state.modal)) { next(); return; } const t0 = performance.now(); do { if (MX_LAZY.length) MX_LAZY.shift()(); } while (MX_LAZY.length && performance.now() - t0 < 8 && (!dl || dl.didTimeout || dl.timeRemaining() > 2)); if (MX_LAZY.length) next(); };
   const next = () => window.requestIdleCallback ? requestIdleCallback(run, { timeout: 400 }) : setTimeout(run, 60);
   window.addEventListener('load', () => setTimeout(next, 2500));
 })();
@@ -8854,7 +8854,7 @@ setEra(curEra);
 {
   const flags = [];
   scene.traverse(o => { if (!o.isMesh || o.geometry.type !== 'PlaneGeometry') return; const p = o.geometry.parameters, im = o.material.map && o.material.map.image;
-    if (p.width === 0.9 && p.height === 0.6 && im && im.width === 192 && im.height === 128) flags.push(o); });
+    if (p.width === 0.9 && p.height === 0.6 && im && im.width * 2 === im.height * 3) flags.push(o); }); // 태극기 그림(3:2) — 해상도가 바뀌어도 찾아요
   flags.forEach(f => {
     const pair = flags.find(g => g !== f && g.parent === f.parent && Math.abs(g.position.y - f.position.y) < 0.01 && Math.abs(g.position.z - f.position.z) < 0.01 && Math.abs(Math.abs(g.position.x - f.position.x) - 0.96) < 0.05);
     const hinge = pair ? Math.sign(pair.position.x - f.position.x) * 0.45 : Math.sign(f.position.x) * 0.45; // 깃대 쪽 가장자리
@@ -9092,7 +9092,7 @@ if (window.MIRROR && MIRROR.mg) {
     if (refl._busy || cam === vCam) return;
     refl.getWorldPosition(mp); rotM.extractRotation(refl.matrixWorld); nrm.set(0, 0, 1).applyMatrix4(rotM);
     cam.getWorldPosition(cp); la.subVectors(mp, cp); if (la.dot(nrm) > 0 || la.length() > 9) return;
-    const lowQ = typeof Qcur !== 'undefined' && Qcur === 'low'; refl._f = (refl._f || 0) + 1; if (refl._f % (lowQ ? 4 : 2)) return; // 거울은 2프레임(가볍게: 4프레임)에 한 번만 다시 그려요
+    const lowQ = typeof Qcur !== 'undefined' && Qcur === 'low'; refl._f = (refl._f || 0) + 1; const pastShot = mirMat.opacity > 0.02 && mirMat.opacity < 1 && curEra === 'present'; if (refl._f % (pastShot ? 6 : lowQ ? 4 : 2)) return; // 1919 거울 장면은 시대를 바꿔 그려야 해서 6프레임에 한 번 // 거울은 2프레임(가볍게: 4프레임)에 한 번만 다시 그려요
     la.reflect(nrm).negate().add(mp); vCam.position.copy(la);
     rotM.extractRotation(cam.matrixWorld); tg.set(0, 0, -1).applyMatrix4(rotM).add(cp); tg.subVectors(mp, tg).reflect(nrm).negate().add(mp);
     vCam.up.set(0, 1, 0).applyMatrix4(rotM).reflect(nrm); vCam.lookAt(tg); vCam.far = cam.far; vCam.updateMatrixWorld(); vCam.projectionMatrix.copy(cam.projectionMatrix);
@@ -9385,26 +9385,18 @@ const PERF = (() => {
     return r;
   };
 
-  // 꺼진(밝기 0) 조명은 그리는 동안 빼요
-  let lights = [], depth = 0; const off = [];
-  const refreshLights = () => { lights = []; scene.traverse(o => { if (o.isPointLight || o.isSpotLight) lights.push(o); }); };
-  const _render = renderer.render.bind(renderer);
-  renderer.render = function (s, c) {
-    if (depth++ === 0) { off.length = 0; for (const l of lights) if (l.visible && l.intensity <= 0.001) { l.visible = false; off.push(l); } }
-    try { return _render(s, c); } finally { if (--depth === 0) for (const l of off) l.visible = true; }
-  };
-  const _compile = renderer.compile.bind(renderer);
-  renderer.compile = function (s, c) {
-    if (depth++ === 0) { off.length = 0; for (const l of lights) if (l.visible && l.intensity <= 0.001) { l.visible = false; off.push(l); } }
-    try { return _compile(s, c); } finally { if (--depth === 0) for (const l of off) l.visible = true; }
-  };
+  // 조명은 그대로 둬요: 켜고 끌 때 조명 개수가 바뀌면 그래픽 프로그램을 새로 만들며 버벅이기 때문이에요
+  const refreshLights = () => {};
+  const calm = () => state.mode === 'orbit' || !!state.modal; // 시작 화면이나 창이 떠 있을 때만 무거운 일을 해요
   // 그래픽 프로그램 미리 만들기: 로딩 화면 동안 지금 시대, 시작 화면에서 쉬는 틈에 나머지 시대
   const precompile = era => { try { const prev = curEra; if (era && era !== prev) setEra(era); refreshLights(); renderer.compile(scene, camera); if (era && era !== prev) setEra(prev); } catch (e) {} };
   // 로딩 화면이 걷힌 뒤 시작 화면에 머무는 동안 차례로 만들어요(로딩은 짧게, 게임 첫걸음은 매끄럽게)
   window.addEventListener('load', () => {
     const list = [null].concat(ERAS.filter(e => e !== curEra)); let k = 0;
-    const step = () => { if (k >= list.length) return; const bt = document.getElementById('boot'); if (state.mode !== 'orbit' || (bt && !bt.classList.contains('out'))) { setTimeout(step, 500); return; } precompile(list[k++]); setTimeout(step, 600); };
-    setTimeout(step, 300);
+    const step = () => { if (k >= list.length) return; const bt = document.getElementById('boot');
+      if (state.mode === 'cine') { while (k < list.length) precompile(list[k++]); return; }
+      if (state.mode !== 'orbit' || (bt && !bt.classList.contains('out'))) { setTimeout(step, 300); return; } precompile(list[k++]); setTimeout(step, 400); };
+    setTimeout(step, 200);
   });
 
   // '가볍게': 먼 묶음은 그리지 않아요
@@ -9413,7 +9405,7 @@ const PERF = (() => {
     if (!P.built) return;
     verify();
     const now = performance.now();
-    if (now > (P.scanAt || 0)) { // 처음엔 숨어 있던 것, 풀렸던 것 중 지금 보이고 멈춰 있는 것을 다시 묶어요
+    if (now > (P.scanAt || 0) && calm()) { // 처음엔 숨어 있던 것, 풀렸던 것 중 지금 보이고 멈춰 있는 것을 다시 묶어요
       P.scanAt = now + 3000;
       const r = (P.pool || []).filter(o => !o._dyn && !o._tried && !byMesh.has(o) && o.parent && chainVisible(o));
       if (r.length >= 6) build(r);
@@ -9434,9 +9426,9 @@ const PERF = (() => {
     if (P.built) return;
     const now = performance.now();
     if (!watch) { refreshLights(); startWatch(); t0w = now; return; }
-    if (now - t0w < 4000) return;
+    if (now - t0w < 3000 || !calm()) return;
     const c = []; watch.forEach((s, o) => { if (moved(o, s)) o._dyn = true; else c.push(o); }); P.pool = c;
-    const tb = performance.now(); try { build(c); } catch (e) { P.err = String(e); P.built = true; } refreshLights();
+    const tb = performance.now(); try { build(c); renderer.compile(scene, camera); } catch (e) { P.err = String(e); P.built = true; }
     P.ms = Math.round(performance.now() - tb);
   });
   setInterval(refreshLights, 10000);
