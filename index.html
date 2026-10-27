@@ -6959,10 +6959,23 @@ const mxRoofs = [0x5a4a3e, 0x6d3a2a, 0x3e4a52, 0x7a5a3a];
 // 그림 판: canvas에 직접 그려 벽에 붙여요
 // 전시 패널 그림은 처음부터 그리지 않고, 화면에 처음 쓰일 때나 쉬는 틈에 그려요(첫 로딩 단축)
 const MX_LAZY = [];
+// 전시 그림(이미지 생성 그림): 수채화 벽화 · 현수막 · 패널 배경
+const ART = {};
+[['mural1', 'assets/art_mural1.webp'], ['mural2', 'assets/art_mural2.webp'], ['banner1', 'assets/art_banner1.webp'], ['banner2', 'assets/art_banner2.webp'],
+ ['p1', 'assets/art_p1.webp'], ['p2', 'assets/art_p2.webp'], ['p3', 'assets/art_p3.webp'], ['p4', 'assets/art_p4.webp'], ['p5', 'assets/art_p5.webp'], ['p6', 'assets/art_p6.webp'], ['p7', 'assets/art_p7.webp']]
+  .forEach(([k, src]) => { const im = new Image(); im.decoding = 'async'; im.src = src; ART[k] = im; });
+const artReady = k => !!(ART[k] && ART[k].complete && ART[k].naturalWidth);
+function artCover(g, k, x, y, w, h, fx = 0.5, fy = 0.5) {
+  const im = ART[k]; const s = Math.max(w / im.naturalWidth, h / im.naturalHeight), sw = w / s, sh = h / s;
+  g.drawImage(im, (im.naturalWidth - sw) * fx, (im.naturalHeight - sh) * fy, sw, sh, x, y, w, h);
+}
+function wrapText(g, t, maxW) { const out = []; let line = ''; for (const ch of String(t)) { if (g.measureText(line + ch).width > maxW && line) { const sp = line.lastIndexOf(' '); if (sp > 0 && line.length - sp < 6) { out.push(line.slice(0, sp)); line = line.slice(sp + 1) + ch; } else { out.push(line); line = ch; } } else line += ch; } if (line) out.push(line); return out; }
+const MX_FONT = '"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+function mxThemeAt(x, y, z) { if (y < 2) { if (x > 4) return z > 0 ? 'p1' : 'p2'; if (x < -4) return 'p3'; return null; } if (x < -4) return 'p4'; if (x > 4) return z > 0 ? 'p5' : 'p7'; return null; }
 function lazyCanvasTex(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const t = new THREE.Texture(c); let done = false; // 아직 올리지 않은 그림(version 0)
-  t.paint = () => { if (done) return; done = true; draw(c.getContext('2d'), w, h); t.needsUpdate = true; };
+  t.paint = () => { if (done) return; done = true; if (draw(c.getContext('2d'), w, h) === false) { done = false; return; } t.needsUpdate = true; }; // 그림 파일이 아직이면 다음에 다시
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4); MX_LAZY.push(t.paint);
   return t;
 }
@@ -7087,14 +7100,22 @@ function darkText(g, W, H, title, en, lines, accent, x0, y0, w) {
 const MX_PANEL_TEXT = {"목포진":["서남해를 지키던 조선 수군 진영"],"목포의 개항":["1897년 고종의 칙령으로 개항"],"개항장 목포":["개항 뒤 변화한 도시를 살펴봐요"],"삼백의 고장":["쌀 · 목화 · 소금"],"1919. 4. 8. 목포 만세운동":["시민들의 저항을 기억해요"],"종교의 전파":["개항 이후 여러 종교가 들어왔어요"],"근대 교육의 시작":["여러 학교가 문을 열었어요"],"일본인들의 학교":["학교와 교육의 변화를 살펴봐요"]};
 function darkPanelTex(title, en, lines, accent, seed) {
   const verified = MX_PANEL_TEXT[title];
-  if (verified) { lines = verified; en = ''; }
-  else if (!title || !lines || !lines.length) { title = title || '근대 목포'; lines = []; }
-
-  return (g, W, H) => {
-    const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#3a393d'); bg.addColorStop(1, '#2a292d'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    mxText(g, '공식 안내 기반 · 학습용 설명판', W*.1, H*.9, H*.025, '#e9d4a6', false);
-    const lg = g.createLinearGradient(0, 0, 0, H * 0.18); lg.addColorStop(0, 'rgba(255,240,210,.28)'); lg.addColorStop(1, 'rgba(255,240,210,0)'); g.fillStyle = lg; g.fillRect(0, 0, W, H * 0.18);
-    darkText(g, W, H, title, en, lines, accent, W * 0.1, H * 0.2, W * 0.8);
+  if (verified) lines = verified;
+  if (!title) title = '근대 목포';
+  lines = lines || [];
+  return (g, W, H, theme, idx = 0) => {
+    if (theme && !artReady(theme)) return false;
+    g.fillStyle = '#2b292c'; g.fillRect(0, 0, W, H);
+    const IH = theme ? H * 0.4 : 0;
+    if (theme) { artCover(g, theme, 0, 0, W, IH, [0.82, 0.62, 0.95, 0.72][idx % 4], 0.5);
+      const fd = g.createLinearGradient(0, IH * 0.7, 0, IH); fd.addColorStop(0, 'rgba(43,41,44,0)'); fd.addColorStop(1, 'rgba(43,41,44,1)'); g.fillStyle = fd; g.fillRect(0, IH * 0.7, W, IH * 0.3 + 1); }
+    const L = W * 0.09, MW = W * 0.82; let y = IH + H * 0.05;
+    g.textAlign = 'left'; g.textBaseline = 'top';
+    g.font = `700 ${W * 0.095}px ${MX_FONT}`; g.fillStyle = '#ffffff';
+    wrapText(g, title, MW).slice(0, 3).forEach(t => { g.fillText(t, L, y); y += W * 0.125; });
+    g.fillStyle = accent; g.fillRect(L, y + W * 0.02, W * 0.16, W * 0.018); y += W * 0.09;
+    g.font = `500 ${W * 0.068}px ${MX_FONT}`; g.fillStyle = '#efe9df';
+    lines.forEach(ln => { wrapText(g, ln, MW).forEach(t => { if (y < H - W * 0.12) { g.fillText(t, L, y); y += W * 0.098; } }); y += W * 0.035; });
   };
 }
 // 세로 띠(금색·붉은색) 제목
@@ -7113,7 +7134,7 @@ function mxUnit(x, y, z, ry, parts, opt = {}) {
   const H = opt.h || 2.3, base = opt.base || 0.35; let cx = 0;
   const total = parts.reduce((s, p) => s + p.w + 0.03, 0); cx = -total / 2;
   parts.forEach(p => {
-    const b = mxBoard(p.w, H, p.draw, 300); b.position.set(cx + p.w / 2, base + H / 2, 0.03 + (p.strip ? 0.04 : 0)); g.add(b);
+    const th = mxThemeAt(x, y, z), ix = (mxUnit.n = (mxUnit.n || 0) + 1); const b = mxBoard(p.w, H, (gg, WW, HH) => p.draw(gg, WW, HH, p.strip ? undefined : th, ix), 300); b.position.set(cx + p.w / 2, base + H / 2, 0.03 + (p.strip ? 0.04 : 0)); g.add(b);
     if (!p.strip) { dk(p.w, 0.12, 0.34, MXM.black, cx + p.w / 2, base + H + 0.06, 0.14, g); const gl = new THREE.Mesh(new THREE.PlaneGeometry(p.w * 0.85, 0.04), MXM.glow); gl.rotation.x = Math.PI / 2; gl.position.set(cx + p.w / 2, base + H - 0.005, 0.24); g.add(gl); }
     cx += p.w + 0.03;
   });
@@ -7355,18 +7376,11 @@ function mxModelCase(x, y, z, ry, kind) {
     q: "같은 시기 목포에 있던 곳 가운데, 우리 민족 자본으로 세운 곳은?", o: ["동양척식주식회사", "조선은행 목포지점", "호남은행 목포지점", "일본영사관"], a: 2, sourceIds: ["mokpo","photos"] });
 
   // 6 zone · 만세운동 함께해요 (홍보관)
-  const mural = (w, h, seed) => mxBoard(w, h, (g, W, H) => {
-    const Rr = rng(seed); g.fillStyle = '#d9d2c2'; g.fillRect(0, 0, W, H); oldPhoto(g, 0, 0, W, H * 0.6, seed, [210, 205, 195]);
-    for (let i = 0; i < 26; i++) {
-      const x = W * (0.03 + Rr() * 0.94), y = H * (0.45 + Rr() * 0.12), s = H * (0.16 + Rr() * 0.08);
-      g.fillStyle = Rr() < 0.25 ? '#6f8fb4' : Rr() < 0.5 ? '#2a2826' : '#f2eee4'; g.fillRect(x - s * 0.2, y, s * 0.4, s * 1.4);
-      g.fillStyle = '#e8c9a8'; g.beginPath(); g.arc(x, y - s * 0.12, s * 0.16, 0, 7); g.fill(); g.fillStyle = '#1a1614'; g.fillRect(x - s * 0.16, y - s * 0.3, s * 0.32, s * 0.1);
-      if (Rr() < 0.6) { g.strokeStyle = '#6a5a40'; g.lineWidth = 3; g.beginPath(); g.moveTo(x + s * 0.2, y + s * 0.2); g.lineTo(x + s * 0.4, y - s * 0.9); g.stroke();
-        const fx = x + s * 0.4, fy = y - s * 0.9; g.fillStyle = '#f7f5ef'; g.fillRect(fx, fy, s * 0.7, s * 0.46); g.strokeStyle = '#222'; g.lineWidth = 1; g.strokeRect(fx, fy, s * 0.7, s * 0.46);
-        drawTaegukgi(g, s * 0.69, s * 0.46, fx, fy); }
-    }
-    mxText(g, '만세운동 함께해요', W * 0.62, H * 0.18, H * 0.06, '#ffffff', true);
-  }, 260);
+  const mural = (w, h, seed) => mxBoard(w, h, (g, W, H) => { const k = seed === 61 ? 'mural1' : 'mural2'; if (!artReady(k)) return false;
+    artCover(g, k, 0, 0, W, H, 0.5, 0.45);
+    if (seed === 61) { const gr = g.createLinearGradient(0, H * 0.8, 0, H); gr.addColorStop(0, 'rgba(30,22,16,0)'); gr.addColorStop(1, 'rgba(30,22,16,.75)'); g.fillStyle = gr; g.fillRect(0, H * 0.8, W, H * 0.2);
+      g.font = `700 ${H * 0.055}px ${MX_FONT}`; g.fillStyle = '#fff'; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillText('1919. 4. 8. 목포 만세운동', W * 0.04, H * 0.955); }
+  }, 300);
   const mw = mural(3.3, 2.7, 61); mxAdd(mw, -6.48, 1.4, -3.1, PI / 2, R);
   const mw2 = mural(2.9, 2.7, 63); mxAdd(mw2, -8.3, 1.4, -5.83, 0, R);
   const navy = mxBoard(2.6, 2.7, (g, W, H) => { g.fillStyle = '#1d2c4c'; g.fillRect(0, 0, W, H); g.fillStyle = '#c8ccd2'; g.fillRect(0, H * 0.7, W, H * 0.3);
@@ -7467,15 +7481,11 @@ function mxModelCase(x, y, z, ry, kind) {
     MXP('창씨개명', 'Name Changing', ['1939년 11월', '우리 이름을 일본식으로 바꾸게 하다'], '#c9a157', 0.75, 153),
     MXS('강제 동원', '#8a6a32'), MXP('인력의 강제 동원', 'Forced Mobilization', ['징병 · 징용 · 근로보국대', '쌀과 놋그릇까지 빼앗다(공출)'], '#c9a157', 0.75, 155)], { col: false });
   // 5 zone · 대중 문화의 시대 (옛 거리 세트 · 인력거)
-  const street = mxBoard(4.4, 2.9, (g, W, H) => {
-    const sk = g.createLinearGradient(0, 0, 0, H * 0.5); sk.addColorStop(0, '#6f9cc8'); sk.addColorStop(1, '#d7e4ec'); g.fillStyle = sk; g.fillRect(0, 0, W, H);
-    g.fillStyle = '#9a9e88'; g.beginPath(); g.moveTo(0, H * 0.5); g.lineTo(W * 0.3, H * 0.38); g.lineTo(W * 0.6, H * 0.46); g.lineTo(W, H * 0.36); g.lineTo(W, H * 0.55); g.lineTo(0, H * 0.55); g.fill();
-    g.fillStyle = '#c9ae86'; g.beginPath(); g.moveTo(W * 0.15, H); g.lineTo(W * 0.46, H * 0.52); g.lineTo(W * 0.52, H * 0.52); g.lineTo(W * 0.95, H); g.fill();
-    const Rr = rng(170); for (let side = 0; side < 2; side++) for (let i = 0; i < 6; i++) { const t = i / 6, x = side ? W * (0.53 + t * 0.4) : W * (0.45 - t * 0.4), w = W * (0.04 + t * 0.06), h = H * (0.1 + t * 0.32), y = H * (0.52 - t * 0.02) - h + H * t * 0.22;
-      g.fillStyle = ['#8a6a4a', '#9c7b56', '#6e5a48', '#b09a7a'][Math.floor(Rr() * 4)]; g.fillRect(side ? x : x - w, y, w, h + H * 0.04); g.fillStyle = '#3a3430'; g.fillRect(side ? x : x - w, y - h * 0.08, w, h * 0.1);
-      g.fillStyle = 'rgba(40,40,50,.6)'; for (let k = 0; k < 3; k++) g.fillRect((side ? x : x - w) + w * (0.15 + k * 0.28), y + h * 0.25, w * 0.16, h * 0.25); }
-    g.strokeStyle = '#3a3430'; g.lineWidth = 3; g.beginPath(); g.moveTo(W * 0.92, H * 0.1); g.lineTo(W * 0.92, H * 0.9); g.stroke(); g.beginPath(); g.moveTo(W * 0.92, H * 0.15); g.lineTo(W * 0.4, H * 0.3); g.stroke();
-  }, 120);
+  const street = mxBoard(4.4, 2.9, (g, W, H) => { if (!artReady('p6')) return false; artCover(g, 'p6', 0, 0, W, H, 0.7, 0.5);
+    const gr = g.createLinearGradient(0, 0, W * 0.45, 0); gr.addColorStop(0, 'rgba(250,240,222,.85)'); gr.addColorStop(1, 'rgba(250,240,222,0)'); g.fillStyle = gr; g.fillRect(0, 0, W * 0.45, H);
+    g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = '#2a1d14'; g.font = `700 ${H * 0.075}px ${MX_FONT}`; g.fillText('대중 문화의 시대', W * 0.05, H * 0.1);
+    g.fillStyle = '#a8462f'; g.fillRect(W * 0.05, H * 0.2, W * 0.08, H * 0.01);
+    g.fillStyle = '#3a2c22'; g.font = `500 ${H * 0.045}px ${MX_FONT}`; ['1920년 목포극장', '1927년 평화관', '영화 · 연극 · 대중가요'].forEach((t, i) => g.fillText(t, W * 0.05, H * (0.25 + i * 0.07))); }, 200);
   mxAdd(street, 7.6, 5.45, -5.83, 0, R);
   
   const shop = grp(9.8, 4, -3.6, -PI / 2); R.add(shop);
@@ -7509,7 +7519,11 @@ function mxModelCase(x, y, z, ry, kind) {
   const gp = interactables.gate ? interactables.gate.pos : new THREE.Vector3(0, 1.4, -20);
   const sg = grp(gp.x + 2.4, 0, gp.z + 1.6, -0.3); mxRoot.add(sg);
   dk(0.08, 1.3, 0.08, M.darkwood, -0.85, 0.65, 0, sg); dk(0.08, 1.3, 0.08, M.darkwood, 0.85, 0.65, 0, sg);
-  const bp = mxPanel('방공호 특별전시', '건물 뒤편', ['공습에 대비해 만든 방어시설', '강제동원된 조선인의 노동을 기억해요'], 1.9, 1.15, '#5a5048');
+  const bp = mxBoard(1.9, 1.15, (g, W, H) => { if (!artReady('p7')) return false; artCover(g, 'p7', 0, 0, W, H, 0.6, 0.5);
+    const gr = g.createLinearGradient(0, 0, W * 0.55, 0); gr.addColorStop(0, 'rgba(250,240,222,.92)'); gr.addColorStop(1, 'rgba(250,240,222,0)'); g.fillStyle = gr; g.fillRect(0, 0, W * 0.55, H);
+    g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = '#2a1d14'; g.font = `700 ${H * 0.1}px ${MX_FONT}`; g.fillText('방공호 특별전시', W * 0.05, H * 0.1);
+    g.fillStyle = '#5a5048'; g.fillRect(W * 0.05, H * 0.24, W * 0.08, H * 0.015);
+    g.fillStyle = '#3a2c22'; g.font = `500 ${H * 0.062}px ${MX_FONT}`; ['공습에 대비해 만든 방어시설', '강제동원된 조선인의', '노동을 기억해요'].forEach((t, i) => g.fillText(t, W * 0.05, H * (0.32 + i * 0.1))); }, 400);
   bp.position.set(0, 1.55, 0.05); sg.add(bp); dk(1.95, 1.2, 0.06, M.darkwood, 0, 1.55, 0, sg);
   addCol(gp.x + 1.4, gp.z + 1.3, gp.x + 3.4, gp.z + 1.9, 1);
   mxDef({ id: 'mx8', name: "방공호 이야기", place: '뒤뜰 방공호 앞', lv: 1, obj: sg, at: [gp.x + 2.2, gp.z + 3.0], title: "전쟁준비의 흔적, 방공호",
@@ -8617,10 +8631,8 @@ TICK.push(() => { if (typeof work !== 'undefined') work.visible = !MUSEUM.on; })
 // ── 2026: 2층 중앙 홀(계단 위) — 뒷벽 큰 창 양옆 세피아 사진 현수막, 놋쇠 샹들리에(설화석 갓)
 {
   const N0 = scene.children.length;
-  const banner = (seed, title) => mxBoard(0.75, 3.6, (g, W, H) => { g.fillStyle = '#d9d0c0'; g.fillRect(0, 0, W, H);
-    oldPhoto(g, 0, H * 0.08, W, H * 0.3, seed, [222, 214, 198]); oldPhoto(g, 0, H * 0.4, W, H * 0.28, seed + 1, [222, 214, 198]); oldPhoto(g, 0, H * 0.7, W, H * 0.28, seed + 2, [222, 214, 198]);
-    g.fillStyle = '#8a7a3a'; g.fillRect(title ? 0 : W - W * 0.12, 0, W * 0.12, H * 0.2);
-    }, 150);
+  const banner = (seed, title) => mxBoard(0.75, 3.6, (g, W, H) => { const k = seed === 31 ? 'banner1' : 'banner2'; if (!artReady(k)) return false;
+    g.fillStyle = '#d9d0c0'; g.fillRect(0, 0, W, H); artCover(g, k, W * 0.04, H * 0.01, W * 0.92, H * 0.98, 0.5, 0.5); }, 300);
   const hallArt = [];
   [[-2.6, 31, true], [2.6, 41, false]].forEach(([x, s, t]) => { const b = banner(s, t); b.position.set(x, 6.0, -5.82); scene.add(b); hallArt.push(b); });
   const hallInfo=mxDef({id:'mxHallArt',name:'홀의 그림 살펴보기',place:'2층 중앙 홀',lv:2,obj:hallArt[0],title:'그림으로 만나는 근대의 일상',facts:['항구와 거리, 배움터와 공연장의 모습을 그림으로 살펴보세요.','그림 속 사람들은 어떤 하루를 보냈을까요?'],sourceIds:[]});
