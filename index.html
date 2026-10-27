@@ -368,8 +368,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 
 /* 수첩 */
 .nb{background:#f3e9d0;background-image:none}
-.nb .page{white-space:pre-line;word-break:keep-all;overflow-wrap:normal;line-height:44px;margin:6px 0 10px;padding:0 4px;
-  background-image:repeating-linear-gradient(180deg,transparent 0 42px,rgba(70,90,140,.35) 42px 44px);background-position:0 0}
+.nb .page{white-space:pre-line;word-break:keep-all;overflow-wrap:normal;line-height:54px;margin:6px 0 10px;padding:0 6px;letter-spacing:.04em;word-spacing:.18em;
+  background-image:repeating-linear-gradient(180deg,transparent 0 52px,rgba(70,90,140,.28) 52px 54px);background-position:0 0}
+.nb .page.kid{font-size:28px;color:#0e1133;font-weight:700}.nb .page.adult{font-size:30px}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 12px}
 .tabs button{border:1px solid #b9a37a;background:#fff8e6;border-radius:4px;padding:6px 10px;font-size:14px;color:var(--text)}
 .tabs button.cur{background:var(--ink2);color:var(--paper)}
@@ -746,8 +747,8 @@ body.deskUI #btnNote::after{content:"N";font:700 10.5px/1 sans-serif;margin-left
 .tgram{background:#f4ead0;border:1px solid #b9a37a;border-radius:3px;padding:10px 14px;margin:8px 0;box-shadow:0 4px 10px rgba(0,0,0,.15);transform:rotate(-.5deg)}
 .tgram .th{display:flex;justify-content:space-between;border-bottom:2px solid #a8462f;padding-bottom:4px;color:#a8462f;font-size:13px}
 .tgram .th b{font-size:18px;letter-spacing:.3em}
-.tgram .code{font-family:"Courier New",monospace;font-size:26px;letter-spacing:.1em;color:#1d2148;padding:10px 0;text-align:center;word-break:break-all}
-.tgram .tf{font-size:12px;color:var(--muted)}
+.tgram .code{font-family:"Courier New",monospace;font-size:34px;font-weight:900;letter-spacing:.14em;color:#0b0d24;padding:10px 0;text-align:center;word-break:break-all;-webkit-text-stroke:1.2px #0b0d24;text-shadow:0 0 1px #0b0d24}
+.tgram .tf{font-size:14px;color:#2a1d14;font-weight:600}
 /* 편지 */
 #letterText{white-space:pre-line;word-break:keep-all;line-height:1.6;margin:0 0 8px}
 .letterPaper{background:#f3e9d0;color:#2b2a5a;border-radius:3px;padding:16px 20px;box-shadow:0 10px 30px rgba(0,0,0,.4);transform:rotate(-.6deg)}
@@ -1748,6 +1749,11 @@ function buildProps() {
   newel(RX, 4, S1.z0, 1.05, g2);
   for (let z = zL + 0.3; z < S1.z0; z += 0.3) bal(RX, 4, z, 0.92, g2);
   for (let x = RX + 0.3; x < 3; x += 0.3) bal(x, 4, S1.z0, 0.92, g2);
+  // 두 번째 계단 위 구멍 가장자리(2층 바닥 끝)도 난간으로 이어요: 계단 끝 엄지기둥 → 모서리 엄지기둥
+  rail(new THREE.Vector3(S2.x1, 4.98, zL + 0.04), new THREE.Vector3(RX, 4.98, zL + 0.04), g2);
+  newel(RX, 4, zL + 0.04, 1.05, g2);
+  for (let x = S2.x1 + 0.3; x < RX - 0.1; x += 0.3) bal(x, 4, zL + 0.04, 0.92, g2);
+  addCol(S2.x1, zL - 0.02, RX, zL + 0.1, 2);
   box(sw + 0.1, 0.3, 0.12, stringM, scx, 3.85, S1.z0, g2); box(0.12, 0.3, -zL + S1.z0, stringM, RX, 3.85, (zL + S1.z0) / 2, g2);
   addCol(S1.x0, -6, 3, S1.z0, 1);
   const rope = new THREE.Group(); const ropeP = new THREE.Group(); ropeP.position.set(scx, 0, S1.z0 + 0.25); ropeP.rotation.y = Math.PI / 2; scene.add(ropeP); ropeP.add(rope); rope.position.set(-4.0, 0, 5.1);
@@ -2878,7 +2884,7 @@ function openNotebook(page) {
         const spans = [...txt].map(ch => { if (ch === '\n') { hp.appendChild(document.createTextNode('\n')); return null; } const sp = document.createElement('span'); sp.textContent = ch; sp.style.opacity = '0'; hp.appendChild(sp); return sp; }).filter(Boolean);
         let k = 0, revealed = false;
         const reveal = () => { revealed = true; hp.textContent = txt; hp.removeAttribute('role'); hp.removeAttribute('tabindex'); hp.onclick = hp.onkeydown = null; };
-        hp.tabIndex = 0; hp.setAttribute('role','button'); hp.setAttribute('aria-label','수첩 글씨 바로 보기'); hp.title = '누르면 글씨를 한 번에 볼 수 있어요';
+        hp.tabIndex = 0; hp.setAttribute('role','button'); hp.setAttribute('aria-label','수첩 글씨 바로 보기'); 
         hp.onclick = reveal; hp.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); } };
         const tick = () => { if (revealed || !hp.isConnected) return; for (let n = 0; n < 3 && k < spans.length; n++, k++) spans[k].style.opacity = '1'; if (k < spans.length) setTimeout(tick, 40); else reveal(); };
         setTimeout(tick, 350);
@@ -4326,7 +4332,7 @@ function scopePick(n) {
 }
 
 /* ---------- ⑤ 4월 8일: 90초 안에 태극기 조각 모으기 ---------- */
-const PIECE_POS = [[6.75, 5.25], [-1.7, 6.9], [-9.3, -1.0], [2.2, -4.7], [-5.6, -3.4]]; // 0번은 동쪽 방 책상 밑, 4번(태극)은 서쪽 방 책상 밑에 숨어 있어요
+const PIECE_POS = [[6.75, 5.25], [-1.7, 6.9], [-9.3, -1.0], [-1.6, 2.6], [-5.6, -3.4]]; // 3번: 계단 구멍·계단 버튼에서 떨어진 2층 가운데 방 바닥 // 0번은 동쪽 방 책상 밑, 4번(태극)은 서쪽 방 책상 밑에 숨어 있어요
 const PIECE_N = PIECE_POS.length;
 const pieceMeshes = PIECE_POS.map(([x, z], i) => {
   const t = canvasTex(96, 72, g => { g.fillStyle = '#f7f3e8'; g.fillRect(6, 6, 84, 60); g.strokeStyle = 'rgba(150,130,90,.4)'; g.lineWidth = 2; g.strokeRect(8, 8, 80, 56); if (i === 4) { drawTaegeuk(g,48,36,22); return; }
@@ -4474,7 +4480,7 @@ function takeArt(i) {
   sfx.pick();
   const a = ARTS[i];
   if (typeof findPop === 'function') findPop(i);
-  setTimeout(() => openModal(body => { head(body, `숨은 유물 ${FX.arts.size}/7`, `${a.e} ${a.t}`); tagHead(body, 'recon'); if (typeof ART_IMG !== 'undefined' && ART_IMG[i + 1]) { const im = el('img', 'artimg'); im.src = ART_IMG[i + 1]; im.alt = a.t; body.appendChild(im); } if (ART_MEMO[i]) body.appendChild(el('p', 'hand kid artmemo', `“${ART_MEMO[i]}” <span>— 민승이의 수첩</span>`)); body.appendChild(el('div', 'fact', a.d)); const b = el('button', 'pbtn', '도감에 넣기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); }), typeof findPop === 'function' ? 1800 : 0);
+  setTimeout(() => openModal(body => { head(body, `숨은 유물 ${FX.arts.size}/7`, `${a.e} ${a.t}`); tagHead(body, 'recon'); if (typeof ART_IMG !== 'undefined' && ART_IMG[i + 1]) { const im = el('img', 'artimg'); im.src = ART_IMG[i + 1]; im.alt = a.t; body.appendChild(im); } if (ART_MEMO[i]) body.appendChild(el('p', 'hand kid artmemo', `“${ART_MEMO[i]}” <span>— 민승이의 수첩</span>`)); body.appendChild(el('div', 'fact', a.d)); const b = el('button', 'pbtn', '도감에 넣기'); b.style.marginTop = '12px'; b.onclick = closeModal; body.appendChild(b); }), typeof findPop === 'function' ? 650 : 0);
 }
 
 /* ---------- 상호작용 연결 ---------- */
@@ -5637,7 +5643,7 @@ returnHome = async function () {
   let a = 0; retCam = dt => { a += dt * .12; camera.position.set(Math.sin(a-.6)*30,9,Math.cos(a-.6)*30); camera.lookAt(0,4.5,0); };
   for (const [year,caption,era] of [[1947,'목포시청이 된 건물','y1919'],[2014,'역사를 함께 읽는 역사관으로','present'],[2026,'그리고, 기록을 읽은 오늘','present']]) {
     goEra(era); setDark(false); $('rYear').textContent = year+'년'; $('rCap').textContent = caption;
-    $('rYear').classList.add('on'); $('rCap').classList.add('on'); await sleep(900);
+    $('rYear').classList.add('on'); $('rCap').classList.add('on'); await sleep(2600); $('rYear').classList.remove('on'); $('rCap').classList.remove('on'); await sleep(450); // 한 장면씩 천천히
   }
   $('rYear').classList.remove('on'); $('rCap').classList.remove('on');
   goEra('present'); cineBook.visible = true;
@@ -5662,6 +5668,8 @@ showEnding = function () {
 
 /* ---------- 새 미션은 민승이가 직접 알려 줘요 ---------- */
 const MS_LINES = [
+  ['벽난로에서 이름', '벽 글씨를 다 찾았구나! 이제 벽난로 앞으로 가 봐. 벽 글씨에 적힌 해를 차례대로 떠올리면서 이 건물의 이름을 순서대로 맞춰 줘.'],
+  ['숨은 벽 글씨', '촛불을 비추면 벽에 숨은 글씨가 보일 거야. 이 방 벽을 천천히 둘러보면서 세 군데를 찾아 줘.'],
   ['분필 표시', '나는 열두 살 민승이야. 들키면 빼앗길 기록을 나누어 숨겼어. 이 집을 찬찬히 살펴보는 사람이 찾아 주기를 바라면서. 바깥벽 네 곳의 분필 번호부터 찾아 줘.'],
   ['쪽지판에서 흰 벽돌', '분필 표시를 다 찾았구나! 이제 앞마당 쪽지판으로 가서, 줄마다 흰 벽돌을 세어 자물쇠를 열어 봐.'],
   ['대칭 자물쇠', '기록이 있는 방으로 가는 잠금장치는 이 집 모양을 본떠 만들었어. 왼쪽과 오른쪽이 거울처럼 같은 모습을 떠올려 봐.'],
@@ -5675,13 +5683,13 @@ const MS_LINES = [
   ['서랍장', '2층 동쪽 방 서랍장에 내가 아끼는 걸 숨겨 두었어. 가서 살펴봐 줘!'],
   ['공고문', '1944년, 나도 서른일곱이 되었구나. 그날의 흰 천과 친구들의 이름을 아직 간직하고 있단다. 이제 뒤뜰 봉안전 공고문에서 거짓을 가려내렴. 순사의 노란 불빛은 조심하고.'],
   ['서고', '방공호 안은 한 치 앞도 보이지 않을 만큼 어둡단다. 뒤뜰 왼쪽 돌 건물, 서고 탁자 위에 내 손전등을 두었으니 먼저 챙겨 가거라.'],
-  ['출구에서', '글자를 모두 찾았구나. 어린 날부터 지켜 온 내 소원, 모두의 되찾은 집. 출구에서 네 글자를 맞추고 마지막 기록을 읽어 다오.'],
+  ['출구에서', '글자를 모두 찾았구나. 어린 날부터 지켜 온 내 소원이 그 네 글자에 담겨 있어. 출구에서 네 글자를 맞추고 마지막 기록을 읽어 다오.'],
   ['철문', '손전등 손잡이에 철문 열쇠를 묶어 두었단다. 언덕 방공호 철문의 열쇠 구멍에 그 열쇠를 꽂아 돌려 주렴.'],
   ['방공호', '손전등은 잘 챙겼느냐? 방공호 굴 벽에 내가 몰래 새긴 글자 네 개가 있단다. 무너진 길이 나오면 서두르지 말고 돌아가거라.']
 ];
 const MS = { last: null, pending: null, t: 0, started: false };
 function goalKey() { return ($('goalTxt').textContent || '').replace(/\s*\(\d+\/\d+\)\s*/g, '').trim(); }
-function msLine(g, old) { const m = MS_LINES.find(([k]) => g.includes(k)); return m ? m[1] : old ? `이제 할 일은 이것이란다. ${g}` : `다음에 할 일이야. ${g}`; }
+function msLine(g, old) { const m = MS_LINES.find(([k]) => g.includes(k)); return m ? m[1] : old ? `이제 남은 일은 「${g}」란다.` : `좋아, 이제 「${g}」 차례야!`; }
 let msTick = 0;
 TICK.push(dt => {
   if (state.mode !== 'play') return;
@@ -5978,8 +5986,8 @@ TICK.push(() => {
     const inside = typeof indoors === 'function' && indoors();
     skyDome.material.uniforms.top.value.setHex(0x070d22); skyDome.material.uniforms.bot.value.setHex(0x1c2742);
     if (!scene.background || !scene.background.isColor) scene.background = new THREE.Color(); scene.background.setHex(0x141c30); scene.fog.color.setHex(0x161e33); scene.fog.near = 25;
-    sun.color.setHex(0x9db2e6); sun.intensity = 0.42; hemi.color.setHex(0x6c7aa2); hemi.groundColor.setHex(0x1b1712); hemi.intensity = 0.52; amb.intensity = 0.12; // 안팎 같은 밤빛: 문을 나설 때 갑자기 어두워지지 않게
-    const f = 'saturate(.9) contrast(1.06) brightness(1.02)'; if (canvas.style.filter !== f) canvas.style.filter = f;
+    sun.color.setHex(0x8fa4dc); sun.intensity = 0.2; hemi.color.setHex(0x52608a); hemi.groundColor.setHex(0x120f0c); hemi.intensity = 0.3; amb.intensity = 0.05; // 안팎 같은 밤빛: 문을 나설 때 갑자기 어두워지지 않게
+    const f = 'saturate(.75) contrast(1.08) brightness(.82)'; if (canvas.style.filter !== f) canvas.style.filter = f;
     moon.visible = stars.visible = true; LIT_WIN.list.forEach(o => o.material = LIT_WIN.lit); clouds.forEach(c => c.visible = false);
     WIN.in.color.setHex(0x2c3654); WIN.out.color.setHex(0x55607e); // 그림으로 된 창도 밤하늘 색으로
     LAMPS.forEach(l => { l.g.visible = true; l.L.intensity = 1.3 + Math.sin(performance.now() / 160 + l.g.position.x) * 0.06; });
@@ -6558,12 +6566,19 @@ if (coarse) {
       const tt = t - s.d; if (tt < 0) { s.f.visible = false; return; } s.f.visible = true;
       // 왼쪽에서 걸어와 → 봉안전 앞에서 돌아서 고개 숙이고 → 다시 걸어가요
       let x, bow = 0, face = Math.PI / 2;
-      // 봉안전 앞에서 잠깐 고개를 돌려 가볍게 인사하고 지나가요
-      if (tt < 2.2) x = 1 + tt * 2.3;
-      else if (tt < 3.0) { x = 6.06; const q = (tt - 2.2) / 0.8; face = Math.PI / 2 + Math.PI / 2 * Math.sin(Math.min(1, q) * Math.PI) * 0.9; bow = Math.sin(Math.min(1, q) * Math.PI) * 0.22; }
-      else x = 6.06 + (tt - 3.0) * 2.3;
-      s.f.position.set(x, 0, -11.2); s.f.rotation.set(0, face, 0); s.f.rotateX(bow);
-      if (tt < 2.2 || tt >= 3.0) walkPose(s.f, t * 7 + s.d, 0.8); else walkPose(s.f, 0, 0);
+      // 봉안전 앞에서 멈춰 돌아서고 → 허리를 깊이 숙여 절하고 → 다시 돌아서 지나가요
+      const ss = v => v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v);
+      const T0 = 2.2, T1 = 2.6, T2 = 3.0, T3 = 3.9, T4 = 4.3, T5 = 4.7;
+      if (tt < T0) x = 1 + tt * 2.3;
+      else if (tt < T5) { x = 6.06;
+        face = Math.PI / 2 + Math.PI / 2 * (tt < T4 ? ss((tt - T0) / (T1 - T0)) : 1 - ss((tt - T4) / (T5 - T4)));
+        bow = 0.62 * (tt < T3 ? ss((tt - T1) / (T2 - T1)) : 1 - ss((tt - T3) / (T4 - T3))); }
+      else x = 6.06 + (tt - T5) * 2.3;
+      s.f.rotation.set(0, face, 0); s.f.rotateX(bow);
+      if (tt < T0 || tt >= T5) { s.f.position.set(x, 0, -11.2); walkPose(s.f, t * 7 + s.d, 0.8); }
+      else { // 허리(엉덩이 높이)를 축으로 윗몸만 숙여요: 다리는 반대로 돌려 땅을 딛고 있게
+        walkPose(s.f, 0, 0); const v = new THREE.Vector3(0, 0.9, 0).applyQuaternion(s.f.quaternion);
+        s.f.position.set(x - v.x, 0.9 - v.y, -11.2 - v.z); s.f.userData.legs.forEach(l => { l.rotation.x = -bow; }); }
     });
   };
   BRIDGE[6].end = () => { SH.forEach(s => s.f.visible = false); const sp = sign(); if (sp) sp.rotation.set(0, 0, 0); try { wind && wind.stop(); } catch (e) {} };
@@ -6622,7 +6637,7 @@ async function tjCinema() {
   const poster = (lines, x, y, z, ry, w = 0.7, h = 0.95, bg = '#e9dfc4') => { const p = textPlane(lines, w, h, { bg, fg: '#7a1c12', fg2: '#2a211a' }); p.position.set(x, y, z); p.rotation.y = ry; G44.add(p); return p; };
   poster([{ t: '燈火管制', size: 0.13, bold: true }, { t: '밤에는 불빛이', size: 0.07 }, { t: '새지 않게 하라', size: 0.07 }], 9.83, 6.1, -0.4, -Math.PI / 2);
   poster([{ t: '防 空', size: 0.16, bold: true }, { t: '공습 경보가 울리면', size: 0.065 }, { t: '방공호로 대피', size: 0.065 }], 9.83, 6.1, 3.2, -Math.PI / 2);
-  poster([{ t: '金屬供出', size: 0.12, bold: true }, { t: '쇠붙이를 모두', size: 0.07 }, { t: '바칠 것', size: 0.07 }], -2.83, 6.1, 1.0, Math.PI / 2);
+  poster([{ t: '金屬供出', size: 0.12, bold: true }, { t: '쇠붙이를 모두', size: 0.07 }, { t: '바칠 것', size: 0.07 }], -2.83, 6.1, 2.6, Math.PI / 2);
   poster([{ t: '配給 案內', size: 0.12, bold: true }, { t: '쌀 배급은', size: 0.07 }, { t: '줄여서 나눔', size: 0.07 }], 2.83, 2.1, 1.6, -Math.PI / 2);
   poster([{ t: '昭和 十九年', size: 0.11, bold: true }, { t: '1944 · 8月', size: 0.13 }], -3.18, 2.0, -3.6, -Math.PI / 2, 0.6, 0.75, '#efe6cf');
   // 창문 안쪽: 폭격에 유리가 튀지 않게 X자로 붙인 종이띠
@@ -6975,12 +6990,12 @@ function mxThemeAt(x, y, z) { if (y < 2) { if (x > 4) return z > 0 ? 'p1' : 'p2'
 function lazyCanvasTex(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const t = new THREE.Texture(c); let done = false; // 아직 올리지 않은 그림(version 0)
-  t.paint = () => { if (done) return; done = true; if (draw(c.getContext('2d'), w, h) === false) { done = false; return; } t.needsUpdate = true; }; // 그림 파일이 아직이면 다음에 다시
+  t.paint = (force) => { if (done) return; const f = (window.__pf = window.__pf || { n: 0, t: 0 }); const now = performance.now(); if (now - f.t > 12) { f.t = now; f.n = 0; } if (force !== true && ++f.n > 2) return; done = true; if (draw(c.getContext('2d'), w, h) === false) { done = false; return; } t.needsUpdate = true; }; // 그림 파일이 아직이면 다음에 다시
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = (typeof renderer !== 'undefined' ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4); MX_LAZY.push(t.paint);
   return t;
 }
 (function idlePaint() {
-  const run = dl => { if (typeof state !== 'undefined' && !(state.mode === 'orbit' || state.modal)) { next(); return; } const t0 = performance.now(); do { if (MX_LAZY.length) MX_LAZY.shift()(); } while (MX_LAZY.length && performance.now() - t0 < 8 && (!dl || dl.didTimeout || dl.timeRemaining() > 2)); if (MX_LAZY.length) next(); };
+  const run = dl => { if (typeof state !== 'undefined' && !(state.mode === 'orbit' && !$('startScreen').hidden)) { next(); return; } const t0 = performance.now(); do { if (MX_LAZY.length) MX_LAZY.shift()(true); } while (MX_LAZY.length && performance.now() - t0 < 8 && (!dl || dl.didTimeout || dl.timeRemaining() > 2)); if (MX_LAZY.length) next(); };
   const next = () => window.requestIdleCallback ? requestIdleCallback(run, { timeout: 400 }) : setTimeout(run, 60);
   window.addEventListener('load', () => setTimeout(next, 2500));
 })();
@@ -6988,7 +7003,7 @@ function mxBoard(w, h, draw, ppm = 300) {
   const tex = lazyCanvasTex(Math.round(w * ppm), Math.round(h * ppm), draw);
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: tex }));
-  m.onBeforeRender = tex.paint; // 화면에 처음 보이기 직전에 그려요
+  m.onBeforeRender = () => tex.paint(); // 화면에 처음 보이기 직전에 그려요
   return m;
 }
 function mxText(g, t, x, y, size, color, bold, align) {
@@ -7710,7 +7725,7 @@ POST.push(() => {
    미래 · 2045 기억의 담벼락 — 이번 활동에서만 보는 기록과 상상 편지
    - 모든 글은 현재 페이지의 메모리에서만 처리하며 저장·전송하지 않습니다.
    ===================================================================== */
-const WALL_COLORS = ['#a8462f', '#8e3424', '#b9653f', '#6d3a2a', '#d8cbb4'];
+const WALL_COLORS = ['#a8462f', '#8e3424', '#b9653f', '#6d3a2a'];
 const WALL_MOTIFS = ['없음', '태극', '무궁화', '댕기', '4·8', '별'];
 const WALL_FEELINGS = [
   { label: '뭉클했어요', short: '뭉클함' }, { label: '안타까웠어요', short: '안타까움' },
@@ -8167,6 +8182,7 @@ const LOOK = {
 function applyLook() {
   const want = curEra === 'present' && !state.dark;
   if (want === LOOK.on && !LOOK.force) return; LOOK.on = want; LOOK.force = false;
+  if (state.dark) { renderer.toneMapping = LOOK.base.tm; renderer.toneMappingExposure = 1; document.body.classList.remove('nowLook'); return; } // 굴 안: 손전등 어둠을 낮빛으로 덮지 않아요
   const L = want ? LOOK.now : LOOK.base;
   skyDome.material.uniforms.top.value.copy(L.top); skyDome.material.uniforms.bot.value.copy(L.bot);
   sun.color.copy(L.sunC); sun.intensity = L.sunI; hemi.color.copy(L.hemiC); hemi.groundColor.copy(L.hemiG); hemi.intensity = L.hemiI; amb.intensity = L.ambI;
@@ -8178,7 +8194,7 @@ function applyLook() {
 // 시대가 바뀌거나 굴에서 나올 때마다 다시 맞춰요
 {
   const _ge = goEra; goEra = function () { const r = _ge.apply(this, arguments); LOOK.force = true; applyLook(); return r; };
-  const _sd = setDark; setDark = function () { const r = _sd.apply(this, arguments); LOOK.force = true; applyLook(); return r; };
+  const _sd = setDark; setDark = function () { const prev = state.dark; const r = _sd.apply(this, arguments); if (state.dark !== prev) { LOOK.force = true; applyLook(); } return r; }; // 바뀔 때만(매 프레임 밤빛을 낮빛으로 덮어쓰지 않게)
   TICK.push(() => { if ((curEra === 'present') !== LOOK.on && !state.dark) applyLook(); });
 }
 // 2026 화면 톤: 살짝 또렷하고 맑게
@@ -9072,9 +9088,13 @@ if (!coarse) {
     });
     return g;
   };
-  leaf(0); leaf(1.0);
-  dk(0.03, 2.6, 0.12, blueD, 0.995, 1.3, 0, pv); // 두 짝이 맞닿는 선
-  [0.88, 1.12].forEach(x => [-1, 1].forEach(sd => { const k = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), M.brass); k.position.set(x, 1.15, sd * 0.09); pv.add(k); dk(0.05, 0.16, 0.015, M.brass, x, 1.15, sd * 0.065, pv); }));
+  // 왼쪽 짝: 왼쪽 경첩(pv) · 오른쪽 짝: 오른쪽 경첩(pR) — 두 짝이 가운데에서 갈라져 양쪽 안으로 열려요
+  leaf(0.01);
+  const pR = new THREE.Group(); pv.add(pR);
+  const lr = leaf(-0.99); pv.remove(lr); pR.add(lr);
+  const knob = (x, par) => [-1, 1].forEach(sd => { const k = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), M.brass); k.position.set(x, 1.15, sd * 0.09); par.add(k); dk(0.05, 0.16, 0.015, M.brass, x, 1.15, sd * 0.065, par); });
+  knob(0.88, pv); knob(-0.12, pR);
+  POST.push(() => { const c = pv.rotation.y; pR.position.set(2 * Math.cos(c), 0, 2 * Math.sin(c)); pR.rotation.y = -2 * c; }); // 오른쪽 경첩(세계 x=+1)에 붙어 반대로 돌아요
 }
 
 // ── 계단 밑 옛 거울 다시 만들기: 아치 머리의 마호가니 틀 · 금빛 안쪽 테두리 · 조개 장식 · 짧은 다리의 서랍 받침
@@ -9229,6 +9249,12 @@ function privacyValidate(value,node) {
 
 </script>
 <script>
+// 서고(x -18~-13, z -16.5~-8.5)를 뚫고 서 있던 나무는 치워요
+{ const inS = p => p.x > -18.6 && p.x < -12.4 && p.z > -17.1 && p.z < -7.9; const w = new THREE.Vector3(); scene.updateMatrixWorld(true);
+  scene.children.forEach(o => { if (o.isInstancedMesh || o === skyDome || !o.isGroup) return; let bark = false, fol = false; o.traverse(c => { if (c.isMesh && c.customDepthMaterial) fol = true; if (c.isMesh && c.geometry.type === 'CylinderGeometry' && c.geometry.parameters.height > 1) { c.getWorldPosition(w); if (inS(w) && w.y < 8) bark = true; } }); bark = bark && fol;
+    if (bark) o.visible = false; }); }
+// 유물 사진은 미리 받아 두고, 찾은 뒤 창이 더 빨리 떠요
+try { Object.values(ART_IMG).concat(typeof ART_CUT !== 'undefined' ? Object.values(ART_CUT) : []).forEach(src => { const im = new Image(); im.src = src; }); } catch (e) {}
 /* ================= 성능: 정적 물체 합쳐 그리기 · 꺼진 조명 제외 · '가볍게' 강화 =================
    - 움직이지 않는 물체를 재질(같은 색·같은 그림이면 같은 재질로 봐요)·시대·구역별로 묶어 한 번에 그려요.
    - 원본은 그대로 두고(충돌·클릭·가림 판정 유지) 화면에만 숨겨요. 원본이 움직이거나 보이기·색·층이 바뀌면
@@ -9254,6 +9280,7 @@ const PERF = (() => {
     try { clouds.forEach(add); } catch (e) {}
     try { WALLS.forEach(add); } catch (e) {}
     try { if (window.MIRROR) add(MIRROR.mg); } catch (e) {}
+    try { add(clockHands); } catch (e) {}
     return ex;
   }
   function eraMasks() {
@@ -9419,7 +9446,7 @@ const PERF = (() => {
 
   // 조명은 그대로 둬요: 켜고 끌 때 조명 개수가 바뀌면 그래픽 프로그램을 새로 만들며 버벅이기 때문이에요
   const refreshLights = () => {};
-  const calm = () => state.mode === 'orbit' || !!state.modal; // 시작 화면이나 창이 떠 있을 때만 무거운 일을 해요
+  const calm = () => (state.mode === 'orbit' && !$('startScreen').hidden) || (state.mode === 'play' && !!state.modal); // 시작 화면이나 창이 떠 있을 때만 무거운 일을 해요
   // 시작 화면 배경: 몇 프레임만 그린 뒤 멈추고, 화면 확대·이동은 CSS로 천천히(그래픽 처리와 따로 돌아 끊기지 않아요)
   // 그 사이 무거운 준비(물체 합치기·그래픽 미리 만들기·패널 그림)를 해도 배경이 버벅이지 않아요
   { const st = document.createElement('style');
@@ -9430,6 +9457,7 @@ const PERF = (() => {
   renderer.render = function (s, c) {
     const bootOn = !!(document.getElementById('boot') && !document.getElementById('boot').classList.contains('out'));
     const want = state.mode === 'orbit' && !bootOn && c === camera;
+    return _render(s, c); // 시작 화면 배경도 계속 움직여요(멈춤 효과 끔)
     if (!want) { if (still) { still = false; cv.classList.remove('bgStill'); } stillFrames = 0; stillT0 = 0; return _render(s, c); }
     if (!stillT0) stillT0 = performance.now();
     if ((stillFrames < 8 || performance.now() - stillT0 < 1200) || P.dirty) { stillFrames++; P.dirty = false; return _render(s, c); } // 처음 몇 프레임(그림이 다 들어오도록)만 그려요
@@ -9443,7 +9471,7 @@ const PERF = (() => {
     const list = [null].concat(ERAS.filter(e => e !== curEra)); let k = 0;
     const step = () => { if (k >= list.length) return; const bt = document.getElementById('boot');
       if (state.mode === 'cine') { while (k < list.length) precompile(list[k++]); return; }
-      if (state.mode !== 'orbit' || (bt && !bt.classList.contains('out'))) { setTimeout(step, 300); return; } precompile(list[k++]); setTimeout(step, 400); };
+      if (state.mode !== 'orbit' || $('startScreen').hidden || (bt && !bt.classList.contains('out'))) { setTimeout(step, 300); return; } precompile(list[k++]); setTimeout(step, 400); };
     setTimeout(step, 200);
   });
 
